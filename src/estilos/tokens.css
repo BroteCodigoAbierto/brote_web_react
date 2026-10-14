@@ -1,0 +1,61 @@
+/* Valores de diseño de Brote. Los componentes usan estas variables y nunca
+   colores o medidas sueltos. Salen de la paleta del prototipo. */
+
+:root {
+  --color-fondo: #f7f7f5;
+  --color-superficie: #ffffff;
+  --color-texto: #1f2320;
+  --color-texto-suave: #6b7268;
+  --color-primario: #2f7d4f;
+  --color-primario-oscuro: #235f3c;
+  --color-sobre-primario: #ffffff;
+  --color-borde: #e2e2dd;
+  --color-exito: #2f7d4f;
+  --color-exito-fondo: #e6f4ea;
+  --color-error: #b3413a;
+  --color-error-fondo: #fbeae8;
+
+  --radio: 10px;
+  --espacio-1: 0.25rem;
+  --espacio-2: 0.5rem;
+  --espacio-3: 1rem;
+  --espacio-4: 1.5rem;
+  --espacio-5: 2.5rem;
+
+  --fuente: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --fuente-codigo: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
+  --ancho-contenido: 960px;
+}
+
+/* modo oscuro según el sistema, salvo que el usuario haya elegido claro */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-tema="claro"]) {
+    --color-fondo: #14171a;
+    --color-superficie: #1e2225;
+    --color-texto: #e8eae7;
+    --color-texto-suave: #98a29b;
+    --color-primario: #4caf7d;
+    --color-primario-oscuro: #3d9268;
+    --color-sobre-primario: #0b1210;
+    --color-borde: #33383a;
+    --color-exito: #4caf7d;
+    --color-exito-fondo: #16241c;
+    --color-error: #e2685f;
+    --color-error-fondo: #2b1917;
+  }
+}
+
+:root[data-tema="oscuro"] {
+  --color-fondo: #14171a;
+  --color-superficie: #1e2225;
+  --color-texto: #e8eae7;
+  --color-texto-suave: #98a29b;
+  --color-primario: #4caf7d;
+  --color-primario-oscuro: #3d9268;
+  --color-sobre-primario: #0b1210;
+  --color-borde: #33383a;
+  --color-exito: #4caf7d;
+  --color-exito-fondo: #16241c;
+  --color-error: #e2685f;
+  --color-error-fondo: #2b1917;
+}
