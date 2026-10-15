@@ -1,11 +1,11 @@
 import { usePeticion } from "../../hooks/usePeticion.ts";
-import { traerSalud } from "../../servicios/salud.ts";
+import { traerPing } from "../../servicios/ping.ts";
 import estilos from "./Inicio.module.css";
 
 // Página provisional: el catálogo llega con F02. Mientras, muestra si la API
 // responde, para comprobar que web y backend están conectados.
 export default function Inicio() {
-  const { datos, cargando, error } = usePeticion(traerSalud);
+  const { datos, cargando, error } = usePeticion(traerPing);
 
   return (
     <section>
