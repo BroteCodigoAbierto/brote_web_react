@@ -1,0 +1,47 @@
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-1);
+}
+
+.etiqueta {
+  font-weight: 600;
+}
+
+.control {
+  display: flex;
+  align-items: stretch;
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio);
+  background: var(--color-superficie);
+}
+
+.control:focus-within {
+  outline: 2px solid var(--color-primario);
+  outline-offset: 1px;
+}
+
+.conError {
+  border-color: var(--color-error);
+}
+
+.entrada {
+  flex: 1;
+  min-width: 0;
+  padding: var(--espacio-2) var(--espacio-3);
+  border: 0;
+  border-radius: var(--radio);
+  background: transparent;
+  color: var(--color-texto);
+  font: inherit;
+}
+
+.entrada:focus {
+  outline: none;
+}
+
+.error {
+  margin: 0;
+  color: var(--color-error);
+  font-size: 0.875rem;
+}
