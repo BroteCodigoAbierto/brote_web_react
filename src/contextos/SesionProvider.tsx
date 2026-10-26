@@ -56,10 +56,9 @@ async function arrancar(): Promise<Accion> {
     return { tipo: "iniciada", usuario };
   } catch (error) {
     if (esFalloDeRed(error)) return { tipo: "sinServidor" };
-    // la cookie vence junto con la sesión: la marca dice si había una
-    const habiaSesion = leerMarca(CLAVES.sesionActiva);
-    quitarMarca(CLAVES.sesionActiva);
-    return { tipo: "terminada", aviso: habiaSesion ? "sesionTerminada" : null };
+    // la cookie vence junto con la sesión: la marca dice si había una (se
+    // quita en el efecto, no aquí, ver abajo)
+    return { tipo: "terminada", aviso: leerMarca(CLAVES.sesionActiva) ? "sesionTerminada" : null };
   }
 }
 
@@ -72,18 +71,21 @@ export default function SesionProvider({ children }: PropsSesionProvider) {
   useEffect(() => {
     let vigente = true; // StrictMode monta dos veces; la respuesta vieja se ignora
     arrancar().then((accion) => {
-      if (vigente) despachar(accion);
+      if (!vigente) return;
+      // la marca se quita solo con la respuesta vigente: si la quitara la
+      // primera vuelta de StrictMode, la segunda ya no mostraría el aviso
+      if (accion.tipo === "terminada") quitarMarca(CLAVES.sesionActiva);
+      despachar(accion);
     });
     return () => {
       vigente = false;
     };
   }, [intento]);
 
+  // La marca sesionActiva no se quita aquí: al arrancar, pedir() avisa de este
+  // 401 antes de que arrancar() lea la marca para decidir si muestra el aviso.
   useEffect(() => {
-    alPerderSesion(() => {
-      quitarMarca(CLAVES.sesionActiva);
-      despachar({ tipo: "perdida" });
-    });
+    alPerderSesion(() => despachar({ tipo: "perdida" }));
     return () => alPerderSesion(null);
   }, []);
 
