@@ -1,24 +1,15 @@
-import { usePeticion } from "../../hooks/usePeticion.ts";
-import { traerPing } from "../../servicios/ping.ts";
+import { useSesion } from "../../hooks/useSesion.ts";
 import estilos from "./Inicio.module.css";
 
-// Página provisional: el catálogo llega con F02. Mientras, muestra si la API
-// responde, para comprobar que web y backend están conectados.
+// Página provisional: el catálogo llega con F02. Mientras, saluda con el nombre
+// del usuario, que es lo único que existe tras crear la cuenta o entrar (F01).
 export default function Inicio() {
-  const { datos, cargando, error } = usePeticion(traerPing);
+  const { usuario } = useSesion();
 
   return (
     <section>
-      <h1>Brote</h1>
-      <p className={estilos.descripcion}>Cursos interactivos creados por la comunidad.</p>
-
-      {cargando && <p className={estilos.estado}>Conectando con la API...</p>}
-      {error !== null && (
-        <p className={`${estilos.estado} ${estilos.error}`}>
-          No se pudo conectar con la API. ¿Está corriendo brote_backend_express?
-        </p>
-      )}
-      {datos && <p className={`${estilos.estado} ${estilos.exito}`}>API conectada.</p>}
+      <h1>Hola, {usuario?.nombre}</h1>
+      <p className={estilos.descripcion}>Pronto vas a encontrar aquí los cursos de la comunidad.</p>
     </section>
   );
 }
