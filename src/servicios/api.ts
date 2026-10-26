@@ -14,6 +14,20 @@ export class ErrorHttp extends Error {
   }
 }
 
+// Quien quiera enterarse de que la sesión se perdió (el SesionContext) se
+// registra aquí; así cualquier petición que responda 401 lleva a "Entrar".
+let oyentePerderSesion: (() => void) | null = null;
+
+export function alPerderSesion(oyente: (() => void) | null) {
+  oyentePerderSesion = oyente;
+}
+
+// En POST /sesiones un 401 significa "correo o contraseña incorrectos", no que
+// se haya perdido una sesión.
+function esEntrar(ruta: string, opciones: RequestInit): boolean {
+  return ruta === "/sesiones" && opciones.method === "POST";
+}
+
 export async function pedir<T>(ruta: string, opciones: RequestInit = {}): Promise<T> {
   const respuesta = await fetch(URL_API + ruta, {
     ...opciones,
@@ -23,7 +37,9 @@ export async function pedir<T>(ruta: string, opciones: RequestInit = {}): Promis
   if (!respuesta.ok) {
     // el cuerpo puede no ser JSON (p. ej. un proxy caído)
     const cuerpo = await respuesta.json().catch(() => null);
+    if (respuesta.status === 401 && !esEntrar(ruta, opciones)) oyentePerderSesion?.();
     throw new ErrorHttp(respuesta.status, cuerpo);
   }
+  if (respuesta.status === 204) return undefined as T; // sin cuerpo
   return respuesta.json() as Promise<T>;
 }
