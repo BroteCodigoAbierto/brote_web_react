@@ -1,0 +1,17 @@
+.mensaje {
+  margin: 0;
+  padding: var(--espacio-2) var(--espacio-3);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio);
+}
+
+.error {
+  border-color: var(--color-error);
+  background: var(--color-error-fondo);
+  color: var(--color-error);
+}
+
+.aviso {
+  background: var(--color-superficie);
+  color: var(--color-texto);
+}
