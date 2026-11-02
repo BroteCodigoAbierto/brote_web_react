@@ -6,7 +6,8 @@ import type { ResumenCurso } from "../tipos/contrato.ts";
 // cargados siguen ahí al volver del detalle (research de F02, punto 8).
 
 export type EstadoCatalogo = {
-  // la búsqueda vigente, ya recortada; null antes de la primera
+  // la búsqueda, ya recortada, de lo que está en pantalla (la lista o el
+  // error); null hasta la primera respuesta. La que está en camino no cuenta
   consulta: string | null;
   cursos: ResumenCurso[];
   // cursor para pedir los 10 siguientes; null si no hay más

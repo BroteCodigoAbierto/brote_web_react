@@ -30,13 +30,18 @@ const inicial: Estado = {
   pendiente: null,
 };
 
+// La búsqueda que se va a mostrar: la que está en camino o, si no hay, la que
+// está en pantalla.
+function consultaVigente(actual: Estado): string | null {
+  return actual.pendiente?.tipo === "primera" ? actual.pendiente.consulta : actual.consulta;
+}
+
 // Pide desde el primer curso. Si hay una lista en pantalla se queda, atenuada,
 // hasta que llegan los resultados (spec F02, "Buscando").
 function pedirPrimera(actual: Estado, consulta: string): Estado {
   const conLista = actual.fase === "listo";
   return {
     ...actual,
-    consulta,
     fase: conLista ? "listo" : "cargando",
     buscando: conLista,
     cargandoMas: false,
@@ -59,7 +64,7 @@ function reducir(actual: Estado, accion: Accion): Estado {
   switch (accion.tipo) {
     case "buscar":
       // al volver del detalle la consulta es la misma: no se pide otra vez
-      if (accion.consulta === actual.consulta && actual.fase !== "error") return actual;
+      if (accion.consulta === consultaVigente(actual) && actual.fase !== "error") return actual;
       return pedirPrimera(actual, accion.consulta);
     case "cargarMas":
       // una sola carga a la vez, y nunca con cursos de una búsqueda anterior
@@ -85,6 +90,7 @@ function reducir(actual: Estado, accion: Accion): Estado {
       if (accion.pendiente.tipo === "primera") {
         return {
           ...actual,
+          consulta: accion.pendiente.consulta,
           cursos: accion.respuesta.cursos,
           siguiente: accion.respuesta.siguiente,
           fase: "listo",
@@ -102,7 +108,14 @@ function reducir(actual: Estado, accion: Accion): Estado {
     case "fallo":
       if (accion.pendiente !== actual.pendiente) return actual;
       if (accion.pendiente.tipo === "primera") {
-        return { ...actual, fase: "error", buscando: false, error: accion.error, pendiente: null };
+        return {
+          ...actual,
+          consulta: accion.pendiente.consulta,
+          fase: "error",
+          buscando: false,
+          error: accion.error,
+          pendiente: null,
+        };
       }
       // los cursos ya cargados siguen en pantalla
       return { ...actual, cargandoMas: false, errorMas: accion.error, pendiente: null };
