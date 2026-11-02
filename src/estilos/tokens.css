@@ -15,6 +15,19 @@
   --color-error: #b3413a;
   --color-error-fondo: #fbeae8;
 
+  /* portadas generadas de los cursos (F02): las mismas en claro y oscuro, todas
+     con contraste de al menos 4.5:1 con la letra blanca. El móvil usa los
+     mismos en coloresPortada de tema.ts */
+  --color-portada-1: #2f7d4f;
+  --color-portada-2: #2c6aa0;
+  --color-portada-3: #7b4fa0;
+  --color-portada-4: #a8443f;
+  --color-portada-5: #9a5b13;
+  --color-portada-6: #1f7a7a;
+  --color-portada-7: #8a4a6b;
+  --color-portada-8: #4a5a6a;
+  --color-sobre-portada: #ffffff;
+
   --radio: 10px;
   --espacio-1: 0.25rem;
   --espacio-2: 0.5rem;
