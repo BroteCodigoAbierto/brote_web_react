@@ -3,6 +3,10 @@ import { URL_API } from "../config.ts";
 // Único punto de salida a la red. Las funciones de cada recurso
 // (servicios/cursos.ts, ...) se construyen encima de pedir().
 
+// Lo que se muestra cuando la API no responde o falla (5xx), en cualquier pedido.
+export const MENSAJE_SIN_SERVIDOR =
+  "No se pudo conectar con Brote. Inténtalo de nuevo en un momento.";
+
 export class ErrorHttp extends Error {
   estado: number;
   cuerpo: unknown;

@@ -4,10 +4,7 @@ import type {
   RespuestaError,
   RespuestaUsuario,
 } from "../tipos/contrato.ts";
-import { ErrorHttp, pedir } from "./api.ts";
-
-export const MENSAJE_SIN_SERVIDOR =
-  "No se pudo conectar con Brote. Inténtalo de nuevo en un momento.";
+import { ErrorHttp, MENSAJE_SIN_SERVIDOR, pedir } from "./api.ts";
 
 export function crearCuenta(cuerpo: CuerpoCrearCuenta) {
   return pedir<RespuestaUsuario>("/cuentas", { method: "POST", body: JSON.stringify(cuerpo) });

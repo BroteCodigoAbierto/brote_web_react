@@ -1,5 +1,5 @@
 import { useSesion } from "../../hooks/useSesion.ts";
-import { MENSAJE_SIN_SERVIDOR } from "../../servicios/sesion.ts";
+import { MENSAJE_SIN_SERVIDOR } from "../../servicios/api.ts";
 import Boton from "../Boton/Boton.tsx";
 import estilos from "./PantallaSinServidor.module.css";
 
