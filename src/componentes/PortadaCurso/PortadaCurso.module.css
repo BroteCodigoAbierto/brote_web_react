@@ -1,0 +1,54 @@
+.portada {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  border-radius: var(--radio);
+  color: var(--color-sobre-portada);
+  font-weight: 700;
+  line-height: 1;
+  user-select: none;
+}
+
+.tarjeta {
+  width: 100%;
+  aspect-ratio: 2 / 1;
+  font-size: 3rem;
+}
+
+.detalle {
+  width: 8rem;
+  height: 8rem;
+  font-size: 4rem;
+}
+
+.color1 {
+  background: var(--color-portada-1);
+}
+
+.color2 {
+  background: var(--color-portada-2);
+}
+
+.color3 {
+  background: var(--color-portada-3);
+}
+
+.color4 {
+  background: var(--color-portada-4);
+}
+
+.color5 {
+  background: var(--color-portada-5);
+}
+
+.color6 {
+  background: var(--color-portada-6);
+}
+
+.color7 {
+  background: var(--color-portada-7);
+}
+
+.color8 {
+  background: var(--color-portada-8);
+}
