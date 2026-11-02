@@ -23,6 +23,8 @@
   margin: 0;
   color: var(--color-texto-suave);
   text-align: center;
+  /* una búsqueda de 100 letras sin espacios no ensancha la página */
+  overflow-wrap: anywhere;
 }
 
 .sinResultados {
