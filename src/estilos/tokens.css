@@ -46,6 +46,19 @@
   --color-portada-8: #475569;
   --color-sobre-portada: #ffffff;
 
+  /* F03: final del degradado de la barra de progreso (empieza en --color-brote) */
+  --color-progreso-fin: #84cc16;
+
+  /* F03: el panel de código es oscuro también en modo claro, así que estos
+     valen lo mismo en los dos modos (docs/diseno.md, sección 2.1, "Código") */
+  --color-codigo-fondo: #16142e;
+  --color-codigo-texto: #ecebfa;
+  --color-codigo-agregado: #bef264;
+  --color-codigo-agregado-fondo: rgba(163, 230, 53, 0.16);
+  --color-codigo-eliminado: #fda4af;
+  --color-codigo-eliminado-fondo: rgba(255, 107, 133, 0.16);
+  --color-codigo-encabezado: #a29dff;
+
   --sombra-suave: 0 8px 28px rgba(49, 46, 129, 0.08);
   --sombra-elevada: 0 16px 44px rgba(49, 46, 129, 0.14), 0 2px 6px rgba(49, 46, 129, 0.05);
   --sombra-boton: 0 8px 18px rgba(79, 70, 229, 0.28);
@@ -83,6 +96,7 @@
   --texto-etiqueta: 600 0.8125rem/1.125rem var(--fuente);
   --texto-boton: 600 0.9375rem/1.25rem var(--fuente);
   --texto-seccion: 700 0.6875rem/0.875rem var(--fuente);
+  --texto-codigo: 400 0.875rem/1.375rem var(--fuente-codigo);
   --espaciado-display: -0.075rem;
   --espaciado-titulo1: -0.056rem;
   --espaciado-titulo2: -0.031rem;
@@ -101,6 +115,7 @@
   --area-tactil: 2.75rem;
   --ancho-contenido: 65rem;
   --ancho-formulario: 26.25rem;
+  --ancho-leccion: 42.5rem;
 }
 
 /* modo oscuro: según el sistema, salvo que el usuario haya elegido claro, o
