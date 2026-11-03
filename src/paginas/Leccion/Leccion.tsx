@@ -15,6 +15,7 @@ import { useReproductor } from "../../hooks/useReproductor.ts";
 import { esNoDisponible, leerErrorDeCarga } from "../../servicios/cursos.ts";
 import { traerLeccion } from "../../servicios/lecciones.ts";
 import { MENSAJES_LECCION, type DetalleLeccion } from "../../tipos/contrato.ts";
+import { vieneDelCurso } from "../../utilidades/navegacion.ts";
 import estilos from "./Leccion.module.css";
 
 // Cursar una lección (spec F03), a pantalla completa y fuera del marco común.
@@ -26,11 +27,11 @@ export default function Leccion() {
     useCallback(() => traerLeccion(idCurso, idLeccion), [idCurso, idLeccion]),
   );
 
-  // Vuelve a la pantalla anterior (el detalle del curso). Si se abrió la
-  // dirección directo, la reemplaza por el detalle: así "atrás" no regresa a
-  // la lección (research de F03, punto 8).
+  // Vuelve a la pantalla anterior si es el detalle del curso. Si no (dirección
+  // abierta directo, o después de "Entrar"), reemplaza la lección por el
+  // detalle: así "atrás" no regresa a la lección (research de F03, punto 8).
   function salir() {
-    if (ubicacion.key !== "default") navegar(-1);
+    if (vieneDelCurso(ubicacion.state)) navegar(-1);
     else navegar(`/cursos/${idCurso}`, { replace: true });
   }
 

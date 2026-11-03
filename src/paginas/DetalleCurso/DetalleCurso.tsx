@@ -12,6 +12,7 @@ import { usePeticion } from "../../hooks/usePeticion.ts";
 import { esNoDisponible, leerErrorDeCarga, traerCurso } from "../../servicios/cursos.ts";
 import { MENSAJES_CATALOGO } from "../../tipos/contrato.ts";
 import { textoCantidadLecciones } from "../../utilidades/cursos.ts";
+import { ESTADO_DESDE_CURSO } from "../../utilidades/navegacion.ts";
 import estilos from "./DetalleCurso.module.css";
 
 // Detalle de un curso publicado (spec F02): sus datos y la lista de lecciones,
@@ -70,6 +71,7 @@ export default function DetalleCurso() {
               <li key={leccion.id}>
                 <Link
                   to={`/cursos/${curso.id}/lecciones/${leccion.id}`}
+                  state={ESTADO_DESDE_CURSO}
                   className={estilos.leccion}
                 >
                   <span className={estilos.numero} aria-hidden="true">
