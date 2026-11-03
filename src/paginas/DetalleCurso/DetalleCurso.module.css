@@ -48,6 +48,13 @@
   overflow-wrap: anywhere;
 }
 
+.avance {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-5);
+  padding: var(--espacio-6);
+}
+
 .lecciones {
   display: flex;
   flex-direction: column;

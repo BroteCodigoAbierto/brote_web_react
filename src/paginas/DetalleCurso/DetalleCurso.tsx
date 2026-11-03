@@ -1,6 +1,14 @@
-import { ArrowLeft, BookOpen, ChevronRight, CircleSlash, NotebookPen } from "lucide-react";
+import {
+  ArrowLeft,
+  ArrowRight,
+  BookOpen,
+  ChevronRight,
+  CircleSlash,
+  NotebookPen,
+} from "lucide-react";
 import { useCallback } from "react";
 import { Link, useLocation, useNavigate, useParams } from "react-router";
+import AvanceCurso from "../../componentes/AvanceCurso/AvanceCurso.tsx";
 import Boton from "../../componentes/Boton/Boton.tsx";
 import ErrorCarga from "../../componentes/ErrorCarga/ErrorCarga.tsx";
 import EstadoVacio from "../../componentes/EstadoVacio/EstadoVacio.tsx";
@@ -10,13 +18,15 @@ import PortadaCurso from "../../componentes/PortadaCurso/PortadaCurso.tsx";
 import Superficie from "../../componentes/Superficie/Superficie.tsx";
 import { usePeticion } from "../../hooks/usePeticion.ts";
 import { esNoDisponible, leerErrorDeCarga, traerCurso } from "../../servicios/cursos.ts";
-import { MENSAJES_CATALOGO } from "../../tipos/contrato.ts";
+import { MENSAJES_CATALOGO, type DetalleCurso as Curso } from "../../tipos/contrato.ts";
 import { textoCantidadLecciones } from "../../utilidades/cursos.ts";
 import { ESTADO_DESDE_CURSO } from "../../utilidades/navegacion.ts";
+import { avanceCurso, textoBotonSiguiente } from "../../utilidades/progreso.ts";
 import estilos from "./DetalleCurso.module.css";
 
-// Detalle de un curso publicado (spec F02): sus datos y la lista de lecciones,
-// que se abren para cursarlas (F03).
+// Detalle de un curso publicado (spec F02): sus datos, el avance del alumno
+// (F04) y la lista de lecciones, que se abren para cursarlas (F03). Al volver
+// de una lección la página se monta de nuevo y trae el avance actualizado.
 export default function DetalleCurso() {
   const { idCurso = "" } = useParams();
   const { datos, cargando, error, recargar } = usePeticion(
@@ -59,6 +69,8 @@ export default function DetalleCurso() {
 
       <p className={estilos.descripcion}>{curso.descripcion}</p>
 
+      {curso.lecciones.length > 0 && <Avance curso={curso} />}
+
       <section className={estilos.lecciones} aria-labelledby="titulo-lecciones">
         <h2 id="titulo-lecciones" className={estilos.seccion}>
           Lecciones
@@ -88,6 +100,37 @@ export default function DetalleCurso() {
         )}
       </section>
     </article>
+  );
+}
+
+type PropsAvance = {
+  curso: Curso;
+};
+
+// Cuánto lleva y por dónde seguir (docs/diseno.md, sección 5, "Detalle del
+// curso con progreso"): el botón abre la primera lección sin completar.
+function Avance({ curso }: PropsAvance) {
+  const navegar = useNavigate();
+  const { completadas, total, siguiente } = avanceCurso(curso.lecciones);
+
+  return (
+    <Superficie className={estilos.avance}>
+      <AvanceCurso completadas={completadas} total={total} />
+      {siguiente && (
+        <div>
+          <Boton
+            iconoFinal={ArrowRight}
+            alPulsar={() =>
+              navegar(`/cursos/${curso.id}/lecciones/${siguiente.id}`, {
+                state: ESTADO_DESDE_CURSO,
+              })
+            }
+          >
+            {textoBotonSiguiente(siguiente, completadas)}
+          </Boton>
+        </div>
+      )}
+    </Superficie>
   );
 }
 
