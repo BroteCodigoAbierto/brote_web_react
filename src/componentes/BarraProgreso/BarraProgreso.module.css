@@ -1,0 +1,15 @@
+.barra {
+  flex: 1;
+  height: 0.625rem;
+  overflow: hidden;
+  border-radius: var(--radio-pildora);
+  background: var(--color-borde);
+}
+
+/* "reducir movimiento" quita la transición desde global.css */
+.relleno {
+  height: 100%;
+  border-radius: inherit;
+  background: linear-gradient(90deg, var(--color-brote), var(--color-progreso-fin));
+  transition: width var(--duracion-media) var(--curva);
+}

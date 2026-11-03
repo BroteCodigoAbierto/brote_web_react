@@ -1,0 +1,62 @@
+/* se queda en la línea del texto, con su respuesta esperada al lado */
+.espacio {
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--espacio-3);
+  margin: var(--espacio-1) 0;
+  white-space: nowrap;
+  vertical-align: baseline;
+}
+
+.campo {
+  min-width: 4ch;
+  max-width: 100%;
+  min-height: 2.5rem;
+  padding: 0 var(--espacio-4);
+  border: 2px solid var(--color-borde-fuerte);
+  border-radius: var(--radio-chico);
+  background: var(--color-vidrio-suave);
+  color: var(--color-texto);
+  font: var(--texto-cuerpo);
+  font-weight: 600;
+  transition:
+    border-color var(--duracion-rapida) var(--curva),
+    background-color var(--duracion-rapida) var(--curva),
+    box-shadow var(--duracion-rapida) var(--curva);
+}
+
+.campo:hover:not(:disabled) {
+  border-color: var(--color-primario);
+}
+
+/* el halo hace de foco, como en CampoTexto */
+.campo:focus,
+.campo:focus-visible {
+  outline: none;
+  border-color: var(--color-primario);
+  background: var(--color-vidrio-opaco);
+  box-shadow: var(--halo-foco);
+}
+
+.campo:disabled {
+  opacity: 1;
+  -webkit-text-fill-color: currentColor;
+}
+
+.correcto,
+.correcto:disabled {
+  border-color: var(--color-brote-fuerte);
+  background: var(--color-brote-suave);
+}
+
+.incorrecto,
+.incorrecto:disabled {
+  border-color: var(--color-error);
+  background: var(--color-error-suave);
+}
+
+.esperada {
+  color: var(--color-brote-fuerte);
+  font: var(--texto-nota);
+  font-weight: 700;
+}

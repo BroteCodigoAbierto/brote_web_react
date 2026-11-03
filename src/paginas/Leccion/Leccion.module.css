@@ -1,0 +1,18 @@
+/* la lección va a pantalla completa, sin el encabezado de la marca */
+.pantalla {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+/* cargando, error, sin actividades y la pantalla final */
+.estado {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  justify-content: center;
+  width: 100%;
+  max-width: var(--ancho-leccion);
+  margin: 0 auto;
+  padding: var(--espacio-5) var(--espacio-5) var(--espacio-9);
+}

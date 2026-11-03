@@ -1,0 +1,82 @@
+/* fija abajo, del ancho del contenido de la lección */
+.contenedor {
+  position: fixed;
+  inset: auto 0 0;
+  z-index: 10;
+  padding: 0 var(--espacio-5) var(--espacio-5);
+  pointer-events: none;
+}
+
+.barra {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-4);
+  width: 100%;
+  max-width: var(--ancho-leccion);
+  margin: 0 auto;
+  padding: var(--espacio-5);
+  border-radius: var(--radio-enorme);
+  pointer-events: auto;
+  transition: background var(--duracion-media) var(--curva);
+}
+
+/* el color de la respuesta va encima del vidrio sólido, también en modo
+   oscuro, donde los tonos suaves son translúcidos. Con .barra gana a la clase
+   de Superficie */
+.barra.correcto {
+  background:
+    linear-gradient(var(--color-brote-suave), var(--color-brote-suave)), var(--color-vidrio-opaco);
+}
+
+.barra.incorrecto {
+  background:
+    linear-gradient(var(--color-error-suave), var(--color-error-suave)), var(--color-vidrio-opaco);
+}
+
+.mensaje:empty {
+  display: none;
+}
+
+.mensaje {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-2);
+  padding: 0 var(--espacio-2);
+  animation: aparecer var(--duracion-media) var(--curva);
+}
+
+.titulo {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-3);
+  font: var(--texto-titulo3);
+  letter-spacing: var(--espaciado-titulo3);
+}
+
+.correcto .titulo {
+  color: var(--color-brote-fuerte);
+}
+
+.incorrecto .titulo {
+  color: var(--color-error);
+}
+
+.icono {
+  width: 1.375rem;
+  height: 1.375rem;
+  flex-shrink: 0;
+}
+
+/* la respuesta correcta puede ser código: se respetan saltos y sangría */
+.detalle {
+  color: var(--color-texto);
+  font: var(--texto-cuerpo);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mensaje {
+    animation: none;
+  }
+}

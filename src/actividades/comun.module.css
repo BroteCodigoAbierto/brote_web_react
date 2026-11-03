@@ -1,0 +1,60 @@
+/* Lo que comparten las actividades: columna, consigna y panel de contenido
+   (docs/diseno.md, sección 6). */
+
+.actividad {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-6);
+  animation: aparecer var(--duracion-lenta) var(--curva);
+}
+
+/* consigna en titulo2; recibe el foco al empezar la actividad */
+.consigna {
+  font: var(--texto-titulo2);
+  letter-spacing: var(--espaciado-titulo2);
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
+
+.consigna:focus {
+  outline: none;
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-5);
+  padding: var(--espacio-7);
+}
+
+.parrafo {
+  font: var(--texto-cuerpo);
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
+
+.indicacion {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--espacio-3);
+  color: var(--color-texto-suave);
+  font: var(--texto-nota);
+}
+
+.indicacion svg {
+  width: 1rem;
+  height: 1rem;
+}
+
+@media (max-width: 30rem) {
+  .panel {
+    padding: var(--espacio-6);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .actividad {
+    animation: none;
+  }
+}

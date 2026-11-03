@@ -1,4 +1,4 @@
-import { ArrowLeft, BookOpen, CircleSlash, NotebookPen } from "lucide-react";
+import { ArrowLeft, BookOpen, ChevronRight, CircleSlash, NotebookPen } from "lucide-react";
 import { useCallback } from "react";
 import { Link, useLocation, useNavigate, useParams } from "react-router";
 import Boton from "../../componentes/Boton/Boton.tsx";
@@ -12,9 +12,11 @@ import { usePeticion } from "../../hooks/usePeticion.ts";
 import { esNoDisponible, leerErrorDeCarga, traerCurso } from "../../servicios/cursos.ts";
 import { MENSAJES_CATALOGO } from "../../tipos/contrato.ts";
 import { textoCantidadLecciones } from "../../utilidades/cursos.ts";
+import { ESTADO_DESDE_CURSO } from "../../utilidades/navegacion.ts";
 import estilos from "./DetalleCurso.module.css";
 
-// Detalle de un curso publicado (spec F02): sus datos y la lista de lecciones.
+// Detalle de un curso publicado (spec F02): sus datos y la lista de lecciones,
+// que se abren para cursarlas (F03).
 export default function DetalleCurso() {
   const { idCurso = "" } = useParams();
   const { datos, cargando, error, recargar } = usePeticion(
@@ -66,13 +68,20 @@ export default function DetalleCurso() {
         ) : (
           <Superficie como="ol" className={estilos.lista}>
             {curso.lecciones.map((leccion) => (
-              <li key={leccion.id} className={estilos.leccion}>
-                <span className={estilos.numero} aria-hidden="true">
-                  {leccion.posicion}
-                </span>
-                {/* el número se lee como "1. ..." aunque se dibuje en el círculo */}
-                <span className="oculto">{leccion.posicion}. </span>
-                <span className={estilos.tituloLeccion}>{leccion.titulo}</span>
+              <li key={leccion.id}>
+                <Link
+                  to={`/cursos/${curso.id}/lecciones/${leccion.id}`}
+                  state={ESTADO_DESDE_CURSO}
+                  className={estilos.leccion}
+                >
+                  <span className={estilos.numero} aria-hidden="true">
+                    {leccion.posicion}
+                  </span>
+                  {/* el número se lee como "1. ..." aunque se dibuje en el círculo */}
+                  <span className="oculto">{leccion.posicion}. </span>
+                  <span className={estilos.tituloLeccion}>{leccion.titulo}</span>
+                  <ChevronRight className={estilos.flecha} aria-hidden="true" />
+                </Link>
               </li>
             ))}
           </Superficie>

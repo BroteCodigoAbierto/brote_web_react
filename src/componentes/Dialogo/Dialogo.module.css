@@ -1,0 +1,48 @@
+/* Superficie sólida de radio enorme: va encima de todo */
+.dialogo {
+  width: min(26.25rem, calc(100vw - 2 * var(--espacio-5)));
+  padding: var(--espacio-7);
+  border: 1px solid var(--color-vidrio-borde);
+  border-radius: var(--radio-enorme);
+  background: var(--color-vidrio-opaco);
+  box-shadow: var(--brillo-vidrio), var(--sombra-elevada);
+  color: var(--color-texto);
+}
+
+.dialogo[open] {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-4);
+  animation: aparecer var(--duracion-media) var(--curva);
+}
+
+/* la lección sigue visible detrás, esmerilada */
+.dialogo::backdrop {
+  background: var(--color-vidrio-suave);
+  -webkit-backdrop-filter: var(--desenfoque);
+  backdrop-filter: var(--desenfoque);
+}
+
+.titulo {
+  font: var(--texto-titulo2);
+  letter-spacing: var(--espaciado-titulo2);
+}
+
+.texto {
+  color: var(--color-texto-suave);
+  font: var(--texto-cuerpo);
+}
+
+.botones {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: var(--espacio-4);
+  margin-top: var(--espacio-4);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dialogo[open] {
+    animation: none;
+  }
+}

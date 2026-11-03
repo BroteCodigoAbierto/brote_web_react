@@ -10,6 +10,8 @@ type PropsBoton = {
   icono?: LucideIcon;
   iconoFinal?: LucideIcon;
   anchoCompleto?: boolean;
+  // sin poder pulsarse (p. ej. "Comprobar" sin respuesta)
+  deshabilitado?: boolean;
   // mientras se envía queda deshabilitado, para que no se envíe dos veces
   enviando?: boolean;
   textoEnviando?: string;
@@ -26,6 +28,7 @@ export default function Boton({
   icono: Icono,
   iconoFinal: IconoFinal,
   anchoCompleto = false,
+  deshabilitado = false,
   enviando = false,
   textoEnviando = "Enviando...",
   alPulsar,
@@ -35,13 +38,14 @@ export default function Boton({
     estilos[variante],
     estilos[tamano],
     anchoCompleto ? estilos.anchoCompleto : "",
+    deshabilitado && !enviando ? estilos.deshabilitado : "",
   ].join(" ");
 
   return (
     <button
       type={tipo}
       className={clases}
-      disabled={enviando}
+      disabled={deshabilitado || enviando}
       aria-busy={enviando || undefined}
       onClick={alPulsar}
     >

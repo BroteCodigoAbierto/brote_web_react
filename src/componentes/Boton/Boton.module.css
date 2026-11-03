@@ -49,6 +49,13 @@
   opacity: 0.72;
 }
 
+/* sin poder pulsarse (no es "enviando"): más apagado y sin cursor de espera */
+.boton.deshabilitado {
+  cursor: not-allowed;
+  opacity: 0.5;
+  box-shadow: none;
+}
+
 .primario {
   background: var(--color-primario);
   border-color: rgba(255, 255, 255, 0.18);

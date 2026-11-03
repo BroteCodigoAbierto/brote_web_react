@@ -27,6 +27,8 @@ src/
   estilos/            tokens.css (variables de diseño) y global.css
   paginas/            una carpeta por página: Pagina.tsx + Pagina.module.css
   componentes/        componentes reutilizables, misma convención
+  actividades/        un componente por tipo de actividad, el registro tipo → componente
+                      (registro.ts) y el reproductor de lecciones (F03)
   hooks/              usePeticion y hooks por recurso (useCursos, ...)
   servicios/          api.ts (pedir, ErrorHttp) y funciones por recurso
   contextos/          estado global: un contexto por área, con useReducer
@@ -45,7 +47,12 @@ src/
 - Las pantallas se arman con los componentes del sistema de diseño:
   `Superficie` (vidrio), `Boton`, `CampoTexto`, `CampoContrasena`, `Buscador`,
   `Aviso`, `Insignia`, `EstadoVacio`, `ErrorCarga`, `IndicadorCarga`, `Marca`,
-  `PortadaCurso`, `TarjetaCurso`. Los iconos son de `lucide-react`.
+  `PortadaCurso`, `TarjetaCurso` y, para las lecciones (F03), `BarraProgreso`,
+  `BarraRespuesta`, `OpcionRespuesta`, `BloqueCodigo`, `TarjetaVolteable`,
+  `CampoEspacio`, `Dialogo` y `ResultadoLeccion`. Los iconos son de
+  `lucide-react`.
+- Agregar un tipo de actividad: su componente en `actividades/` y una línea
+  en `actividades/registro.ts` (el tipo del registro obliga a tenerlo).
 - Un componente o token nuevo se agrega primero a `docs/diseno.md` y también
   en el móvil, con el mismo nombre.
 - Contenido de cursos (lo escriben usuarios) nunca con
