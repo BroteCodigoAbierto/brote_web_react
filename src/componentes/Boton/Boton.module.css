@@ -33,6 +33,13 @@
   width: 100%;
 }
 
+/* un texto que no cabe (p. ej. "Continuar: {n}. {título}") se corta con "…" */
+.texto {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .icono {
   width: 1.125rem;
   height: 1.125rem;
