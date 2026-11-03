@@ -66,11 +66,15 @@
   line-clamp: 3;
 }
 
-/* la cantidad de lecciones queda abajo aunque la descripción sea corta */
-.pie {
-  display: flex;
+/* la cantidad de lecciones (o el avance) queda abajo aunque la descripción sea corta */
+.pie,
+.avance {
   margin-top: auto;
   padding-top: var(--espacio-3);
+}
+
+.pie {
+  display: flex;
 }
 
 @media (prefers-reduced-motion: reduce) {
