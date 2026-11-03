@@ -1,0 +1,84 @@
+.tarjeta {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radio-grande);
+  background: none;
+  text-align: center;
+  cursor: pointer;
+  perspective: 75rem;
+}
+
+.tarjeta:focus-visible {
+  outline-offset: 4px;
+}
+
+/* las dos caras ocupan la misma celda; la más alta da el alto */
+.interior {
+  display: grid;
+  min-height: 12.5rem;
+  transform-style: preserve-3d;
+  transition: transform var(--duracion-lenta) var(--curva);
+}
+
+.volteada .interior {
+  transform: rotateY(180deg);
+}
+
+.cara {
+  grid-area: 1 / 1;
+  display: grid;
+  place-items: center;
+  min-height: 12.5rem;
+  padding: var(--espacio-8) var(--espacio-7);
+  border: 1px solid var(--color-vidrio-borde);
+  border-radius: var(--radio-grande);
+  /* opaca: backdrop-filter aplana el giro 3D en algunos navegadores */
+  background: var(--color-vidrio-opaco);
+  box-shadow: var(--brillo-vidrio), var(--sombra-elevada);
+  color: var(--color-texto);
+  font: var(--texto-titulo2);
+  letter-spacing: var(--espaciado-titulo2);
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+  -webkit-backface-visibility: hidden;
+  backface-visibility: hidden;
+}
+
+.reverso {
+  transform: rotateY(180deg);
+  font: var(--texto-cuerpo);
+  font-size: 1.125rem;
+  line-height: 1.625rem;
+}
+
+.tarjeta:active .interior {
+  scale: 0.98;
+}
+
+/* sin giro: se cambia de cara al instante */
+@media (prefers-reduced-motion: reduce) {
+  .interior,
+  .volteada .interior {
+    transform: none;
+    transition: none;
+  }
+
+  .reverso {
+    transform: none;
+    visibility: hidden;
+  }
+
+  .volteada .frente {
+    visibility: hidden;
+  }
+
+  .volteada .reverso {
+    visibility: visible;
+  }
+
+  .tarjeta:active .interior {
+    scale: none;
+  }
+}
