@@ -1,0 +1,39 @@
+.insignia {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espacio-2);
+  align-self: flex-start;
+  min-height: 1.75rem;
+  padding: 0 var(--espacio-4);
+  border-radius: var(--radio-pildora);
+  font: var(--texto-nota);
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.icono {
+  width: 0.9375rem;
+  height: 0.9375rem;
+  flex-shrink: 0;
+}
+
+.neutro {
+  background: var(--color-vidrio-suave);
+  border: 1px solid var(--color-borde);
+  color: var(--color-texto-suave);
+}
+
+.primario {
+  background: var(--color-primario-suave);
+  color: var(--color-primario);
+}
+
+.brote {
+  background: var(--color-brote-suave);
+  color: var(--color-brote-fuerte);
+}
+
+.acento {
+  background: var(--color-acento-suave);
+  color: var(--color-texto);
+}

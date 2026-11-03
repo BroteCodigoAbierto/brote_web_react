@@ -1,33 +1,118 @@
 .boton {
-  padding: var(--espacio-2) var(--espacio-4);
-  border: 1px solid var(--color-primario);
-  border-radius: var(--radio);
-  font: inherit;
-  font-weight: 600;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--espacio-3);
+  max-width: 100%;
+  border: 1px solid transparent;
+  border-radius: var(--radio-pildora);
+  font: var(--texto-boton);
+  letter-spacing: var(--espaciado-boton);
+  white-space: nowrap;
   cursor: pointer;
+  user-select: none;
+  transition:
+    background-color var(--duracion-rapida) var(--curva),
+    border-color var(--duracion-rapida) var(--curva),
+    box-shadow var(--duracion-rapida) var(--curva),
+    transform var(--duracion-rapida) var(--curva),
+    opacity var(--duracion-rapida) var(--curva);
 }
 
-.boton:focus-visible {
-  outline: 2px solid var(--color-primario);
-  outline-offset: 2px;
+.normal {
+  min-height: var(--alto-boton);
+  padding: 0 var(--espacio-7);
+}
+
+.chico {
+  min-height: var(--alto-boton-chico);
+  padding: 0 var(--espacio-6);
+}
+
+.anchoCompleto {
+  width: 100%;
+}
+
+.icono {
+  width: 1.125rem;
+  height: 1.125rem;
+  flex-shrink: 0;
+}
+
+.boton:active:not(:disabled) {
+  transform: scale(0.98);
+  opacity: 0.9;
 }
 
 .boton:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
+  cursor: progress;
+  opacity: 0.72;
 }
 
 .primario {
   background: var(--color-primario);
+  border-color: rgba(255, 255, 255, 0.18);
   color: var(--color-sobre-primario);
+  box-shadow:
+    var(--sombra-boton),
+    inset 0 1px 0 rgba(255, 255, 255, 0.22);
 }
 
 .primario:hover:not(:disabled) {
-  background: var(--color-primario-oscuro);
-  border-color: var(--color-primario-oscuro);
+  background: var(--color-primario-hover);
 }
 
 .secundario {
-  background: var(--color-superficie);
+  background: var(--color-vidrio);
+  border-color: var(--color-borde-fuerte);
   color: var(--color-primario);
+  box-shadow: var(--brillo-vidrio), var(--sombra-suave);
+  -webkit-backdrop-filter: var(--desenfoque);
+  backdrop-filter: var(--desenfoque);
+}
+
+.secundario:hover:not(:disabled) {
+  border-color: var(--color-primario);
+}
+
+.fantasma {
+  background: var(--color-primario-suave);
+  color: var(--color-primario);
+}
+
+.fantasma:hover:not(:disabled) {
+  border-color: var(--color-borde-fuerte);
+}
+
+.peligro {
+  background: var(--color-error);
+  color: #ffffff;
+}
+
+.enlace {
+  min-height: var(--area-tactil);
+  padding: 0 var(--espacio-3);
+  background: transparent;
+  color: var(--color-primario);
+}
+
+.enlace:hover:not(:disabled) {
+  text-decoration: underline;
+  text-underline-offset: 0.2em;
+}
+
+.indicador {
+  width: 1.125rem;
+  height: 1.125rem;
+  flex-shrink: 0;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: girar 0.7s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .indicador {
+    animation-duration: 2s;
+  }
 }

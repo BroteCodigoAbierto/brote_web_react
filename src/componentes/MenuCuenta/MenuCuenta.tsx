@@ -1,5 +1,8 @@
+import { ChevronDown, LogOut } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useSesion } from "../../hooks/useSesion.ts";
+import { inicialPortada } from "../../utilidades/cursos.ts";
+import Superficie from "../Superficie/Superficie.tsx";
 import estilos from "./MenuCuenta.module.css";
 
 // Botón con el nombre del usuario que abre un menú con su correo y "Cerrar
@@ -41,15 +44,26 @@ export default function MenuCuenta() {
         aria-controls="menu-cuenta"
         onClick={() => setAbierto((a) => !a)}
       >
-        {usuario.nombre}
+        <span className={estilos.avatar} aria-hidden="true">
+          {inicialPortada(usuario.nombre)}
+        </span>
+        <span className={estilos.nombre}>{usuario.nombre}</span>
+        <ChevronDown
+          className={`${estilos.flecha} ${abierto ? estilos.flechaAbierta : ""}`}
+          aria-hidden="true"
+        />
       </button>
       {abierto && (
-        <div id="menu-cuenta" className={estilos.panel}>
-          <p className={estilos.correo}>{usuario.correo}</p>
+        <Superficie id="menu-cuenta" tono="solido" elevada className={estilos.panel}>
+          <div className={estilos.datos}>
+            <p className={estilos.nombrePanel}>{usuario.nombre}</p>
+            <p className={estilos.correo}>{usuario.correo}</p>
+          </div>
           <button type="button" className={estilos.opcion} onClick={cerrarSesion}>
+            <LogOut className={estilos.iconoOpcion} aria-hidden="true" />
             Cerrar sesión
           </button>
-        </div>
+        </Superficie>
       )}
     </div>
   );

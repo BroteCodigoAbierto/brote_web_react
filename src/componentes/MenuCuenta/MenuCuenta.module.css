@@ -3,55 +3,123 @@
 }
 
 .alternar {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espacio-3);
   max-width: 16rem;
-  overflow: hidden;
-  padding: var(--espacio-1) var(--espacio-3);
-  border: 1px solid var(--color-borde);
-  border-radius: var(--radio);
-  background: var(--color-superficie);
+  min-height: var(--area-tactil);
+  padding: var(--espacio-2) var(--espacio-4) var(--espacio-2) var(--espacio-2);
+  border: 1px solid transparent;
+  border-radius: var(--radio-pildora);
+  background: transparent;
   color: var(--color-texto);
-  font: inherit;
-  font-weight: 600;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+  font: var(--texto-boton);
   cursor: pointer;
+  transition: background-color var(--duracion-rapida) var(--curva);
 }
 
-.alternar:focus-visible,
-.opcion:focus-visible {
-  outline: 2px solid var(--color-primario);
-  outline-offset: 2px;
+.alternar:hover,
+.alternar[aria-expanded="true"] {
+  background: var(--color-primario-suave);
+}
+
+.avatar {
+  display: grid;
+  place-items: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--color-primario), var(--color-portada-2));
+  color: #ffffff;
+  font-weight: 700;
+}
+
+.nombre {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.flecha {
+  width: 1rem;
+  height: 1rem;
+  flex-shrink: 0;
+  color: var(--color-texto-suave);
+  transition: transform var(--duracion-rapida) var(--curva);
+}
+
+.flechaAbierta {
+  transform: rotate(180deg);
 }
 
 .panel {
   position: absolute;
-  top: calc(100% + var(--espacio-1));
+  top: calc(100% + var(--espacio-4));
   right: 0;
-  z-index: 1;
-  min-width: 14rem;
+  min-width: 16rem;
   display: flex;
   flex-direction: column;
-  gap: var(--espacio-2);
+  gap: var(--espacio-3);
   padding: var(--espacio-3);
-  border: 1px solid var(--color-borde);
-  border-radius: var(--radio);
-  background: var(--color-superficie);
+  border-radius: var(--radio-medio);
+  animation: aparecer var(--duracion-media) var(--curva);
+}
+
+.datos {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-1);
+  padding: var(--espacio-4) var(--espacio-4) var(--espacio-3);
+  border-bottom: 1px solid var(--color-borde);
+}
+
+.nombrePanel {
+  font: var(--texto-titulo3);
+  font-size: 1rem;
+  overflow-wrap: anywhere;
 }
 
 .correo {
-  margin: 0;
   color: var(--color-texto-suave);
+  font: var(--texto-cuerpo-chico);
   overflow-wrap: anywhere;
 }
 
 .opcion {
-  padding: var(--espacio-2) var(--espacio-3);
-  border: 1px solid var(--color-primario);
-  border-radius: var(--radio);
-  background: var(--color-superficie);
-  color: var(--color-primario);
-  font: inherit;
-  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-4);
+  min-height: var(--area-tactil);
+  padding: 0 var(--espacio-4);
+  border: 0;
+  border-radius: var(--radio-chico);
+  background: transparent;
+  color: var(--color-error);
+  font: var(--texto-boton);
   text-align: left;
   cursor: pointer;
+  transition: background-color var(--duracion-rapida) var(--curva);
+}
+
+.opcion:hover {
+  background: var(--color-error-suave);
+}
+
+.iconoOpcion {
+  width: 1.125rem;
+  height: 1.125rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .panel {
+    animation: none;
+  }
+}
+
+/* en pantallas angostas solo queda el avatar */
+@media (max-width: 30rem) {
+  .nombre {
+    display: none;
+  }
 }

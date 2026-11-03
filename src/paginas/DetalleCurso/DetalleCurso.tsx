@@ -1,8 +1,13 @@
+import { ArrowLeft, BookOpen, CircleSlash, NotebookPen } from "lucide-react";
 import { useCallback } from "react";
-import { Link, useParams } from "react-router";
+import { Link, useLocation, useNavigate, useParams } from "react-router";
+import Boton from "../../componentes/Boton/Boton.tsx";
 import ErrorCarga from "../../componentes/ErrorCarga/ErrorCarga.tsx";
+import EstadoVacio from "../../componentes/EstadoVacio/EstadoVacio.tsx";
 import IndicadorCarga from "../../componentes/IndicadorCarga/IndicadorCarga.tsx";
+import Insignia from "../../componentes/Insignia/Insignia.tsx";
 import PortadaCurso from "../../componentes/PortadaCurso/PortadaCurso.tsx";
+import Superficie from "../../componentes/Superficie/Superficie.tsx";
 import { usePeticion } from "../../hooks/usePeticion.ts";
 import { esNoDisponible, leerErrorDeCarga, traerCurso } from "../../servicios/cursos.ts";
 import { MENSAJES_CATALOGO } from "../../tipos/contrato.ts";
@@ -20,10 +25,12 @@ export default function DetalleCurso() {
 
   if (esNoDisponible(error)) {
     return (
-      <section className={estilos.noDisponible}>
-        <p role="alert">{MENSAJES_CATALOGO.cursoNoDisponible}</p>
-        <Link to="/">Ver cursos</Link>
-      </section>
+      <EstadoVacio
+        icono={CircleSlash}
+        titulo={MENSAJES_CATALOGO.cursoNoDisponible}
+        anunciar
+        accion={<Link to="/">Ver cursos</Link>}
+      />
     );
   }
 
@@ -35,28 +42,63 @@ export default function DetalleCurso() {
 
   return (
     <article className={estilos.detalle}>
-      <header className={estilos.encabezado}>
+      <Volver />
+
+      <Superficie className={estilos.encabezado} elevada>
         <PortadaCurso id={curso.id} titulo={curso.titulo} tamano="detalle" />
         <div className={estilos.datos}>
           <h1 className={estilos.titulo}>{curso.titulo}</h1>
-          <p className={estilos.suave}>Por {curso.autor.nombre}</p>
-          <p className={estilos.suave}>{textoCantidadLecciones(curso.cantidadLecciones)}</p>
+          <p className={estilos.autor}>Por {curso.autor.nombre}</p>
+          <Insignia tono="primario" icono={BookOpen}>
+            {textoCantidadLecciones(curso.cantidadLecciones)}
+          </Insignia>
         </div>
-      </header>
+      </Superficie>
 
       <p className={estilos.descripcion}>{curso.descripcion}</p>
 
-      {curso.lecciones.length === 0 ? (
-        <p className={estilos.suave}>Este curso todavía no tiene lecciones.</p>
-      ) : (
-        <ol className={estilos.lista}>
-          {curso.lecciones.map((leccion) => (
-            <li key={leccion.id} className={estilos.leccion}>
-              {leccion.posicion}. {leccion.titulo}
-            </li>
-          ))}
-        </ol>
-      )}
+      <section className={estilos.lecciones} aria-labelledby="titulo-lecciones">
+        <h2 id="titulo-lecciones" className={estilos.seccion}>
+          Lecciones
+        </h2>
+        {curso.lecciones.length === 0 ? (
+          <EstadoVacio icono={NotebookPen} titulo="Este curso todavía no tiene lecciones." />
+        ) : (
+          <Superficie como="ol" className={estilos.lista}>
+            {curso.lecciones.map((leccion) => (
+              <li key={leccion.id} className={estilos.leccion}>
+                <span className={estilos.numero} aria-hidden="true">
+                  {leccion.posicion}
+                </span>
+                {/* el número se lee como "1. ..." aunque se dibuje en el círculo */}
+                <span className="oculto">{leccion.posicion}. </span>
+                <span className={estilos.tituloLeccion}>{leccion.titulo}</span>
+              </li>
+            ))}
+          </Superficie>
+        )}
+      </section>
     </article>
+  );
+}
+
+// Vuelve a la página anterior (el catálogo con su búsqueda y su posición); si
+// se entró directo al detalle, va al catálogo.
+function Volver() {
+  const navegar = useNavigate();
+  const ubicacion = useLocation();
+  const hayAnterior = ubicacion.key !== "default";
+
+  return (
+    <div className={estilos.volver}>
+      <Boton
+        variante="enlace"
+        tamano="chico"
+        icono={ArrowLeft}
+        alPulsar={() => (hayAnterior ? navegar(-1) : navegar("/"))}
+      >
+        Cursos
+      </Boton>
+    </div>
   );
 }

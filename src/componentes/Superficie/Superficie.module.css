@@ -1,0 +1,26 @@
+.superficie {
+  border: 1px solid var(--color-vidrio-borde);
+  border-radius: var(--radio-grande);
+  background: var(--color-vidrio);
+  box-shadow: var(--brillo-vidrio), var(--sombra-suave);
+  -webkit-backdrop-filter: var(--desenfoque);
+  backdrop-filter: var(--desenfoque);
+}
+
+.normal {
+  background: var(--color-vidrio);
+}
+
+.suave {
+  background: var(--color-vidrio-suave);
+  box-shadow: var(--brillo-vidrio);
+}
+
+/* encima de contenido que se mueve (menús): sin transparencia */
+.solido {
+  background: var(--color-vidrio-opaco);
+}
+
+.elevada {
+  box-shadow: var(--brillo-vidrio), var(--sombra-elevada);
+}

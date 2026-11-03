@@ -1,5 +1,6 @@
+import { CloudOff, RotateCw } from "lucide-react";
 import Boton from "../Boton/Boton.tsx";
-import estilos from "./ErrorCarga.module.css";
+import EstadoVacio from "../EstadoVacio/EstadoVacio.tsx";
 
 type PropsErrorCarga = {
   mensaje: string;
@@ -9,13 +10,16 @@ type PropsErrorCarga = {
 // No se pudieron traer los datos de una página (o de "Ver más").
 export default function ErrorCarga({ mensaje, alReintentar }: PropsErrorCarga) {
   return (
-    <div className={estilos.error}>
-      <p role="alert" className={estilos.mensaje}>
-        {mensaje}
-      </p>
-      <Boton variante="secundario" alPulsar={alReintentar}>
-        Reintentar
-      </Boton>
-    </div>
+    <EstadoVacio
+      icono={CloudOff}
+      tono="error"
+      titulo={mensaje}
+      anunciar
+      accion={
+        <Boton variante="secundario" icono={RotateCw} alPulsar={alReintentar}>
+          Reintentar
+        </Boton>
+      }
+    />
   );
 }
