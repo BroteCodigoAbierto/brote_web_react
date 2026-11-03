@@ -1,13 +1,11 @@
-import { Link, Outlet, ScrollRestoration } from "react-router";
-import CatalogoProvider from "../../contextos/CatalogoProvider.tsx";
+import { Link, Outlet } from "react-router";
 import Marca from "../Marca/Marca.tsx";
 import MenuCuenta from "../MenuCuenta/MenuCuenta.tsx";
 import estilos from "./Layout.module.css";
 
 // Marco común de las páginas con sesión: encabezado de vidrio pegajoso (marca
-// y cuenta) y contenido (docs/diseno.md, sección 5). El catálogo vive aquí y no
-// en su página para que siga cargado al ir al detalle de un curso y volver;
-// ScrollRestoration devuelve la lista a donde se dejó.
+// y cuenta) y contenido (docs/diseno.md, sección 5). El estado del catálogo
+// vive un nivel arriba, en ZonaConSesion.
 export default function Layout() {
   return (
     <div className={estilos.pagina}>
@@ -22,11 +20,8 @@ export default function Layout() {
         </div>
       </header>
       <main className={estilos.contenido}>
-        <CatalogoProvider>
-          <Outlet />
-        </CatalogoProvider>
+        <Outlet />
       </main>
-      <ScrollRestoration />
     </div>
   );
 }
