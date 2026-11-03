@@ -1,0 +1,79 @@
+.resultado {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--espacio-7);
+  width: 100%;
+  max-width: var(--ancho-formulario);
+  margin: 0 auto;
+  padding: var(--espacio-9) 0;
+  text-align: center;
+}
+
+.circulo {
+  display: grid;
+  place-items: center;
+  width: 6rem;
+  height: 6rem;
+  border-radius: 50%;
+  background: var(--color-brote-suave);
+  color: var(--color-brote-fuerte);
+  box-shadow: var(--brillo-vidrio), var(--sombra-suave);
+  animation: brotar var(--duracion-lenta) var(--curva) both;
+}
+
+.icono {
+  width: 3rem;
+  height: 3rem;
+}
+
+.textos {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-3);
+}
+
+.titulo {
+  font: var(--texto-display);
+  letter-spacing: var(--espaciado-display);
+}
+
+.titulo:focus {
+  outline: none;
+}
+
+.leccion {
+  color: var(--color-texto-suave);
+  font: var(--texto-titulo3);
+  letter-spacing: var(--espaciado-titulo3);
+  overflow-wrap: anywhere;
+}
+
+/* la insignia llega justo después del icono */
+.aciertos {
+  display: flex;
+  justify-content: center;
+  animation: aparecer var(--duracion-lenta) var(--curva) var(--duracion-lenta) both;
+}
+
+/* crece con un pequeño rebote */
+@keyframes brotar {
+  0% {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+  70% {
+    opacity: 1;
+    transform: scale(1.12);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .circulo,
+  .aciertos {
+    animation: none;
+  }
+}
