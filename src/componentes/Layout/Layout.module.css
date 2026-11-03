@@ -38,7 +38,72 @@
 }
 
 .cuenta {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-4);
   margin-left: auto;
+}
+
+/* "Mi panel" (F04): un enlace con el aspecto del Boton fantasma chico */
+.enlacePanel {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--espacio-3);
+  min-width: var(--alto-boton-chico);
+  min-height: var(--alto-boton-chico);
+  padding: 0 var(--espacio-6);
+  border: 1px solid transparent;
+  border-radius: var(--radio-pildora);
+  background: var(--color-primario-suave);
+  color: var(--color-primario);
+  font: var(--texto-boton);
+  letter-spacing: var(--espaciado-boton);
+  white-space: nowrap;
+  transition:
+    background-color var(--duracion-rapida) var(--curva),
+    border-color var(--duracion-rapida) var(--curva),
+    transform var(--duracion-rapida) var(--curva);
+}
+
+.enlacePanel:hover {
+  border-color: var(--color-borde-fuerte);
+  color: var(--color-primario);
+  text-decoration: none;
+}
+
+.enlacePanel:active {
+  transform: scale(0.98);
+}
+
+/* la página en la que está */
+.enlacePanelActivo,
+.enlacePanelActivo:hover {
+  background: var(--color-primario);
+  color: var(--color-sobre-primario);
+}
+
+.iconoPanel {
+  width: 1.125rem;
+  height: 1.125rem;
+  flex-shrink: 0;
+}
+
+/* en pantallas angostas queda solo el icono; el nombre sigue en aria-label */
+@media (max-width: 36rem) {
+  .enlacePanel {
+    padding: 0;
+  }
+
+  .textoPanel {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .enlacePanel:active {
+    transform: none;
+  }
 }
 
 .contenido {
