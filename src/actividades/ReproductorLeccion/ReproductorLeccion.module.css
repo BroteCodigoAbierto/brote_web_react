@@ -40,12 +40,18 @@
   height: 1.25rem;
 }
 
-.salir:hover {
+.salir:hover:not(:disabled) {
   border-color: var(--color-borde-fuerte);
 }
 
-.salir:active {
+.salir:active:not(:disabled) {
   transform: scale(0.98);
+}
+
+/* como el Boton mientras envía */
+.salir:disabled {
+  cursor: progress;
+  opacity: 0.72;
 }
 
 /* abajo queda lugar para la barra de respuesta, que es fija */

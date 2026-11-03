@@ -49,8 +49,8 @@ src/
   `Aviso`, `Insignia`, `EstadoVacio`, `ErrorCarga`, `IndicadorCarga`, `Marca`,
   `PortadaCurso`, `TarjetaCurso` y, para las lecciones (F03), `BarraProgreso`,
   `BarraRespuesta`, `OpcionRespuesta`, `BloqueCodigo`, `TarjetaVolteable`,
-  `CampoEspacio`, `Dialogo` y `ResultadoLeccion`. Los iconos son de
-  `lucide-react`.
+  `CampoEspacio`, `Dialogo` y `ResultadoLeccion`, y para el progreso (F04)
+  `AvanceCurso`. Los iconos son de `lucide-react`.
 - Agregar un tipo de actividad: su componente en `actividades/` y una línea
   en `actividades/registro.ts` (el tipo del registro obliga a tenerlo).
 - Un componente o token nuevo se agrega primero a `docs/diseno.md` y también

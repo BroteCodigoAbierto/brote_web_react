@@ -56,6 +56,55 @@
   animation: aparecer var(--duracion-lenta) var(--curva) var(--duracion-lenta) both;
 }
 
+/* el estado del progreso (F04) */
+.guardado {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+}
+
+.guardando,
+.listo {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espacio-3);
+  font: var(--texto-nota);
+}
+
+.guardando {
+  color: var(--color-texto-suave);
+}
+
+.listo {
+  color: var(--color-brote-fuerte);
+}
+
+/* el mismo indicador chico que el de Boton */
+.indicador {
+  width: 1rem;
+  height: 1rem;
+  flex-shrink: 0;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: girar 0.7s linear infinite;
+}
+
+.iconoEstado {
+  width: 1.125rem;
+  height: 1.125rem;
+  flex-shrink: 0;
+}
+
+.problema {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--espacio-4);
+  width: 100%;
+  text-align: left;
+}
+
 /* crece con un pequeño rebote */
 @keyframes brotar {
   0% {
@@ -75,5 +124,9 @@
   .circulo,
   .aciertos {
     animation: none;
+  }
+
+  .indicador {
+    animation-duration: 2s;
   }
 }

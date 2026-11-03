@@ -54,7 +54,7 @@ export default function Boton({
       ) : (
         Icono && <Icono className={estilos.icono} aria-hidden="true" />
       )}
-      <span>{enviando ? textoEnviando : children}</span>
+      <span className={estilos.texto}>{enviando ? textoEnviando : children}</span>
       {!enviando && IconoFinal && <IconoFinal className={estilos.icono} aria-hidden="true" />}
     </button>
   );
