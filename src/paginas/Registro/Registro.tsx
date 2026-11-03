@@ -1,9 +1,10 @@
+import { Mail, Sparkles, UserRound } from "lucide-react";
 import { Link } from "react-router";
+import Aviso from "../../componentes/Aviso/Aviso.tsx";
 import Boton from "../../componentes/Boton/Boton.tsx";
 import CampoContrasena from "../../componentes/CampoContrasena/CampoContrasena.tsx";
 import CampoTexto from "../../componentes/CampoTexto/CampoTexto.tsx";
 import FormularioCuenta from "../../componentes/FormularioCuenta/FormularioCuenta.tsx";
-import MensajeFormulario from "../../componentes/MensajeFormulario/MensajeFormulario.tsx";
 import { useFormulario } from "../../hooks/useFormulario.ts";
 import { useSesion } from "../../hooks/useSesion.ts";
 import { validarCrearCuenta } from "../../validacion/cuenta.ts";
@@ -21,7 +22,8 @@ export default function Registro() {
   return (
     <FormularioCuenta
       titulo="Crear cuenta"
-      mensaje={general && <MensajeFormulario texto={general} />}
+      subtitulo="Una sola cuenta para aprender y para crear tus propios cursos."
+      mensaje={general && <Aviso texto={general} />}
       alEnviar={manejarEnvio}
       pie={
         <>
@@ -32,6 +34,8 @@ export default function Registro() {
       <CampoTexto
         id="nombre"
         etiqueta="Nombre para mostrar"
+        icono={UserRound}
+        ayuda="Así te verán como autor de tus cursos."
         autoComplete="name"
         valor={valores.nombre}
         alCambiar={(valor) => cambiar("nombre", valor)}
@@ -40,6 +44,7 @@ export default function Registro() {
       <CampoTexto
         id="correo"
         etiqueta="Correo"
+        icono={Mail}
         tipo="email"
         autoComplete="email"
         valor={valores.correo}
@@ -54,7 +59,7 @@ export default function Registro() {
         alCambiar={(valor) => cambiar("contrasena", valor)}
         error={errores.contrasena}
       />
-      <Boton tipo="submit" enviando={enviando} textoEnviando="Creando cuenta...">
+      <Boton tipo="submit" icono={Sparkles} enviando={enviando} textoEnviando="Creando cuenta...">
         Crear cuenta
       </Boton>
     </FormularioCuenta>

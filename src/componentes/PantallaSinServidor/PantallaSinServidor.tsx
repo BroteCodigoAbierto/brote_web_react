@@ -1,6 +1,7 @@
 import { useSesion } from "../../hooks/useSesion.ts";
 import { MENSAJE_SIN_SERVIDOR } from "../../servicios/api.ts";
-import Boton from "../Boton/Boton.tsx";
+import ErrorCarga from "../ErrorCarga/ErrorCarga.tsx";
+import Marca from "../Marca/Marca.tsx";
 import estilos from "./PantallaSinServidor.module.css";
 
 // Al abrir la web con la API caída no se sabe si hay sesión: se ofrece reintentar.
@@ -9,8 +10,8 @@ export default function PantallaSinServidor() {
 
   return (
     <div className={estilos.pantalla}>
-      <p role="alert">{MENSAJE_SIN_SERVIDOR}</p>
-      <Boton alPulsar={reintentar}>Reintentar</Boton>
+      <Marca />
+      <ErrorCarga mensaje={MENSAJE_SIN_SERVIDOR} alReintentar={reintentar} />
     </div>
   );
 }

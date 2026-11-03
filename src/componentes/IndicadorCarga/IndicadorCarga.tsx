@@ -1,12 +1,20 @@
 import estilos from "./IndicadorCarga.module.css";
 
-// El indicador de PantallaCarga, pero dentro de una página: el encabezado
-// sigue a la vista mientras se traen los datos.
-export default function IndicadorCarga() {
+type PropsIndicadorCarga = {
+  // ocupa toda la pantalla (mientras se comprueba la sesión)
+  pantallaCompleta?: boolean;
+};
+
+// Anillo de carga dentro de una página o a pantalla completa.
+export default function IndicadorCarga({ pantallaCompleta = false }: PropsIndicadorCarga) {
   return (
-    <div className={estilos.contenedor} role="status" aria-busy="true">
-      <span className={estilos.indicador} aria-hidden="true" />
-      <span className={estilos.oculto}>Cargando...</span>
+    <div
+      className={`${estilos.contenedor} ${pantallaCompleta ? estilos.pantallaCompleta : ""}`}
+      role="status"
+      aria-busy="true"
+    >
+      <span className={estilos.anillo} aria-hidden="true" />
+      <span className="oculto">Cargando...</span>
     </div>
   );
 }

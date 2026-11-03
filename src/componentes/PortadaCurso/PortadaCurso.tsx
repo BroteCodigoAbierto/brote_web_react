@@ -8,13 +8,14 @@ type PropsPortadaCurso = {
 };
 
 // Los cursos no tienen imagen: la portada es la inicial del título sobre un
-// color que sale del id. Es decorativa, el título siempre va al lado.
+// degradado del color que sale del id (docs/diseno.md, sección 2.1). Es
+// decorativa, el título siempre va al lado.
 export default function PortadaCurso({ id, titulo, tamano }: PropsPortadaCurso) {
   const color = estilos[`color${indiceColorPortada(id) + 1}`];
 
   return (
     <div className={`${estilos.portada} ${estilos[tamano]} ${color}`} aria-hidden="true">
-      {inicialPortada(titulo)}
+      <span className={estilos.inicial}>{inicialPortada(titulo)}</span>
     </div>
   );
 }

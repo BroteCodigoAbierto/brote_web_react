@@ -1,0 +1,53 @@
+.marca {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espacio-3);
+  color: var(--color-texto);
+}
+
+.simbolo {
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: linear-gradient(135deg, var(--color-portada-1), var(--color-portada-2));
+  box-shadow:
+    var(--sombra-boton),
+    inset 0 1px 0 rgba(255, 255, 255, 0.35);
+  color: #ffffff;
+}
+
+.nombre {
+  font: var(--texto-titulo3);
+  font-weight: 800;
+  letter-spacing: var(--espaciado-titulo2);
+}
+
+.normal .simbolo {
+  width: 2.25rem;
+  height: 2.25rem;
+}
+
+.normal .icono {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.grande {
+  flex-direction: column;
+  gap: var(--espacio-4);
+}
+
+.grande .simbolo {
+  width: 3.5rem;
+  height: 3.5rem;
+}
+
+.grande .icono {
+  width: 1.875rem;
+  height: 1.875rem;
+}
+
+.grande .nombre {
+  font: var(--texto-titulo2);
+  font-weight: 800;
+}

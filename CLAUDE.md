@@ -8,7 +8,9 @@ Antes de cambiar algo, lee:
 
 1. `../brote_specs/.specify/memory/constitution.md`
 2. `../brote_specs/docs/estilo-codigo.md`
-3. La spec y el plan de la feature: `../brote_specs/specs/features/F0X-.../`
+3. `../brote_specs/docs/diseno.md` si tocas pantallas: tokens, componentes y
+   patrones del sistema de diseño de vidrio. Es obligatorio seguirlo.
+4. La spec y el plan de la feature: `../brote_specs/specs/features/F0X-.../`
 
 ## Stack
 
@@ -38,7 +40,14 @@ src/
   páginas las consumen con `usePeticion` o un hook propio.
 - Sin TanStack Query, SWR, Redux, Zustand ni librerías de UI (decisiones
   0009 a 0011 de brote_specs). Una dependencia nueva va justificada en el plan.
-- Nada de colores ni medidas sueltos: `var(--...)` de `estilos/tokens.css`.
+- Nada de colores, sombras ni medidas sueltos: `var(--...)` de
+  `estilos/tokens.css`, con los nombres de `docs/diseno.md`.
+- Las pantallas se arman con los componentes del sistema de diseño:
+  `Superficie` (vidrio), `Boton`, `CampoTexto`, `CampoContrasena`, `Buscador`,
+  `Aviso`, `Insignia`, `EstadoVacio`, `ErrorCarga`, `IndicadorCarga`, `Marca`,
+  `PortadaCurso`, `TarjetaCurso`. Los iconos son de `lucide-react`.
+- Un componente o token nuevo se agrega primero a `docs/diseno.md` y también
+  en el móvil, con el mismo nombre.
 - Contenido de cursos (lo escriben usuarios) nunca con
   `dangerouslySetInnerHTML`.
 - Toda página que carga datos muestra cargando, vacío y error.

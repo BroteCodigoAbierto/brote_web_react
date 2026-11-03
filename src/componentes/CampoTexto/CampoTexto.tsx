@@ -1,3 +1,4 @@
+import { CircleAlert, type LucideIcon } from "lucide-react";
 import type { ReactNode } from "react";
 import estilos from "./CampoTexto.module.css";
 
@@ -7,6 +8,8 @@ type PropsCampoTexto = {
   valor: string;
   alCambiar: (valor: string) => void;
   error?: string;
+  ayuda?: string;
+  icono?: LucideIcon;
   tipo?: "text" | "email" | "password";
   autoComplete?: string;
   autoFocus?: boolean;
@@ -14,20 +17,24 @@ type PropsCampoTexto = {
   accesorio?: ReactNode;
 };
 
-// Campo con su etiqueta y, debajo, su error. El error se enlaza al campo con
-// aria-describedby para que el lector de pantalla lo lea al enfocarlo.
+// Campo con su etiqueta y, debajo, su error o ayuda. El texto de abajo se
+// enlaza al campo con aria-describedby para que el lector de pantalla lo lea
+// al enfocarlo (docs/diseno.md, sección 4).
 export default function CampoTexto({
   id,
   etiqueta,
   valor,
   alCambiar,
   error,
+  ayuda,
+  icono: Icono,
   tipo = "text",
   autoComplete,
   autoFocus,
   accesorio,
 }: PropsCampoTexto) {
-  const idError = `${id}-error`;
+  const idDescripcion = `${id}-descripcion`;
+  const descripcion = error ?? ayuda;
 
   return (
     <div className={estilos.campo}>
@@ -35,6 +42,7 @@ export default function CampoTexto({
         {etiqueta}
       </label>
       <div className={`${estilos.control} ${error ? estilos.conError : ""}`}>
+        {Icono && <Icono className={estilos.icono} aria-hidden="true" />}
         <input
           id={id}
           className={estilos.entrada}
@@ -44,13 +52,14 @@ export default function CampoTexto({
           autoComplete={autoComplete}
           autoFocus={autoFocus}
           aria-invalid={error ? true : undefined}
-          aria-describedby={error ? idError : undefined}
+          aria-describedby={descripcion ? idDescripcion : undefined}
         />
         {accesorio}
       </div>
-      {error && (
-        <p id={idError} className={estilos.error}>
-          {error}
+      {descripcion && (
+        <p id={idDescripcion} className={error ? estilos.error : estilos.ayuda}>
+          {error && <CircleAlert className={estilos.iconoError} aria-hidden="true" />}
+          {descripcion}
         </p>
       )}
     </div>

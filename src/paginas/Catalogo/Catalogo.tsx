@@ -1,8 +1,10 @@
+import { ChevronDown, Library, SearchX } from "lucide-react";
 import { useEffect, useState } from "react";
 import { useSearchParams } from "react-router";
 import Boton from "../../componentes/Boton/Boton.tsx";
 import Buscador from "../../componentes/Buscador/Buscador.tsx";
 import ErrorCarga from "../../componentes/ErrorCarga/ErrorCarga.tsx";
+import EstadoVacio from "../../componentes/EstadoVacio/EstadoVacio.tsx";
 import IndicadorCarga from "../../componentes/IndicadorCarga/IndicadorCarga.tsx";
 import TarjetaCurso from "../../componentes/TarjetaCurso/TarjetaCurso.tsx";
 import { useCatalogo } from "../../hooks/useCatalogo.ts";
@@ -74,7 +76,12 @@ export default function Catalogo() {
 
   return (
     <section className={estilos.catalogo}>
-      <h1 className={estilos.oculto}>Cursos</h1>
+      <header className={estilos.encabezado}>
+        <h1 className={estilos.titulo}>Explora cursos</h1>
+        <p className={estilos.subtitulo}>
+          Lecciones cortas e interactivas, creadas por la comunidad.
+        </p>
+      </header>
       {conBuscador && <Buscador valor={texto} alCambiar={setTexto} buscando={buscando} />}
 
       {fase === "cargando" && <IndicadorCarga />}
@@ -83,14 +90,26 @@ export default function Catalogo() {
         <ErrorCarga mensaje={mensajeError} alReintentar={reintentar} />
       )}
 
-      {catalogoVacio && <p className={estilos.aviso}>Todavía no hay cursos publicados.</p>}
+      {catalogoVacio && (
+        <EstadoVacio
+          icono={Library}
+          titulo="Todavía no hay cursos publicados."
+          texto="Cuando la comunidad publique sus primeros cursos, aparecerán aquí."
+        />
+      )}
 
       {fase === "listo" && consulta !== "" && cursos.length === 0 && (
-        <div className={`${estilos.sinResultados} ${buscando ? estilos.atenuado : ""}`}>
-          <p className={estilos.aviso}>No hay cursos que coincidan con «{consulta}».</p>
-          <Boton variante="secundario" alPulsar={borrarBusqueda}>
-            Borrar búsqueda
-          </Boton>
+        <div className={buscando ? estilos.atenuado : ""}>
+          <EstadoVacio
+            icono={SearchX}
+            titulo={`No hay cursos que coincidan con «${consulta}».`}
+            texto="Prueba con otra palabra o revisa cómo está escrita."
+            accion={
+              <Boton variante="secundario" alPulsar={borrarBusqueda}>
+                Borrar búsqueda
+              </Boton>
+            }
+          />
         </div>
       )}
 
@@ -110,6 +129,7 @@ export default function Catalogo() {
               <div className={estilos.verMas}>
                 <Boton
                   variante="secundario"
+                  iconoFinal={ChevronDown}
                   enviando={cargandoMas}
                   textoEnviando="Cargando..."
                   alPulsar={cargarMas}

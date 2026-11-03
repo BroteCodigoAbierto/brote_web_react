@@ -1,9 +1,10 @@
+import { ArrowRight, Mail } from "lucide-react";
 import { Link } from "react-router";
+import Aviso from "../../componentes/Aviso/Aviso.tsx";
 import Boton from "../../componentes/Boton/Boton.tsx";
 import CampoContrasena from "../../componentes/CampoContrasena/CampoContrasena.tsx";
 import CampoTexto from "../../componentes/CampoTexto/CampoTexto.tsx";
 import FormularioCuenta from "../../componentes/FormularioCuenta/FormularioCuenta.tsx";
-import MensajeFormulario from "../../componentes/MensajeFormulario/MensajeFormulario.tsx";
 import { useFormulario } from "../../hooks/useFormulario.ts";
 import { useSesion } from "../../hooks/useSesion.ts";
 import { MENSAJES_CUENTA } from "../../tipos/contrato.ts";
@@ -20,14 +21,15 @@ export default function Entrar() {
   });
 
   let mensaje = null;
-  if (general) mensaje = <MensajeFormulario texto={general} />;
+  if (general) mensaje = <Aviso texto={general} />;
   else if (aviso === "sesionTerminada") {
-    mensaje = <MensajeFormulario variante="aviso" texto={MENSAJES_CUENTA.sesionTerminada} />;
+    mensaje = <Aviso tono="info" texto={MENSAJES_CUENTA.sesionTerminada} />;
   }
 
   return (
     <FormularioCuenta
       titulo="Entrar"
+      subtitulo="Qué bueno verte de nuevo. Sigue donde te quedaste."
       mensaje={mensaje}
       alEnviar={manejarEnvio}
       pie={
@@ -39,6 +41,7 @@ export default function Entrar() {
       <CampoTexto
         id="correo"
         etiqueta="Correo"
+        icono={Mail}
         tipo="email"
         autoComplete="email"
         valor={valores.correo}
@@ -53,7 +56,7 @@ export default function Entrar() {
         alCambiar={(valor) => cambiar("contrasena", valor)}
         error={errores.contrasena}
       />
-      <Boton tipo="submit" enviando={enviando} textoEnviando="Entrando...">
+      <Boton tipo="submit" iconoFinal={ArrowRight} enviando={enviando} textoEnviando="Entrando...">
         Entrar
       </Boton>
     </FormularioCuenta>

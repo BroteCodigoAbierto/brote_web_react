@@ -1,74 +1,193 @@
-/* Valores de diseño de Brote. Los componentes usan estas variables y nunca
-   colores o medidas sueltos. Salen de la paleta del prototipo. */
+/* Valores de diseño de Brote (brote_specs/docs/diseno.md, sección 2). Los
+   componentes usan estas variables y nunca colores, sombras o medidas sueltos.
+   El móvil tiene los mismos valores en src/constantes/tema.ts. */
 
 :root {
-  --color-fondo: #f7f7f5;
-  --color-superficie: #ffffff;
-  --color-texto: #1f2320;
-  --color-texto-suave: #6b7268;
-  --color-primario: #2f7d4f;
-  --color-primario-oscuro: #235f3c;
-  --color-sobre-primario: #ffffff;
-  --color-borde: #e2e2dd;
-  --color-exito: #2f7d4f;
-  --color-exito-fondo: #e6f4ea;
-  --color-error: #b3413a;
-  --color-error-fondo: #fbeae8;
+  color-scheme: light;
 
-  /* portadas generadas de los cursos (F02): las mismas en claro y oscuro, todas
-     con contraste de al menos 4.5:1 con la letra blanca. El móvil usa los
-     mismos en coloresPortada de tema.ts */
-  --color-portada-1: #2f7d4f;
-  --color-portada-2: #2c6aa0;
-  --color-portada-3: #7b4fa0;
-  --color-portada-4: #a8443f;
-  --color-portada-5: #9a5b13;
-  --color-portada-6: #1f7a7a;
-  --color-portada-7: #8a4a6b;
-  --color-portada-8: #4a5a6a;
+  --color-primario: #4f46e5;
+  --color-primario-hover: #4338ca;
+  --color-primario-suave: #eef0ff;
+  --color-sobre-primario: #ffffff;
+  --color-brote: #65a30d;
+  --color-brote-fuerte: #4d7c0f;
+  --color-brote-suave: #ecfccb;
+  --color-sobre-brote: #ffffff;
+  --color-acento: #f97362;
+  --color-acento-suave: #ffedea;
+  --color-error: #dc2650;
+  --color-error-suave: #fdecef;
+  --color-texto: #1e1b3a;
+  --color-texto-suave: #5b5878;
+  --color-texto-tenue: #8784a3;
+  --color-borde: #e4e2f3;
+  --color-borde-fuerte: #cfcce8;
+  --color-fondo: #f6f5fd;
+  --color-vidrio: rgba(255, 255, 255, 0.72);
+  --color-vidrio-suave: rgba(238, 240, 255, 0.66);
+  --color-vidrio-opaco: #fcfcff;
+  --color-vidrio-borde: rgba(255, 255, 255, 0.9);
+
+  --fondo-ambiental:
+    radial-gradient(ellipse at 0% 0%, rgba(167, 160, 255, 0.38), transparent 55%),
+    radial-gradient(ellipse at 100% 100%, rgba(163, 230, 53, 0.22), transparent 50%),
+    radial-gradient(ellipse at 100% 0%, rgba(249, 115, 98, 0.12), transparent 45%),
+    linear-gradient(160deg, #f7f6fe, #f2f6f8);
+
+  /* portadas generadas de los cursos: contraste ≥ 4.5:1 con la letra blanca.
+     El móvil usa los mismos, en el mismo orden, en coloresPortada de tema.ts */
+  --color-portada-1: #4f46e5;
+  --color-portada-2: #7c3aed;
+  --color-portada-3: #4d7c0f;
+  --color-portada-4: #c2410c;
+  --color-portada-5: #1d4ed8;
+  --color-portada-6: #0f766e;
+  --color-portada-7: #be185d;
+  --color-portada-8: #475569;
   --color-sobre-portada: #ffffff;
 
-  --radio: 10px;
-  --espacio-1: 0.25rem;
-  --espacio-2: 0.5rem;
-  --espacio-3: 1rem;
-  --espacio-4: 1.5rem;
-  --espacio-5: 2.5rem;
+  --sombra-suave: 0 8px 28px rgba(49, 46, 129, 0.08);
+  --sombra-elevada: 0 16px 44px rgba(49, 46, 129, 0.14), 0 2px 6px rgba(49, 46, 129, 0.05);
+  --sombra-boton: 0 8px 18px rgba(79, 70, 229, 0.28);
+  --brillo-vidrio: inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  --desenfoque: blur(24px) saturate(160%);
+  --halo-foco: 0 0 0 3px var(--color-primario-suave);
 
-  --fuente: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  --espacio-1: 0.125rem;
+  --espacio-2: 0.25rem;
+  --espacio-3: 0.5rem;
+  --espacio-4: 0.75rem;
+  --espacio-5: 1rem;
+  --espacio-6: 1.25rem;
+  --espacio-7: 1.5rem;
+  --espacio-8: 2rem;
+  --espacio-9: 3rem;
+
+  --radio-chico: 12px;
+  --radio-medio: 18px;
+  --radio-grande: 26px;
+  --radio-enorme: 34px;
+  --radio-pildora: 999px;
+
+  --fuente: "Plus Jakarta Sans", system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
   --fuente-codigo: ui-monospace, "SFMono-Regular", Menlo, Consolas, monospace;
-  --ancho-contenido: 960px;
+
+  /* font: peso tamaño/interlínea familia; el espaciado entre letras va aparte */
+  --texto-display: 800 2.125rem/2.5rem var(--fuente);
+  --texto-titulo1: 700 1.75rem/2.125rem var(--fuente);
+  --texto-titulo2: 700 1.375rem/1.75rem var(--fuente);
+  --texto-titulo3: 600 1.125rem/1.5rem var(--fuente);
+  --texto-cuerpo: 400 1rem/1.5rem var(--fuente);
+  --texto-cuerpo-chico: 400 0.875rem/1.25rem var(--fuente);
+  --texto-nota: 500 0.8125rem/1.125rem var(--fuente);
+  --texto-etiqueta: 600 0.8125rem/1.125rem var(--fuente);
+  --texto-boton: 600 0.9375rem/1.25rem var(--fuente);
+  --texto-seccion: 700 0.6875rem/0.875rem var(--fuente);
+  --espaciado-display: -0.075rem;
+  --espaciado-titulo1: -0.056rem;
+  --espaciado-titulo2: -0.031rem;
+  --espaciado-titulo3: -0.0125rem;
+  --espaciado-cuerpo: -0.006rem;
+  --espaciado-boton: -0.006rem;
+  --espaciado-seccion: 0.0875rem;
+
+  --duracion-rapida: 140ms;
+  --duracion-media: 220ms;
+  --duracion-lenta: 360ms;
+  --curva: cubic-bezier(0.2, 0.8, 0.2, 1);
+
+  --alto-boton: 3.25rem;
+  --alto-boton-chico: 2.75rem;
+  --area-tactil: 2.75rem;
+  --ancho-contenido: 65rem;
+  --ancho-formulario: 26.25rem;
 }
 
-/* modo oscuro según el sistema, salvo que el usuario haya elegido claro */
+/* modo oscuro: según el sistema, salvo que el usuario haya elegido claro, o
+   forzado con data-tema="oscuro". Las dos listas deben ser iguales. */
 @media (prefers-color-scheme: dark) {
   :root:not([data-tema="claro"]) {
-    --color-fondo: #14171a;
-    --color-superficie: #1e2225;
-    --color-texto: #e8eae7;
-    --color-texto-suave: #98a29b;
-    --color-primario: #4caf7d;
-    --color-primario-oscuro: #3d9268;
-    --color-sobre-primario: #0b1210;
-    --color-borde: #33383a;
-    --color-exito: #4caf7d;
-    --color-exito-fondo: #16241c;
-    --color-error: #e2685f;
-    --color-error-fondo: #2b1917;
+    color-scheme: dark;
+    --color-primario: #8b85ff;
+    --color-primario-hover: #a29dff;
+    --color-primario-suave: rgba(139, 133, 255, 0.16);
+    --color-sobre-primario: #12103a;
+    --color-brote: #a3e635;
+    --color-brote-fuerte: #a3e635;
+    --color-brote-suave: rgba(163, 230, 53, 0.14);
+    --color-sobre-brote: #1a2e05;
+    --color-acento: #ff8a7a;
+    --color-acento-suave: rgba(255, 138, 122, 0.14);
+    --color-error: #ff6b85;
+    --color-error-suave: rgba(255, 107, 133, 0.14);
+    --color-texto: #ecebfa;
+    --color-texto-suave: #a9a6c9;
+    --color-texto-tenue: #6e6b8f;
+    --color-borde: rgba(255, 255, 255, 0.1);
+    --color-borde-fuerte: rgba(255, 255, 255, 0.18);
+    --color-fondo: #0f0e1f;
+    --color-vidrio: rgba(30, 28, 58, 0.62);
+    --color-vidrio-suave: rgba(46, 42, 92, 0.55);
+    --color-vidrio-opaco: #1b1a33;
+    --color-vidrio-borde: rgba(255, 255, 255, 0.1);
+    --fondo-ambiental:
+      radial-gradient(ellipse at 0% 0%, rgba(79, 70, 229, 0.35), transparent 55%),
+      radial-gradient(ellipse at 100% 100%, rgba(101, 163, 13, 0.14), transparent 50%),
+      linear-gradient(160deg, #12112a, #0d0c1a);
+    --sombra-suave: 0 8px 28px rgba(0, 0, 0, 0.35);
+    --sombra-elevada: 0 16px 44px rgba(0, 0, 0, 0.5);
+    --sombra-boton: 0 8px 18px rgba(0, 0, 0, 0.4);
+    --brillo-vidrio: inset 0 1px 0 rgba(255, 255, 255, 0.08);
   }
 }
 
 :root[data-tema="oscuro"] {
-  --color-fondo: #14171a;
-  --color-superficie: #1e2225;
-  --color-texto: #e8eae7;
-  --color-texto-suave: #98a29b;
-  --color-primario: #4caf7d;
-  --color-primario-oscuro: #3d9268;
-  --color-sobre-primario: #0b1210;
-  --color-borde: #33383a;
-  --color-exito: #4caf7d;
-  --color-exito-fondo: #16241c;
-  --color-error: #e2685f;
-  --color-error-fondo: #2b1917;
+  color-scheme: dark;
+  --color-primario: #8b85ff;
+  --color-primario-hover: #a29dff;
+  --color-primario-suave: rgba(139, 133, 255, 0.16);
+  --color-sobre-primario: #12103a;
+  --color-brote: #a3e635;
+  --color-brote-fuerte: #a3e635;
+  --color-brote-suave: rgba(163, 230, 53, 0.14);
+  --color-sobre-brote: #1a2e05;
+  --color-acento: #ff8a7a;
+  --color-acento-suave: rgba(255, 138, 122, 0.14);
+  --color-error: #ff6b85;
+  --color-error-suave: rgba(255, 107, 133, 0.14);
+  --color-texto: #ecebfa;
+  --color-texto-suave: #a9a6c9;
+  --color-texto-tenue: #6e6b8f;
+  --color-borde: rgba(255, 255, 255, 0.1);
+  --color-borde-fuerte: rgba(255, 255, 255, 0.18);
+  --color-fondo: #0f0e1f;
+  --color-vidrio: rgba(30, 28, 58, 0.62);
+  --color-vidrio-suave: rgba(46, 42, 92, 0.55);
+  --color-vidrio-opaco: #1b1a33;
+  --color-vidrio-borde: rgba(255, 255, 255, 0.1);
+  --fondo-ambiental:
+    radial-gradient(ellipse at 0% 0%, rgba(79, 70, 229, 0.35), transparent 55%),
+    radial-gradient(ellipse at 100% 100%, rgba(101, 163, 13, 0.14), transparent 50%),
+    linear-gradient(160deg, #12112a, #0d0c1a);
+  --sombra-suave: 0 8px 28px rgba(0, 0, 0, 0.35);
+  --sombra-elevada: 0 16px 44px rgba(0, 0, 0, 0.5);
+  --sombra-boton: 0 8px 18px rgba(0, 0, 0, 0.4);
+  --brillo-vidrio: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+}
+
+/* sin transparencia (preferencia de la persona o navegador sin backdrop-filter):
+   el vidrio pasa a su versión opaca */
+@media (prefers-reduced-transparency: reduce) {
+  :root {
+    --color-vidrio: var(--color-vidrio-opaco);
+    --color-vidrio-suave: var(--color-vidrio-opaco);
+    --desenfoque: none;
+  }
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  :root {
+    --color-vidrio: var(--color-vidrio-opaco);
+    --color-vidrio-suave: var(--color-vidrio-opaco);
+  }
 }

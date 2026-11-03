@@ -1,47 +1,111 @@
 .campo {
   display: flex;
   flex-direction: column;
-  gap: var(--espacio-1);
+  gap: var(--espacio-3);
+  min-width: 0;
 }
 
 .etiqueta {
-  font-weight: 600;
+  color: var(--color-texto-suave);
+  font: var(--texto-etiqueta);
 }
 
 .control {
   display: flex;
-  align-items: stretch;
+  align-items: center;
+  gap: var(--espacio-3);
+  min-height: 3.375rem;
+  padding: 0 var(--espacio-2) 0 var(--espacio-6);
   border: 1px solid var(--color-borde);
-  border-radius: var(--radio);
-  background: var(--color-superficie);
+  border-radius: var(--radio-medio);
+  background: var(--color-vidrio-suave);
+  transition:
+    border-color var(--duracion-rapida) var(--curva),
+    box-shadow var(--duracion-rapida) var(--curva),
+    background-color var(--duracion-rapida) var(--curva);
+}
+
+.control:hover {
+  border-color: var(--color-borde-fuerte);
 }
 
 .control:focus-within {
-  outline: 2px solid var(--color-primario);
-  outline-offset: 1px;
+  border-color: var(--color-primario);
+  background: var(--color-vidrio-opaco);
+  box-shadow: var(--halo-foco);
 }
 
-.conError {
+.conError,
+.conError:hover {
   border-color: var(--color-error);
+  background: var(--color-error-suave);
+}
+
+.conError:focus-within {
+  box-shadow: 0 0 0 3px var(--color-error-suave);
+}
+
+.icono {
+  width: 1.1875rem;
+  height: 1.1875rem;
+  flex-shrink: 0;
+  color: var(--color-texto-tenue);
+}
+
+.control:focus-within .icono {
+  color: var(--color-primario);
 }
 
 .entrada {
   flex: 1;
   min-width: 0;
-  padding: var(--espacio-2) var(--espacio-3);
+  min-height: var(--area-tactil);
+  padding: 0 var(--espacio-4) 0 0;
   border: 0;
-  border-radius: var(--radio);
   background: transparent;
   color: var(--color-texto);
-  font: inherit;
+  font: var(--texto-cuerpo);
 }
 
-.entrada:focus {
+/* el anillo de foco lo dibuja el recuadro */
+.entrada:focus,
+.entrada:focus-visible {
   outline: none;
 }
 
+.entrada::placeholder {
+  color: var(--color-texto-tenue);
+}
+
+.error,
+.ayuda {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--espacio-2);
+  padding: 0 var(--espacio-1);
+  font: var(--texto-nota);
+}
+
 .error {
-  margin: 0;
   color: var(--color-error);
-  font-size: 0.875rem;
+}
+
+.ayuda {
+  color: var(--color-texto-suave);
+}
+
+.iconoError {
+  width: 1rem;
+  height: 1rem;
+  flex-shrink: 0;
+  margin-top: 0.0625rem;
+}
+
+/* el autocompletado del navegador no pinta su propio fondo sobre el vidrio */
+.entrada:-webkit-autofill,
+.entrada:-webkit-autofill:hover,
+.entrada:-webkit-autofill:focus {
+  -webkit-text-fill-color: var(--color-texto);
+  caret-color: var(--color-primario);
+  transition: background-color 600000s 0s;
 }
