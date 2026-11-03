@@ -1,0 +1,139 @@
+.opcion {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-4);
+  width: 100%;
+  min-height: 3.5rem;
+  padding: var(--espacio-4) var(--espacio-5);
+  border: 2px solid var(--color-borde);
+  border-radius: var(--radio-medio);
+  background: var(--color-vidrio);
+  box-shadow: var(--brillo-vidrio);
+  -webkit-backdrop-filter: var(--desenfoque);
+  backdrop-filter: var(--desenfoque);
+  color: var(--color-texto);
+  text-align: left;
+  cursor: pointer;
+  transition:
+    border-color var(--duracion-rapida) var(--curva),
+    background-color var(--duracion-rapida) var(--curva),
+    box-shadow var(--duracion-rapida) var(--curva),
+    transform var(--duracion-rapida) var(--curva);
+}
+
+.opcion:hover:not(:disabled) {
+  border-color: var(--color-borde-fuerte);
+}
+
+.opcion:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+/* después de comprobar ya no se puede cambiar, pero se lee igual */
+.opcion:disabled {
+  cursor: default;
+}
+
+.seleccionada,
+.seleccionada:hover:not(:disabled) {
+  border-color: var(--color-primario);
+  background: var(--color-primario-suave);
+  box-shadow: var(--brillo-vidrio), var(--sombra-elevada);
+}
+
+.correcta,
+.correcta:hover:not(:disabled) {
+  border-color: var(--color-brote-fuerte);
+  background: var(--color-brote-suave);
+}
+
+.incorrecta,
+.incorrecta:hover:not(:disabled) {
+  border-color: var(--color-error);
+  background: var(--color-error-suave);
+  animation: sacudir var(--duracion-lenta) var(--curva);
+}
+
+.tecla {
+  display: grid;
+  place-items: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  flex-shrink: 0;
+  border: 1px solid var(--color-borde-fuerte);
+  border-radius: var(--radio-chico);
+  color: var(--color-texto-suave);
+  font: var(--texto-nota);
+  font-weight: 700;
+}
+
+.seleccionada .tecla {
+  border-color: var(--color-primario);
+  color: var(--color-primario);
+}
+
+.texto {
+  flex: 1;
+  font: var(--texto-cuerpo);
+  font-weight: 500;
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
+
+.icono {
+  width: 1.375rem;
+  height: 1.375rem;
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
+.correcta .icono {
+  color: var(--color-brote-fuerte);
+}
+
+.incorrecta .icono {
+  color: var(--color-error);
+}
+
+/* opción con símbolo: un mosaico cuadrado */
+.mosaico {
+  flex-direction: column;
+  justify-content: center;
+  aspect-ratio: 1;
+  padding: var(--espacio-5);
+  text-align: center;
+}
+
+.mosaico .icono {
+  position: absolute;
+  top: var(--espacio-4);
+  right: var(--espacio-4);
+}
+
+.simbolo {
+  font: var(--texto-display);
+  letter-spacing: var(--espaciado-display);
+}
+
+@keyframes sacudir {
+  20%,
+  60% {
+    transform: translateX(-6px);
+  }
+  40%,
+  80% {
+    transform: translateX(6px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .incorrecta,
+  .incorrecta:hover:not(:disabled) {
+    animation: none;
+  }
+
+  .opcion:active:not(:disabled) {
+    transform: none;
+  }
+}
