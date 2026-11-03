@@ -1,0 +1,70 @@
+.detalle {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-4);
+}
+
+.encabezado {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--espacio-4);
+}
+
+.datos {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--espacio-1);
+  min-width: 12rem;
+}
+
+.titulo {
+  margin: 0;
+  line-height: 1.2;
+  overflow-wrap: anywhere;
+}
+
+.suave {
+  margin: 0;
+  color: var(--color-texto-suave);
+}
+
+/* respeta los saltos de línea que escribió el autor */
+.descripcion {
+  margin: 0;
+  white-space: pre-line;
+  overflow-wrap: anywhere;
+}
+
+/* el número va escrito en el texto ("1. ..."), no lo pone la lista */
+.lista {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio);
+  background: var(--color-superficie);
+}
+
+.leccion {
+  padding: var(--espacio-2) var(--espacio-3);
+  overflow-wrap: anywhere;
+}
+
+.leccion + .leccion {
+  border-top: 1px solid var(--color-borde);
+}
+
+.noDisponible {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--espacio-3);
+  padding: var(--espacio-4) 0;
+  text-align: center;
+}
+
+.noDisponible p {
+  margin: 0;
+}

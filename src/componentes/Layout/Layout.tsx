@@ -1,8 +1,11 @@
-import { Link, Outlet } from "react-router";
+import { Link, Outlet, ScrollRestoration } from "react-router";
+import CatalogoProvider from "../../contextos/CatalogoProvider.tsx";
 import MenuCuenta from "../MenuCuenta/MenuCuenta.tsx";
 import estilos from "./Layout.module.css";
 
 // Marco común de las páginas con sesión: encabezado (marca y cuenta) y contenido.
+// El catálogo vive aquí y no en su página para que siga cargado al ir al detalle
+// de un curso y volver; ScrollRestoration devuelve la lista a donde se dejó.
 export default function Layout() {
   return (
     <div className={estilos.pagina}>
@@ -15,8 +18,11 @@ export default function Layout() {
         </div>
       </header>
       <main className={estilos.contenido}>
-        <Outlet />
+        <CatalogoProvider>
+          <Outlet />
+        </CatalogoProvider>
       </main>
+      <ScrollRestoration />
     </div>
   );
 }
