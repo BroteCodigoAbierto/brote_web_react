@@ -96,7 +96,7 @@ type PropsCursarLeccion = {
 // La lección ya cargada: el reproductor, la pantalla final y la confirmación
 // de salida. Va aparte porque sus hooks necesitan las actividades.
 function CursarLeccion({ leccion, actividades, alSalir }: PropsCursarLeccion) {
-  const reproductor = useReproductor(actividades.length);
+  const reproductor = useReproductor(actividades);
   const { hizoAlgo, terminada, aciertos, preguntas } = reproductor;
 
   // La X, el botón de volver del navegador y cualquier enlace pasan por aquí.
