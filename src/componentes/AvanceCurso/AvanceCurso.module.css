@@ -1,0 +1,18 @@
+/* grid y no flex: la barra trae flex: 1 para la fila de la lección */
+.avance {
+  display: grid;
+  gap: var(--espacio-3);
+}
+
+.encabezado {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espacio-3);
+}
+
+.texto {
+  font: var(--texto-cuerpo-chico);
+  font-weight: 600;
+}
