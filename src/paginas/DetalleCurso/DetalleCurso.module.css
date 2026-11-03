@@ -134,6 +134,38 @@
   font-weight: 500;
 }
 
+/* lección completada (F04) */
+.numeroCompletada {
+  background: var(--color-brote-suave);
+  color: var(--color-brote-fuerte);
+}
+
+/* el icono y los aciertos quedan juntos antes de la flecha */
+.completada {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espacio-3);
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
+.completada + .flecha {
+  margin-left: 0;
+}
+
+.iconoCompletada {
+  width: 1.25rem;
+  height: 1.25rem;
+  flex-shrink: 0;
+  color: var(--color-brote-fuerte);
+}
+
+.aciertos {
+  color: var(--color-texto-suave);
+  font: var(--texto-nota);
+  white-space: nowrap;
+}
+
 @media (max-width: 30rem) {
   .encabezado {
     padding: var(--espacio-6);

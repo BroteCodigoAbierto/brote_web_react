@@ -3,6 +3,7 @@ import {
   ArrowRight,
   BookOpen,
   ChevronRight,
+  CircleCheck,
   CircleSlash,
   NotebookPen,
 } from "lucide-react";
@@ -21,7 +22,7 @@ import { esNoDisponible, leerErrorDeCarga, traerCurso } from "../../servicios/cu
 import { MENSAJES_CATALOGO, type DetalleCurso as Curso } from "../../tipos/contrato.ts";
 import { textoCantidadLecciones } from "../../utilidades/cursos.ts";
 import { ESTADO_DESDE_CURSO } from "../../utilidades/navegacion.ts";
-import { avanceCurso, textoBotonSiguiente } from "../../utilidades/progreso.ts";
+import { avanceCurso, textoAciertos, textoBotonSiguiente } from "../../utilidades/progreso.ts";
 import estilos from "./DetalleCurso.module.css";
 
 // Detalle de un curso publicado (spec F02): sus datos, el avance del alumno
@@ -79,23 +80,42 @@ export default function DetalleCurso() {
           <EstadoVacio icono={NotebookPen} titulo="Este curso todavía no tiene lecciones." />
         ) : (
           <Superficie como="ol" className={estilos.lista}>
-            {curso.lecciones.map((leccion) => (
-              <li key={leccion.id}>
-                <Link
-                  to={`/cursos/${curso.id}/lecciones/${leccion.id}`}
-                  state={ESTADO_DESDE_CURSO}
-                  className={estilos.leccion}
-                >
-                  <span className={estilos.numero} aria-hidden="true">
-                    {leccion.posicion}
-                  </span>
-                  {/* el número se lee como "1. ..." aunque se dibuje en el círculo */}
-                  <span className="oculto">{leccion.posicion}. </span>
-                  <span className={estilos.tituloLeccion}>{leccion.titulo}</span>
-                  <ChevronRight className={estilos.flecha} aria-hidden="true" />
-                </Link>
-              </li>
-            ))}
+            {curso.lecciones.map((leccion) => {
+              const aciertos = leccion.progreso ? textoAciertos(leccion.progreso) : null;
+              return (
+                <li key={leccion.id}>
+                  <Link
+                    to={`/cursos/${curso.id}/lecciones/${leccion.id}`}
+                    state={ESTADO_DESDE_CURSO}
+                    className={estilos.leccion}
+                  >
+                    <span
+                      className={`${estilos.numero} ${leccion.progreso ? estilos.numeroCompletada : ""}`}
+                      aria-hidden="true"
+                    >
+                      {leccion.posicion}
+                    </span>
+                    {/* el número se lee como "1. ..." aunque se dibuje en el círculo */}
+                    <span className="oculto">{leccion.posicion}. </span>
+                    <span className={estilos.tituloLeccion}>{leccion.titulo}</span>
+                    {/* completada: un icono y el texto, no solo el color (docs/diseno.md, sección 5) */}
+                    {leccion.progreso && (
+                      <span className={estilos.completada}>
+                        <span className="oculto">, completada</span>
+                        <CircleCheck className={estilos.iconoCompletada} aria-hidden="true" />
+                        {aciertos && (
+                          <span className={estilos.aciertos}>
+                            <span className="oculto">, </span>
+                            {aciertos}
+                          </span>
+                        )}
+                      </span>
+                    )}
+                    <ChevronRight className={estilos.flecha} aria-hidden="true" />
+                  </Link>
+                </li>
+              );
+            })}
           </Superficie>
         )}
       </section>
