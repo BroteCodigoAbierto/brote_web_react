@@ -1,0 +1,37 @@
+/* oscuro también en modo claro (docs/diseno.md, sección 2.1, "Código") */
+.bloque {
+  margin: 0;
+  padding: var(--espacio-5) 0;
+  overflow-x: auto;
+  border-radius: var(--radio-medio);
+  background: var(--color-codigo-fondo);
+  color: var(--color-codigo-texto);
+  font: var(--texto-codigo);
+}
+
+.bloque code {
+  display: inline-block;
+  min-width: 100%;
+  font: inherit;
+}
+
+/* cada línea ocupa todo el ancho para que el fondo del diff se vea completo */
+.linea {
+  display: block;
+  padding: 0 var(--espacio-5);
+  white-space: pre;
+}
+
+.agregada {
+  background: var(--color-codigo-agregado-fondo);
+  color: var(--color-codigo-agregado);
+}
+
+.eliminada {
+  background: var(--color-codigo-eliminado-fondo);
+  color: var(--color-codigo-eliminado);
+}
+
+.encabezado {
+  color: var(--color-codigo-encabezado);
+}
