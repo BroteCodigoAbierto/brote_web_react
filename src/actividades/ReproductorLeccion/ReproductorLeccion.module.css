@@ -1,0 +1,64 @@
+/* pantalla completa, sin el encabezado de la marca (docs/diseno.md, sección 6) */
+.reproductor {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.encabezado {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-5);
+  width: 100%;
+  max-width: var(--ancho-leccion);
+  margin: 0 auto;
+  padding: var(--espacio-5);
+}
+
+.salir {
+  display: grid;
+  place-items: center;
+  width: var(--area-tactil);
+  height: var(--area-tactil);
+  flex-shrink: 0;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: var(--radio-pildora);
+  background: var(--color-primario-suave);
+  color: var(--color-primario);
+  cursor: pointer;
+  transition:
+    border-color var(--duracion-rapida) var(--curva),
+    transform var(--duracion-rapida) var(--curva);
+}
+
+.salir svg {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.salir:hover {
+  border-color: var(--color-borde-fuerte);
+}
+
+.salir:active {
+  transform: scale(0.98);
+}
+
+/* abajo queda lugar para la barra de respuesta, que es fija */
+.contenido {
+  flex: 1;
+  width: 100%;
+  max-width: var(--ancho-leccion);
+  margin: 0 auto;
+  padding: var(--espacio-3) var(--espacio-5) 16rem;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .salir:active {
+    transform: none;
+  }
+}
