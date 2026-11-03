@@ -1,0 +1,26 @@
+.puntos {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-4);
+  margin: 0;
+  padding: var(--espacio-5);
+  border-radius: var(--radio-medio);
+  background: var(--color-vidrio-suave);
+  list-style: none;
+}
+
+.punto {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--espacio-4);
+  font: var(--texto-cuerpo);
+  overflow-wrap: anywhere;
+}
+
+.marca {
+  width: 1.25rem;
+  height: 1.25rem;
+  flex-shrink: 0;
+  margin-top: 0.125rem;
+  color: var(--color-brote);
+}
