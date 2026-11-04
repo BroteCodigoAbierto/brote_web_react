@@ -4,9 +4,12 @@
 // solo sirven para dos cosas (brote_specs, research de F01, punto 10):
 // - sesionActiva: saber, al abrir, si una sesión terminó o nunca hubo una.
 // - cierrePendiente: reintentar un "Cerrar sesión" que no llegó al servidor.
+//
+// copiaEditor no es una marca: la usa utilidades/copiaEditor.ts (F05).
 export const CLAVES = {
   sesionActiva: "sesion.activa",
   cierrePendiente: "sesion.cierrePendiente",
+  copiaEditor: "editor.copia",
 } as const;
 
 type Clave = (typeof CLAVES)[keyof typeof CLAVES];
