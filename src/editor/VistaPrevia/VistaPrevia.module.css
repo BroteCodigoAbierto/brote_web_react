@@ -1,0 +1,39 @@
+.vistaPrevia {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-5);
+  padding: var(--espacio-5);
+}
+
+.encabezado {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espacio-4);
+}
+
+.titulo {
+  color: var(--color-texto-suave);
+  font: var(--texto-seccion);
+  letter-spacing: var(--espaciado-seccion);
+  text-transform: uppercase;
+}
+
+.contenido {
+  min-width: 0;
+}
+
+.contenido:focus,
+.contenido:focus-visible {
+  outline: none;
+}
+
+/* la entrada de la actividad parpadearía con cada cambio */
+.contenido > * {
+  animation: none;
+}
+
+.mensaje {
+  color: var(--color-texto-suave);
+  font: var(--texto-cuerpo-chico);
+}
