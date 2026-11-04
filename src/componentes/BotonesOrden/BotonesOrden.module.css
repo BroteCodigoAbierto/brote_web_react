@@ -1,0 +1,36 @@
+.botones {
+  display: flex;
+  flex-shrink: 0;
+}
+
+.boton {
+  display: grid;
+  place-items: center;
+  width: var(--area-tactil);
+  height: var(--area-tactil);
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: var(--radio-chico);
+  background: transparent;
+  color: var(--color-texto-suave);
+  cursor: pointer;
+  transition:
+    border-color var(--duracion-rapida) var(--curva),
+    color var(--duracion-rapida) var(--curva);
+}
+
+.boton svg {
+  width: 1.25rem;
+  height: 1.25rem;
+}
+
+.boton:hover:not([aria-disabled="true"]) {
+  border-color: var(--color-borde-fuerte);
+  color: var(--color-primario);
+}
+
+/* se ve deshabilitado, pero conserva el foco */
+.boton[aria-disabled="true"] {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
