@@ -1,4 +1,4 @@
-import type { ComponentType } from "react";
+import type { ComponentType, ReactNode } from "react";
 import type { Reproductor } from "../../hooks/useReproductor.ts";
 import type { Actividad } from "../../tipos/contrato.ts";
 import { registroActividades } from "../registro.ts";
@@ -11,6 +11,8 @@ type PropsReproductorLeccion = {
   actividades: Actividad[];
   reproductor: Reproductor;
   alSalir: () => void;
+  // debajo del encabezado, en el modo de prueba del editor (F05)
+  aviso?: ReactNode;
 };
 
 // Lo que el reproductor sabe de cualquier actividad: su componente recibe la
@@ -27,6 +29,7 @@ export default function ReproductorLeccion({
   actividades,
   reproductor,
   alSalir,
+  aviso,
 }: PropsReproductorLeccion) {
   const { indice, total, interactuar, terminarActividad } = reproductor;
   const actividad = actividades[indice];
@@ -37,6 +40,7 @@ export default function ReproductorLeccion({
   return (
     <div className={estilos.reproductor}>
       <EncabezadoLeccion alSalir={alSalir} progreso={{ actual: indice, total }} />
+      {aviso && <div className={estilos.aviso}>{aviso}</div>}
       <main className={estilos.contenido}>
         {/* key: cada actividad empieza sin el estado de la anterior */}
         <Componente

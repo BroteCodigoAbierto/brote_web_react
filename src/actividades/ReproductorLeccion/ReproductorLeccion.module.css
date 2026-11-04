@@ -54,6 +54,13 @@
   opacity: 0.72;
 }
 
+.aviso {
+  width: 100%;
+  max-width: var(--ancho-leccion);
+  margin: 0 auto;
+  padding: 0 var(--espacio-5) var(--espacio-3);
+}
+
 /* abajo queda lugar para la barra de respuesta, que es fija */
 .contenido {
   flex: 1;

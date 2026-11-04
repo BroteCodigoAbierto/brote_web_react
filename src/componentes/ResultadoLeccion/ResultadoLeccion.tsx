@@ -17,6 +17,7 @@ type PropsResultadoLeccion = {
   // sin él no se muestra nada del guardado (p. ej. una vista previa)
   guardado?: EstadoGuardado;
   alReintentar?: () => void;
+  textoVolver?: string;
 };
 
 const AVISOS_GUARDADO = {
@@ -35,6 +36,7 @@ export default function ResultadoLeccion({
   alVolver,
   guardado,
   alReintentar,
+  textoVolver = "Volver al curso",
 }: PropsResultadoLeccion) {
   const encabezado = useRef<HTMLHeadingElement>(null);
 
@@ -69,10 +71,10 @@ export default function ResultadoLeccion({
       <Boton
         anchoCompleto
         enviando={guardado === "guardando"}
-        textoEnviando="Volver al curso"
+        textoEnviando={textoVolver}
         alPulsar={alVolver}
       >
-        Volver al curso
+        {textoVolver}
       </Boton>
     </section>
   );
