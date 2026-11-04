@@ -3,6 +3,7 @@ import BarraRespuesta from "../../componentes/BarraRespuesta/BarraRespuesta.tsx"
 import CampoEspacio, { type EstadoEspacio } from "../../componentes/CampoEspacio/CampoEspacio.tsx";
 import Superficie from "../../componentes/Superficie/Superficie.tsx";
 import { esAceptada, partirEnEspacios, textoConRespuestas } from "../../utilidades/actividades.ts";
+import { useAmbito } from "../ambito.ts";
 import comun from "../comun.module.css";
 import type { PropsActividad } from "../tipos.ts";
 import estilos from "./CompletarEspacios.module.css";
@@ -16,6 +17,7 @@ export default function CompletarEspacios({
   alTerminar,
 }: PropsActividad<"completarEspacios">) {
   const { espacios } = actividad;
+  const enRecuadro = useAmbito() !== null;
   const trozos = partirEnEspacios(actividad.texto);
   const [valores, setValores] = useState<string[]>(() => espacios.map(() => ""));
   const [correctos, setCorrectos] = useState<boolean[] | null>(null);
@@ -68,7 +70,7 @@ export default function CompletarEspacios({
                   esperada={estadoDe(i) === "incorrecto" ? espacios[i]?.aceptadas[0] : undefined}
                   etiqueta={`Espacio ${i + 1} de ${espacios.length}`}
                   deshabilitado={comprobada}
-                  autoFocus={i === 0}
+                  autoFocus={i === 0 && !enRecuadro}
                 />
               )}
             </Fragment>
