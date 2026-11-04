@@ -1,5 +1,7 @@
 import { CircleCheck, CircleX } from "lucide-react";
-import { useEffect, useEffectEvent, useRef } from "react";
+import { useEffect, useRef } from "react";
+import { useAmbito } from "../../actividades/ambito.ts";
+import { useTeclasActividad } from "../../hooks/useTeclasActividad.ts";
 import Boton from "../Boton/Boton.tsx";
 import Superficie from "../Superficie/Superficie.tsx";
 import estilos from "./BarraRespuesta.module.css";
@@ -34,27 +36,23 @@ export default function BarraRespuesta({
   alPulsar,
 }: PropsBarraRespuesta) {
   const contenedor = useRef<HTMLDivElement>(null);
+  const enRecuadro = useAmbito() !== null;
 
   useEffect(() => {
     if (estado !== "neutro") contenedor.current?.querySelector("button")?.focus();
   }, [estado]);
 
-  const alTeclear = useEffectEvent((evento: KeyboardEvent) => {
+  useTeclasActividad((evento) => {
     if (evento.key !== "Enter" || evento.isComposing || evento.defaultPrevented) return;
     if (deshabilitado || enterPropio(evento.target)) return;
     evento.preventDefault();
     alPulsar();
   });
 
-  useEffect(() => {
-    document.addEventListener("keydown", alTeclear);
-    return () => document.removeEventListener("keydown", alTeclear);
-  }, []);
-
   const Icono = estado === "correcto" ? CircleCheck : CircleX;
 
   return (
-    <div className={estilos.contenedor} ref={contenedor}>
+    <div className={`${estilos.contenedor} ${enRecuadro ? estilos.enLinea : ""}`} ref={contenedor}>
       <Superficie tono="solido" elevada className={`${estilos.barra} ${estilos[estado]}`}>
         <div className={estilos.mensaje} aria-live="polite">
           {titulo && (

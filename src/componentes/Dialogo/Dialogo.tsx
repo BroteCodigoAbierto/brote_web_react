@@ -10,6 +10,8 @@ type PropsDialogo = {
   textoCancelar: string;
   alConfirmar: () => void;
   alCancelar: () => void;
+  // mientras se hace lo que se confirmó; no se puede cancelar (F05)
+  enviando?: boolean;
 };
 
 // Confirmación modal (docs/diseno.md, sección 4) sobre el <dialog> nativo:
@@ -23,6 +25,7 @@ export default function Dialogo({
   textoCancelar,
   alConfirmar,
   alCancelar,
+  enviando = false,
 }: PropsDialogo) {
   const dialogo = useRef<HTMLDialogElement>(null);
   const id = useId();
@@ -46,7 +49,7 @@ export default function Dialogo({
       onCancel={(evento) => {
         // Esc: lo cierra el padre al cambiar `abierto`
         evento.preventDefault();
-        alCancelar();
+        if (!enviando) alCancelar();
       }}
     >
       <h2 id={`${id}-titulo`} className={estilos.titulo}>
@@ -56,10 +59,15 @@ export default function Dialogo({
         {texto}
       </p>
       <div className={estilos.botones}>
-        <Boton variante="secundario" alPulsar={alCancelar}>
+        <Boton variante="secundario" deshabilitado={enviando} alPulsar={alCancelar}>
           {textoCancelar}
         </Boton>
-        <Boton variante="peligro" alPulsar={alConfirmar}>
+        <Boton
+          variante="peligro"
+          enviando={enviando}
+          textoEnviando={textoConfirmar}
+          alPulsar={alConfirmar}
+        >
           {textoConfirmar}
         </Boton>
       </div>

@@ -7,7 +7,10 @@ import Catalogo from "./paginas/Catalogo/Catalogo.tsx";
 import DetalleCurso from "./paginas/DetalleCurso/DetalleCurso.tsx";
 import Entrar from "./paginas/Entrar/Entrar.tsx";
 import Leccion from "./paginas/Leccion/Leccion.tsx";
+import LienzoLeccion from "./paginas/LienzoLeccion/LienzoLeccion.tsx";
+import MapaCurso from "./paginas/MapaCurso/MapaCurso.tsx";
 import NoEncontrada from "./paginas/NoEncontrada/NoEncontrada.tsx";
+import NuevoCurso from "./paginas/NuevoCurso/NuevoCurso.tsx";
 import Panel from "./paginas/Panel/Panel.tsx";
 import Registro from "./paginas/Registro/Registro.tsx";
 
@@ -15,8 +18,8 @@ import Registro from "./paginas/Registro/Registro.tsx";
 // Sin sesión solo existen /entrar y /registro; todo lo demás (incluidas las
 // direcciones que no existen) pasa por RutaProtegida. El catálogo es el inicio
 // (F02); su estado vive en ZonaConSesion, de la que cuelgan el Layout (catálogo,
-// detalle y "Mi panel", F04) y la lección, que va a pantalla completa fuera del
-// Layout (F03). /mis-cursos queda para los cursos del autor (F05).
+// detalle, "Mi panel" y el mapa del curso) y lo que va a pantalla completa, fuera
+// del Layout: la lección (F03) y su lienzo (F05).
 export const enrutador = createBrowserRouter([
   {
     element: <SoloSinSesion />,
@@ -37,10 +40,13 @@ export const enrutador = createBrowserRouter([
               { path: "/", element: <Catalogo /> },
               { path: "/cursos/:idCurso", element: <DetalleCurso /> },
               { path: "/panel", element: <Panel /> },
+              { path: "/editor/nuevo", element: <NuevoCurso /> },
+              { path: "/editor/:idCurso", element: <MapaCurso /> },
               { path: "*", element: <NoEncontrada /> },
             ],
           },
           { path: "/cursos/:idCurso/lecciones/:idLeccion", element: <Leccion /> },
+          { path: "/editor/:idCurso/lecciones/:idLeccion", element: <LienzoLeccion /> },
         ],
       },
     ],

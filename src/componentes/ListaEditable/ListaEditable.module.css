@@ -1,0 +1,50 @@
+.lista {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-4);
+}
+
+.fila {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--espacio-3);
+}
+
+.contenido {
+  flex: 1;
+  min-width: 0;
+}
+
+/* a la altura del campo, debajo de su etiqueta, tenga lo que tenga debajo */
+.quitar {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: var(--area-tactil);
+  height: 3.375rem;
+  margin-top: 1.625rem;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: var(--radio-medio);
+  background: transparent;
+  color: var(--color-texto-suave);
+  cursor: pointer;
+  transition:
+    border-color var(--duracion-rapida) var(--curva),
+    color var(--duracion-rapida) var(--curva);
+}
+
+.quitar svg {
+  width: 1.125rem;
+  height: 1.125rem;
+}
+
+.quitar:hover:not(:disabled) {
+  border-color: var(--color-borde-fuerte);
+  color: var(--color-error);
+}
+
+.quitar:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}

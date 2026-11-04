@@ -1,0 +1,23 @@
+.inspector {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-5);
+  min-width: 0;
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-5);
+  padding: var(--espacio-5);
+}
+
+.titulo {
+  font: var(--texto-titulo3);
+  letter-spacing: var(--espaciado-titulo3);
+}
+
+.mensaje {
+  color: var(--color-texto-suave);
+  font: var(--texto-cuerpo-chico);
+}

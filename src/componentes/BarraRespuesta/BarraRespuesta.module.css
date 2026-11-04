@@ -7,6 +7,12 @@
   pointer-events: none;
 }
 
+/* en la vista previa del editor va dentro de su recuadro (F05) */
+.enLinea {
+  position: static;
+  padding: 0;
+}
+
 .barra {
   display: flex;
   flex-direction: column;

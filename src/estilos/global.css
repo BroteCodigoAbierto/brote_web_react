@@ -47,8 +47,9 @@ a:hover {
   text-underline-offset: 0.2em;
 }
 
-/* foco visible y consistente en todo lo interactivo (sección 7) */
-:is(a, button, input, textarea, select, [tabindex]):focus-visible {
+/* foco visible y consistente en todo lo interactivo (sección 7). Con :where, para
+   que un campo que dibuja el anillo en su recuadro pueda quitar este */
+:where(a, button, input, textarea, select, [tabindex]):focus-visible {
   outline: 2px solid var(--color-primario);
   outline-offset: 3px;
 }

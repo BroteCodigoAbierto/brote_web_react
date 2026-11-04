@@ -3,6 +3,7 @@ import { CLAVES, leerMarca, ponerMarca, quitarMarca } from "../constantes/almace
 import { ErrorHttp, alPerderSesion } from "../servicios/api.ts";
 import * as servicio from "../servicios/sesion.ts";
 import type { CuerpoCrearCuenta, CuerpoEntrar, Usuario } from "../tipos/contrato.ts";
+import { descartarCopiaAjena } from "../utilidades/copiaEditor.ts";
 import { SesionContext, type EstadoSesion } from "./SesionContext.ts";
 
 type Accion =
@@ -88,6 +89,12 @@ export default function SesionProvider({ children }: PropsSesionProvider) {
     alPerderSesion(() => despachar({ tipo: "perdida" }));
     return () => alPerderSesion(null);
   }, []);
+
+  // lo no guardado en el editor solo lo recupera la cuenta que lo escribió (F05)
+  const idUsuario = estado.usuario?.id;
+  useEffect(() => {
+    if (idUsuario) descartarCopiaAjena(idUsuario);
+  }, [idUsuario]);
 
   const iniciar = useCallback((usuario: Usuario) => {
     ponerMarca(CLAVES.sesionActiva);

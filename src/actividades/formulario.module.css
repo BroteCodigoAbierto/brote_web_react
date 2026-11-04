@@ -1,0 +1,51 @@
+/* Lo que comparten los formularios de cada tipo en el inspector (F05). */
+
+.formulario {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-5);
+}
+
+.grupo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-3);
+  min-width: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+}
+
+.etiqueta {
+  padding: 0;
+  color: var(--color-texto-suave);
+  font: var(--texto-etiqueta);
+}
+
+.opciones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espacio-5);
+}
+
+.radio {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espacio-3);
+  min-height: var(--area-tactil);
+  color: var(--color-texto);
+  font: var(--texto-cuerpo-chico);
+  cursor: pointer;
+}
+
+.radio input {
+  width: 1.125rem;
+  height: 1.125rem;
+  accent-color: var(--color-primario);
+}
+
+.filaOpcion {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-2);
+}

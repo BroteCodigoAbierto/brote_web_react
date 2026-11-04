@@ -1,0 +1,111 @@
+/* ocupa toda la columna, para soltar también debajo del último bloque */
+.zona {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-4);
+  min-height: 16rem;
+  min-width: 0;
+}
+
+.lista {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-4);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.item {
+  border-radius: var(--radio-grande);
+}
+
+/* dónde quedará al soltar */
+.destinoArriba {
+  box-shadow: 0 -3px 0 0 var(--color-primario);
+}
+
+.destinoAbajo {
+  box-shadow: 0 3px 0 0 var(--color-primario);
+}
+
+.bloque {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--espacio-3);
+  padding: var(--espacio-4);
+}
+
+.seleccionado {
+  border-color: var(--color-primario);
+  background: var(--color-primario-suave);
+}
+
+.asa {
+  flex-shrink: 0;
+  width: 1.25rem;
+  height: 1.25rem;
+  color: var(--color-texto-tenue);
+  cursor: grab;
+}
+
+.contenido {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--espacio-2);
+  min-width: 10rem;
+  padding: var(--espacio-2);
+  border: 0;
+  border-radius: var(--radio-chico);
+  background: transparent;
+  color: var(--color-texto);
+  text-align: left;
+  cursor: pointer;
+}
+
+.contenido:disabled {
+  cursor: not-allowed;
+}
+
+.cabecera {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--espacio-3);
+}
+
+.numero {
+  color: var(--color-texto-suave);
+  font: var(--texto-etiqueta);
+}
+
+.icono {
+  flex-shrink: 0;
+  width: 1.125rem;
+  height: 1.125rem;
+  color: var(--color-primario);
+}
+
+.tipo {
+  font: var(--texto-etiqueta);
+}
+
+/* una línea con "…" */
+.resumen,
+.sinContenido {
+  overflow: hidden;
+  font: var(--texto-cuerpo-chico);
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.resumen {
+  color: var(--color-texto-suave);
+}
+
+.sinContenido {
+  color: var(--color-texto-suave);
+  font-style: italic;
+}

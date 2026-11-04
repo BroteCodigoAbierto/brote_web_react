@@ -1,11 +1,13 @@
 import { useRef, useState, type FormEvent } from "react";
-import { leerErrorDeEnvio } from "../servicios/sesion.ts";
+import { leerErrorDeEnvio, type ErrorDeEnvio } from "../servicios/sesion.ts";
 
 type OpcionesFormulario<C extends string> = {
   inicial: Record<C, string>;
   validar: (valores: Record<C, string>) => Partial<Record<C, string>>;
   // si lanza, el error se muestra en el formulario y lo capturado se conserva
   enviar: (valores: Record<C, string>) => Promise<void>;
+  // para mostrar otro mensaje que el de "No se pudo conectar" (F05)
+  leerError?: (error: unknown) => ErrorDeEnvio;
 };
 
 // Estado de un formulario según la spec F01: los errores de campo aparecen al
@@ -15,6 +17,7 @@ export function useFormulario<C extends string>({
   inicial,
   validar,
   enviar,
+  leerError = leerErrorDeEnvio,
 }: OpcionesFormulario<C>) {
   const [valores, setValores] = useState(inicial);
   const [errores, setErrores] = useState<Partial<Record<C, string>>>({});
@@ -47,7 +50,7 @@ export function useFormulario<C extends string>({
     try {
       await enviar(valores);
     } catch (error) {
-      const leido = leerErrorDeEnvio(error);
+      const leido = leerError(error);
       setErrores((leido.campos ?? {}) as Partial<Record<C, string>>);
       setGeneral(leido.general ?? null);
     } finally {

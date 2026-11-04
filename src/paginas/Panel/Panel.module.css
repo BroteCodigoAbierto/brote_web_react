@@ -16,6 +16,13 @@
   gap: var(--espacio-5);
 }
 
+.encabezadoSeccion {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--espacio-5);
+}
+
 .tituloSeccion {
   color: var(--color-texto-suave);
   font: var(--texto-seccion);

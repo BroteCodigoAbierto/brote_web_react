@@ -1,10 +1,11 @@
-import { useEffect, useEffectEvent, useId, useState } from "react";
+import { useId, useState } from "react";
 import BarraRespuesta from "../../componentes/BarraRespuesta/BarraRespuesta.tsx";
 import BloqueCodigo from "../../componentes/BloqueCodigo/BloqueCodigo.tsx";
 import OpcionRespuesta, {
   type EstadoOpcion,
 } from "../../componentes/OpcionRespuesta/OpcionRespuesta.tsx";
 import { useEnfocarAlMontar } from "../../hooks/useEnfocarAlMontar.ts";
+import { useTeclasActividad } from "../../hooks/useTeclasActividad.ts";
 import { mezclar, textoOpcion } from "../../utilidades/actividades.ts";
 import comun from "../comun.module.css";
 import type { PropsActividad } from "../tipos.ts";
@@ -40,7 +41,7 @@ export default function OpcionMultiple({
     alInteractuar();
   }
 
-  const alTeclear = useEffectEvent((evento: KeyboardEvent) => {
+  useTeclasActividad((evento) => {
     if (comprobada || evento.ctrlKey || evento.metaKey || evento.altKey) return;
     if (escribiendo(evento.target)) return;
     const lugar = Number(evento.key);
@@ -49,11 +50,6 @@ export default function OpcionMultiple({
     evento.preventDefault();
     elegir(opcion.indice);
   });
-
-  useEffect(() => {
-    document.addEventListener("keydown", alTeclear);
-    return () => document.removeEventListener("keydown", alTeclear);
-  }, []);
 
   function estadoDe(indice: number): EstadoOpcion {
     if (!comprobada) return indice === elegida ? "seleccionada" : "normal";

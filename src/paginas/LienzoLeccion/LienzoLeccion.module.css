@@ -1,0 +1,71 @@
+/* a pantalla completa, sin el encabezado de la marca (docs/diseno.md, sección 5) */
+.pantalla {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-5);
+  min-height: 100vh;
+  padding: var(--espacio-5);
+}
+
+/* cargando y errores */
+.volver {
+  align-self: flex-start;
+}
+
+.estado {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.barra {
+  position: sticky;
+  top: var(--espacio-3);
+  z-index: 5;
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--espacio-5);
+  padding: var(--espacio-4) var(--espacio-5);
+}
+
+.volverBarra {
+  flex-shrink: 0;
+}
+
+.titulo {
+  flex: 1;
+  min-width: 14rem;
+}
+
+.acciones {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--espacio-4);
+}
+
+.estadoGuardado {
+  color: var(--color-texto-suave);
+  font: var(--texto-nota);
+}
+
+.zonas {
+  display: grid;
+  flex: 1;
+  grid-template-columns: var(--ancho-paleta) minmax(0, 1fr) var(--ancho-inspector);
+  align-items: start;
+  gap: var(--espacio-5);
+}
+
+.inspector {
+  min-width: 0;
+}
+
+/* docs/diseno.md, sección 2.3: por debajo de 1024 px se apilan */
+@media (max-width: 64rem) {
+  .zonas {
+    grid-template-columns: minmax(0, 1fr);
+  }
+}

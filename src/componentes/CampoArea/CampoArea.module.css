@@ -1,0 +1,46 @@
+/* con el aspecto de CampoTexto */
+.area {
+  width: 100%;
+  padding: var(--espacio-4) var(--espacio-6);
+  border: 1px solid var(--color-borde);
+  border-radius: var(--radio-medio);
+  background: var(--color-vidrio-suave);
+  color: var(--color-texto);
+  font: var(--texto-cuerpo);
+  resize: vertical;
+  transition:
+    border-color var(--duracion-rapida) var(--curva),
+    box-shadow var(--duracion-rapida) var(--curva),
+    background-color var(--duracion-rapida) var(--curva);
+}
+
+.area:hover:not(:disabled) {
+  border-color: var(--color-borde-fuerte);
+}
+
+.area:focus,
+.area:focus-visible {
+  outline: none;
+  border-color: var(--color-primario);
+  background: var(--color-vidrio-opaco);
+  box-shadow: var(--halo-foco);
+}
+
+.area:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.codigo {
+  font: var(--texto-codigo);
+}
+
+.conError,
+.conError:hover:not(:disabled) {
+  border-color: var(--color-error);
+  background: var(--color-error-suave);
+}
+
+.conError:focus {
+  box-shadow: 0 0 0 3px var(--color-error-suave);
+}
