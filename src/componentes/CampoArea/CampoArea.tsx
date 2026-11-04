@@ -1,5 +1,6 @@
 import { CircleAlert } from "lucide-react";
 import type { Ref } from "react";
+import base from "../CampoTexto/CampoTexto.module.css";
 import estilos from "./CampoArea.module.css";
 
 type PropsCampoArea = {
@@ -38,8 +39,8 @@ export default function CampoArea({
   const clases = [estilos.area, codigo ? estilos.codigo : "", error ? estilos.conError : ""];
 
   return (
-    <div className={estilos.campo}>
-      <label htmlFor={id} className={estilos.etiqueta}>
+    <div className={base.campo}>
+      <label htmlFor={id} className={base.etiqueta}>
         {etiqueta}
       </label>
       <textarea
@@ -56,8 +57,8 @@ export default function CampoArea({
         aria-describedby={descripcion ? idDescripcion : undefined}
       />
       {descripcion && (
-        <p id={idDescripcion} className={error ? estilos.error : estilos.ayuda}>
-          {error && <CircleAlert className={estilos.iconoError} aria-hidden="true" />}
+        <p id={idDescripcion} className={error ? base.error : base.ayuda}>
+          {error && <CircleAlert className={base.iconoError} aria-hidden="true" />}
           {descripcion}
         </p>
       )}

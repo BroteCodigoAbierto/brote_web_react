@@ -5,6 +5,7 @@ import { textoCantidadLecciones } from "../../utilidades/cursos.ts";
 import Insignia from "../Insignia/Insignia.tsx";
 import PortadaCurso from "../PortadaCurso/PortadaCurso.tsx";
 import Superficie from "../Superficie/Superficie.tsx";
+import base from "../TarjetaCurso/TarjetaCurso.module.css";
 import estilos from "./TarjetaCursoAutor.module.css";
 
 type PropsTarjetaCursoAutor = {
@@ -21,11 +22,11 @@ export default function TarjetaCursoAutor({ curso }: PropsTarjetaCursoAutor) {
     <Superficie
       como={Link}
       to={publicado ? `/cursos/${curso.id}` : `/editor/${curso.id}`}
-      className={estilos.tarjeta}
+      className={base.tarjeta}
     >
       <PortadaCurso id={curso.id} titulo={curso.titulo} tamano="tarjeta" />
-      <div className={estilos.texto}>
-        <h3 className={estilos.titulo}>{curso.titulo}</h3>
+      <div className={base.texto}>
+        <h3 className={base.titulo}>{curso.titulo}</h3>
         <div className={estilos.insignias}>
           {publicado ? (
             <Insignia tono="primario" icono={Globe}>

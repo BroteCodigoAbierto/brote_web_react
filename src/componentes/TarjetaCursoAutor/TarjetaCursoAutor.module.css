@@ -1,15 +1,3 @@
-.tarjeta {
-  composes: tarjeta from "../TarjetaCurso/TarjetaCurso.module.css";
-}
-
-.texto {
-  composes: texto from "../TarjetaCurso/TarjetaCurso.module.css";
-}
-
-.titulo {
-  composes: titulo from "../TarjetaCurso/TarjetaCurso.module.css";
-}
-
 .insignias {
   display: flex;
   flex-wrap: wrap;
