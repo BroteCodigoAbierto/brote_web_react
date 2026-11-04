@@ -13,6 +13,8 @@ type PropsCampoTexto = {
   tipo?: "text" | "email" | "password";
   autoComplete?: string;
   autoFocus?: boolean;
+  maxLongitud?: number;
+  deshabilitado?: boolean;
   // algo que va dentro del recuadro, a la derecha (p. ej. "Mostrar" en la contraseña)
   accesorio?: ReactNode;
 };
@@ -31,6 +33,8 @@ export default function CampoTexto({
   tipo = "text",
   autoComplete,
   autoFocus,
+  maxLongitud,
+  deshabilitado = false,
   accesorio,
 }: PropsCampoTexto) {
   const idDescripcion = `${id}-descripcion`;
@@ -51,6 +55,8 @@ export default function CampoTexto({
           onChange={(evento) => alCambiar(evento.target.value)}
           autoComplete={autoComplete}
           autoFocus={autoFocus}
+          maxLength={maxLongitud}
+          disabled={deshabilitado}
           aria-invalid={error ? true : undefined}
           aria-describedby={descripcion ? idDescripcion : undefined}
         />
