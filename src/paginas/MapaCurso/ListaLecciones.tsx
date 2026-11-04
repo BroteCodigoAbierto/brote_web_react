@@ -94,7 +94,7 @@ export default function ListaLecciones({
   }
 
   function mover(desde: number, hasta: number) {
-    if (desde === hasta) return;
+    if (desde === hasta || accionEnCurso.current) return;
     const anteriores = lecciones;
     const nuevas = [...lecciones];
     const [movida] = nuevas.splice(desde, 1);

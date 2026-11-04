@@ -15,7 +15,12 @@ import {
   guardarLeccion,
   leerErrorDeAccion,
 } from "../servicios/editor.ts";
-import { MENSAJES_EDITOR, type LeccionEnEditor, type RespuestaError } from "../tipos/contrato.ts";
+import {
+  MENSAJES_EDITOR,
+  type LeccionEnEditor,
+  type RespuestaError,
+  type TipoActividad,
+} from "../tipos/contrato.ts";
 import { guardarCopia, tomarCopia } from "../utilidades/copiaEditor.ts";
 import { textoIncompletas } from "../utilidades/editor.ts";
 import { useSesion } from "./useSesion.ts";
@@ -51,10 +56,7 @@ export function useEditorLeccion(idCurso: string, leccion: LeccionEnEditor) {
     despachar(accion);
   }
 
-  function agregar(
-    tipoActividad: Extract<AccionLeccion, { tipo: "agregar" }>["tipoActividad"],
-    posicion?: number,
-  ) {
+  function agregar(tipoActividad: TipoActividad, posicion?: number) {
     editar({ tipo: "agregar", tipoActividad, posicion });
     setFocoAlFormulario((n) => n + 1);
   }
