@@ -73,8 +73,6 @@
   align-items: center;
   gap: var(--espacio-3);
   padding: var(--espacio-3) var(--espacio-4);
-  border-radius: var(--radio-chico);
-  box-shadow: 0 0 0 0 var(--color-primario);
 }
 
 .leccion + .leccion {

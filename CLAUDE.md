@@ -27,8 +27,11 @@ src/
   estilos/            tokens.css (variables de diseño) y global.css
   paginas/            una carpeta por página: Pagina.tsx + Pagina.module.css
   componentes/        componentes reutilizables, misma convención
-  actividades/        un componente por tipo de actividad, el registro tipo → componente
-                      (registro.ts) y el reproductor de lecciones (F03)
+  actividades/        por tipo de actividad, su componente y su editor (borrador y
+                      formulario, F05); los registros tipo → componente (registro.ts)
+                      y tipo → editor (registroEditor.ts), y el reproductor (F03)
+  editor/             lo del editor que no depende del tipo: paleta, secuencia,
+                      inspector, vista previa y prueba de la lección (F05)
   hooks/              usePeticion y hooks por recurso (useCursos, ...)
   servicios/          api.ts (pedir, ErrorHttp) y funciones por recurso
   contextos/          estado global: un contexto por área, con useReducer
@@ -49,12 +52,19 @@ src/
   `Aviso`, `Insignia`, `EstadoVacio`, `ErrorCarga`, `IndicadorCarga`, `Marca`,
   `PortadaCurso`, `TarjetaCurso` y, para las lecciones (F03), `BarraProgreso`,
   `BarraRespuesta`, `OpcionRespuesta`, `BloqueCodigo`, `TarjetaVolteable`,
-  `CampoEspacio`, `Dialogo` y `ResultadoLeccion`, y para el progreso (F04)
-  `AvanceCurso`. Los iconos son de `lucide-react`.
-- Agregar un tipo de actividad: su componente en `actividades/` y una línea
-  en `actividades/registro.ts` (el tipo del registro obliga a tenerlo).
+  `CampoEspacio`, `Dialogo` y `ResultadoLeccion`, para el progreso (F04)
+  `AvanceCurso`, y para el editor (F05) `CampoArea`, `ListaEditable`,
+  `BotonesOrden` y `TarjetaCursoAutor`. Los iconos son de `lucide-react`.
+- Agregar un tipo de actividad: su carpeta en `actividades/` con su componente,
+  su `editor<Tipo>.ts` y su `Formulario<Tipo>.tsx`, y una línea en
+  `actividades/registro.ts` y en `actividades/registroEditor.ts` (el tipo de cada
+  registro obliga a tenerla). La paleta (`editor/paleta.ts`) ya lo conoce: se
+  activa sola si usa el mismo identificador.
+- Una actividad nueva usa `useEnfocarAlMontar`, `useTeclasActividad` y
+  `BarraRespuesta`, para funcionar también en la vista previa del editor.
 - Un componente o token nuevo se agrega primero a `docs/diseno.md` y también
-  en el móvil, con el mismo nombre.
+  en el móvil, con el mismo nombre. Lo del editor es la excepción: solo existe en
+  la web (decisión 0003).
 - Contenido de cursos (lo escriben usuarios) nunca con
   `dangerouslySetInnerHTML`.
 - Toda página que carga datos muestra cargando, vacío y error.
