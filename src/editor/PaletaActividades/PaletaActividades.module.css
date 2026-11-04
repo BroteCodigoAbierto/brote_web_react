@@ -27,11 +27,12 @@
   list-style: none;
 }
 
+/* el icono, la etiqueta y, debajo de ella, "Próximamente": no caben en una línea */
 .tipo {
-  display: flex;
-  flex-wrap: wrap;
+  display: grid;
+  grid-template-columns: 1.25rem minmax(0, 1fr);
   align-items: center;
-  gap: var(--espacio-3);
+  gap: var(--espacio-2) var(--espacio-3);
   width: 100%;
   min-height: var(--area-tactil);
   padding: var(--espacio-2) var(--espacio-3);
@@ -73,9 +74,8 @@
   color: var(--color-texto-tenue);
 }
 
-.etiqueta {
-  flex: 1;
-  min-width: 0;
+.insignia {
+  grid-column: 2;
 }
 
 .nota {

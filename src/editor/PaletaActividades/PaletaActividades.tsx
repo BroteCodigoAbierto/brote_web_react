@@ -37,8 +37,10 @@ export default function PaletaActividades({
                   <li key={tipo}>
                     <button type="button" className={estilos.tipo} disabled>
                       <Icono className={estilos.iconoInactivo} aria-hidden="true" />
-                      <span className={estilos.etiqueta}>{etiqueta}</span>
-                      <Insignia>Próximamente</Insignia>
+                      <span>{etiqueta}</span>
+                      <span className={estilos.insignia}>
+                        <Insignia>Próximamente</Insignia>
+                      </span>
                     </button>
                   </li>
                 );
@@ -53,7 +55,7 @@ export default function PaletaActividades({
                     {...(sinAgregar ? {} : arrastre.propsOrigen({ origen: "paleta", tipo }))}
                   >
                     <Icono className={estilos.icono} aria-hidden="true" />
-                    <span className={estilos.etiqueta}>{etiqueta}</span>
+                    <span>{etiqueta}</span>
                   </button>
                 </li>
               );
