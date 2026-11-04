@@ -7,6 +7,7 @@ import Catalogo from "./paginas/Catalogo/Catalogo.tsx";
 import DetalleCurso from "./paginas/DetalleCurso/DetalleCurso.tsx";
 import Entrar from "./paginas/Entrar/Entrar.tsx";
 import Leccion from "./paginas/Leccion/Leccion.tsx";
+import LienzoLeccion from "./paginas/LienzoLeccion/LienzoLeccion.tsx";
 import MapaCurso from "./paginas/MapaCurso/MapaCurso.tsx";
 import NoEncontrada from "./paginas/NoEncontrada/NoEncontrada.tsx";
 import NuevoCurso from "./paginas/NuevoCurso/NuevoCurso.tsx";
@@ -45,6 +46,7 @@ export const enrutador = createBrowserRouter([
             ],
           },
           { path: "/cursos/:idCurso/lecciones/:idLeccion", element: <Leccion /> },
+          { path: "/editor/:idCurso/lecciones/:idLeccion", element: <LienzoLeccion /> },
         ],
       },
     ],
