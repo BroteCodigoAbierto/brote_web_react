@@ -116,6 +116,8 @@
   --ancho-contenido: 65rem;
   --ancho-formulario: 26.25rem;
   --ancho-leccion: 42.5rem;
+  --ancho-paleta: 15rem;
+  --ancho-inspector: 27.5rem;
 }
 
 /* modo oscuro: según el sistema, salvo que el usuario haya elegido claro, o
