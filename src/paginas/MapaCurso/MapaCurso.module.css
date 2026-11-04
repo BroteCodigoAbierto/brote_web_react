@@ -1,0 +1,146 @@
+.mapa {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-7);
+  max-width: 50rem;
+  margin: 0 auto;
+}
+
+.volver {
+  margin: calc(var(--espacio-5) * -1) 0 calc(var(--espacio-4) * -1) calc(var(--espacio-3) * -1);
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-6);
+  padding: var(--espacio-7);
+}
+
+.encabezado {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--espacio-6);
+}
+
+/* la portada de tarjeta ocupa todo el ancho que le den */
+.encabezado > :first-child {
+  width: 10rem;
+}
+
+.formulario {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-5);
+}
+
+.acciones {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--espacio-5);
+}
+
+.guardado {
+  color: var(--color-brote-fuerte);
+  font: var(--texto-nota);
+}
+
+.lecciones {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-5);
+}
+
+.seccion {
+  color: var(--color-texto-suave);
+  font: var(--texto-seccion);
+  letter-spacing: var(--espaciado-seccion);
+  text-transform: uppercase;
+}
+
+.lista {
+  margin: 0;
+  padding: var(--espacio-3);
+  list-style: none;
+}
+
+.leccion {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--espacio-3);
+  padding: var(--espacio-3) var(--espacio-4);
+  border-radius: var(--radio-chico);
+  box-shadow: 0 0 0 0 var(--color-primario);
+}
+
+.leccion + .leccion {
+  border-top: 1px solid var(--color-borde);
+}
+
+/* dónde quedará al soltar */
+.destinoArriba {
+  box-shadow: 0 -2px 0 0 var(--color-primario);
+}
+
+.destinoAbajo {
+  box-shadow: 0 2px 0 0 var(--color-primario);
+}
+
+.asa {
+  flex-shrink: 0;
+  width: 1.25rem;
+  height: 1.25rem;
+  color: var(--color-texto-tenue);
+  cursor: grab;
+}
+
+.enlace {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  gap: var(--espacio-1);
+  min-width: 12rem;
+  color: var(--color-texto);
+  font-weight: 400;
+  text-decoration: none;
+}
+
+.enlace:hover {
+  color: var(--color-primario);
+  text-decoration: none;
+}
+
+.tituloLeccion {
+  font: var(--texto-cuerpo);
+  font-weight: 600;
+  overflow-wrap: anywhere;
+}
+
+.cantidad,
+.nota {
+  color: var(--color-texto-suave);
+  font: var(--texto-nota);
+}
+
+.nuevaLeccion {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--espacio-4);
+}
+
+.campoNueva {
+  flex: 1;
+  min-width: 14rem;
+}
+
+.agregar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--espacio-4);
+}
