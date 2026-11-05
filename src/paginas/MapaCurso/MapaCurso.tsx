@@ -13,7 +13,7 @@ import { useSesion } from "../../hooks/useSesion.ts";
 import { esNoDisponible, leerErrorDeCarga } from "../../servicios/cursos.ts";
 import {
   borrarCurso,
-  esCursoPublicado,
+  esCursoNoEditable,
   esSesionPerdida,
   leerErrorDeAccion,
   traerCursoEnEditor,
@@ -44,7 +44,7 @@ export default function MapaCurso() {
     );
   }
 
-  if (esCursoPublicado(error)) {
+  if (esCursoNoEditable(error)) {
     return (
       <EstadoVacio
         icono={CircleSlash}
