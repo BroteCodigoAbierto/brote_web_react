@@ -54,12 +54,12 @@ export default function CursoNoEditable({
   }, [idUsuario, pathname]);
 
   async function pasarAlEstadoReal() {
-    setAviso(MENSAJES_EDITOR.estadoCambiado);
     try {
       const { curso: actual } = await traerCursoEnEditor(curso.id);
       alCambiarCurso(actual, { texto: MENSAJES_EDITOR.estadoCambiado, tono: "error" });
     } catch {
-      // el aviso se queda: sin red no hay estado real que mostrar
+      // sin red no hay estado real que mostrar, pero el aviso sí
+      setAviso(MENSAJES_EDITOR.estadoCambiado);
     }
   }
 
