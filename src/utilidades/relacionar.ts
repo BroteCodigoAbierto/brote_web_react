@@ -31,6 +31,16 @@ export type EstadoEmparejar = {
   seleccion: ElementoPareja | null;
 };
 
+// Identifica un elemento al arrastrar: el origen y el destino se comparan con ===.
+export function claveDe({ lado, indice }: ElementoPareja): string {
+  return `${lado}-${indice}`;
+}
+
+export function elementoDe(clave: string): ElementoPareja {
+  const [lado, indice] = clave.split("-");
+  return { lado: lado === "derecha" ? "derecha" : "izquierda", indice: Number(indice) };
+}
+
 export function parejaDe(parejas: Pareja[], { lado, indice }: ElementoPareja): Pareja | undefined {
   return parejas.find((pareja) => pareja[lado] === indice);
 }
