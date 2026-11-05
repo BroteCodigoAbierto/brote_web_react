@@ -1,11 +1,9 @@
-import { Plus } from "lucide-react";
-import { useRef } from "react";
 import Aviso from "../../componentes/Aviso/Aviso.tsx";
 import Boton from "../../componentes/Boton/Boton.tsx";
-import CampoArea from "../../componentes/CampoArea/CampoArea.tsx";
+import CampoConEspacios from "../../componentes/CampoConEspacios/CampoConEspacios.tsx";
 import CampoTexto from "../../componentes/CampoTexto/CampoTexto.tsx";
 import ListaEditable from "../../componentes/ListaEditable/ListaEditable.tsx";
-import { LIMITES_ACTIVIDADES, MARCA_ESPACIO, MENSAJES_EDITOR } from "../../tipos/contrato.ts";
+import { LIMITES_ACTIVIDADES, MENSAJES_EDITOR } from "../../tipos/contrato.ts";
 import { idLocal } from "../../utilidades/editor.ts";
 import estilos from "../formulario.module.css";
 import type { PropsFormularioActividad } from "../tipos.ts";
@@ -21,7 +19,6 @@ export default function FormularioCompletarEspacios({
   deshabilitado,
 }: PropsFormularioActividad<BorradorCompletarEspacios>) {
   const { texto, grupos } = borrador;
-  const area = useRef<HTMLTextAreaElement>(null);
   // se ve siempre, no solo al intentar guardar: el autor tiene que elegir cuál sobra
   const sobranGrupos = grupos.length > contarEspacios(texto);
 
@@ -36,48 +33,17 @@ export default function FormularioCompletarEspacios({
     });
   }
 
-  // Escribe la marca donde está el cursor y lo deja justo después.
-  function agregarEspacio() {
-    const campo = area.current;
-    const inicio = campo?.selectionStart ?? texto.length;
-    const fin = campo?.selectionEnd ?? texto.length;
-    const nuevo = texto.slice(0, inicio) + MARCA_ESPACIO + texto.slice(fin);
-    if (Array.from(nuevo).length > LIMITES_ACTIVIDADES.textoEspaciosMax) return;
-    cambiarTexto(nuevo);
-    const cursor = inicio + MARCA_ESPACIO.length;
-    requestAnimationFrame(() => {
-      campo?.focus();
-      campo?.setSelectionRange(cursor, cursor);
-    });
-  }
-
   return (
     <div className={estilos.formulario}>
-      <div className={estilos.grupo}>
-        <CampoArea
-          ref={area}
-          id={`${idBase}-texto`}
-          etiqueta="Texto"
-          ayuda="Cada ___ es un espacio que el alumno llena."
-          valor={texto}
-          alCambiar={cambiarTexto}
-          error={errores.texto}
-          maxLongitud={LIMITES_ACTIVIDADES.textoEspaciosMax}
-          codigo
-          deshabilitado={deshabilitado}
-        />
-        <div>
-          <Boton
-            variante="secundario"
-            tamano="chico"
-            icono={Plus}
-            deshabilitado={deshabilitado}
-            alPulsar={agregarEspacio}
-          >
-            Agregar espacio
-          </Boton>
-        </div>
-      </div>
+      <CampoConEspacios
+        id={`${idBase}-texto`}
+        valor={texto}
+        alCambiar={cambiarTexto}
+        ayuda="Cada ___ es un espacio que el alumno llena."
+        error={errores.texto}
+        maxLongitud={LIMITES_ACTIVIDADES.textoEspaciosMax}
+        deshabilitado={deshabilitado}
+      />
       {sobranGrupos && <Aviso tono="calido" texto={MENSAJES_EDITOR.gruposDeMas} />}
       {grupos.map((grupo, indice) => (
         <div key={grupo.id} className={estilos.grupo}>
