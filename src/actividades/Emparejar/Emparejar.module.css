@@ -1,0 +1,13 @@
+/* lado a lado también en pantallas angostas: los textos largos ocupan varias líneas */
+.columnas {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: var(--espacio-4);
+  align-items: start;
+}
+
+.columna {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-4);
+}
