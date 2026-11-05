@@ -1,5 +1,12 @@
-import { BookOpen, GripVertical, Plus } from "lucide-react";
-import { useId, useRef, useState, type FormEvent } from "react";
+import { BookOpen, CircleAlert, GripVertical, Plus } from "lucide-react";
+import {
+  useId,
+  useRef,
+  useState,
+  type Dispatch,
+  type FormEvent,
+  type SetStateAction,
+} from "react";
 import { Link } from "react-router";
 import Aviso from "../../componentes/Aviso/Aviso.tsx";
 import Boton from "../../componentes/Boton/Boton.tsx";
@@ -7,6 +14,7 @@ import BotonesOrden from "../../componentes/BotonesOrden/BotonesOrden.tsx";
 import CampoTexto from "../../componentes/CampoTexto/CampoTexto.tsx";
 import Dialogo from "../../componentes/Dialogo/Dialogo.tsx";
 import EstadoVacio from "../../componentes/EstadoVacio/EstadoVacio.tsx";
+import Insignia from "../../componentes/Insignia/Insignia.tsx";
 import Superficie from "../../componentes/Superficie/Superficie.tsx";
 import { useArrastrar } from "../../hooks/useArrastrar.ts";
 import {
@@ -30,7 +38,10 @@ import estilos from "./MapaCurso.module.css";
 
 type PropsListaLecciones = {
   idCurso: string;
-  leccionesIniciales: LeccionEnMapa[];
+  lecciones: LeccionEnMapa[];
+  alCambiarLecciones: Dispatch<SetStateAction<LeccionEnMapa[]>>;
+  // las que impidieron enviar el curso a revisión, por estar vacías (F06)
+  marcadas: ReadonlySet<string>;
   // lo escrito en "Nueva lección" cuando expiró la sesión
   tituloInicial: string;
   ocupado: boolean;
@@ -44,10 +55,13 @@ function renumerar(lecciones: LeccionEnMapa[]): LeccionEnMapa[] {
 }
 
 // Las lecciones del curso (spec F05, "Armar las lecciones del curso"). Cada acción
-// se guarda al momento. La lista vive aquí para reordenar sin esperar la respuesta.
+// se guarda al momento, y la lista cambia sin esperar la respuesta al reordenar. La
+// lista la guarda el mapa, porque enviar a revisión también la actualiza.
 export default function ListaLecciones({
   idCurso,
-  leccionesIniciales,
+  lecciones,
+  alCambiarLecciones,
+  marcadas,
   tituloInicial,
   ocupado,
   alCambiarOcupado,
@@ -55,7 +69,6 @@ export default function ListaLecciones({
   alSesionPerdida,
 }: PropsListaLecciones) {
   const idTitulo = useId();
-  const [lecciones, setLecciones] = useState(leccionesIniciales);
   const [agregando, setAgregando] = useState(tituloInicial !== "");
   const [titulo, setTitulo] = useState(tituloInicial);
   const [errorTitulo, setErrorTitulo] = useState<string | undefined>();
@@ -100,7 +113,7 @@ export default function ListaLecciones({
     const [movida] = nuevas.splice(desde, 1);
     if (!movida) return;
     nuevas.splice(hasta, 0, movida);
-    setLecciones(renumerar(nuevas));
+    alCambiarLecciones(renumerar(nuevas));
     ejecutar(
       async () => {
         await ordenarLecciones(
@@ -110,13 +123,13 @@ export default function ListaLecciones({
         setAnuncio(`Movida a la posición ${hasta + 1}`);
       },
       (error) => {
-        setLecciones(anteriores);
+        alCambiarLecciones(anteriores);
         setAviso(leerErrorDeAccion(error, "No se pudo guardar el nuevo orden."));
         // otra pestaña cambió la lista: la que hay aquí está vieja. No se recarga la
         // pantalla, para no perder lo escrito en el formulario del curso
         if (esConflicto(error)) {
           traerCursoEnEditor(idCurso)
-            .then(({ curso }) => setLecciones(curso.lecciones))
+            .then(({ curso }) => alCambiarLecciones(curso.lecciones))
             .catch(() => {});
         }
       },
@@ -138,7 +151,7 @@ export default function ListaLecciones({
     ejecutar(
       async () => {
         const { leccion } = await crearLeccion(idCurso, { titulo });
-        setLecciones((actuales) => [...actuales, leccion]);
+        alCambiarLecciones((actuales) => [...actuales, leccion]);
         cambiarTitulo("");
         setAgregando(false);
       },
@@ -153,7 +166,7 @@ export default function ListaLecciones({
     ejecutar(
       async () => {
         await borrarLeccion(idCurso, id);
-        setLecciones((actuales) => renumerar(actuales.filter((leccion) => leccion.id !== id)));
+        alCambiarLecciones((actuales) => renumerar(actuales.filter((leccion) => leccion.id !== id)));
       },
       (error) => setAviso(leerErrorDeAccion(error, "No se pudo eliminar la lección.")),
     ).finally(() => {
@@ -194,7 +207,13 @@ export default function ListaLecciones({
                   {leccion.posicion}. {leccion.titulo}
                 </span>
                 <span className={estilos.cantidad}>
-                  {textoCantidadActividades(leccion.cantidadActividades)}
+                  {marcadas.has(leccion.id) ? (
+                    <Insignia tono="acento" icono={CircleAlert}>
+                      {textoCantidadActividades(leccion.cantidadActividades)}
+                    </Insignia>
+                  ) : (
+                    textoCantidadActividades(leccion.cantidadActividades)
+                  )}
                 </span>
               </Link>
               <BotonesOrden

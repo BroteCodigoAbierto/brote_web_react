@@ -85,6 +85,8 @@ function ContenidoMapa({ curso }: PropsContenidoMapa) {
   const capturado = useRef<CopiaMapa>(
     copia ?? { titulo: curso.titulo, descripcion: curso.descripcion, nuevaLeccion: "" },
   );
+  const [lecciones, setLecciones] = useState(curso.lecciones);
+  const [marcadas] = useState<ReadonlySet<string>>(new Set());
   const [hayCambios, setHayCambios] = useState(false);
   const [ocupado, setOcupado] = useState(false);
   const [confirmando, setConfirmando] = useState(false);
@@ -144,7 +146,9 @@ function ContenidoMapa({ curso }: PropsContenidoMapa) {
       />
       <ListaLecciones
         idCurso={curso.id}
-        leccionesIniciales={curso.lecciones}
+        lecciones={lecciones}
+        alCambiarLecciones={setLecciones}
+        marcadas={marcadas}
         tituloInicial={copia?.nuevaLeccion ?? ""}
         ocupado={ocupado}
         alCambiarOcupado={setOcupado}

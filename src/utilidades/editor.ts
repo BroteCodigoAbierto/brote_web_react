@@ -2,6 +2,12 @@ import { MENSAJES_EDITOR } from "../tipos/contrato.ts";
 
 // Presentación y datos locales del editor (spec F05). Solo existe en la web.
 
+// Lo que se ve arriba del mapa después de que el curso cambia de estado (spec F06).
+export type AvisoEstado = {
+  texto: string;
+  tono: "exito" | "error";
+};
+
 let siguienteId = 0;
 
 // Para las filas de un borrador: nunca viaja, solo distingue filas entre sí.
