@@ -6,6 +6,9 @@ type Tono = "info" | "exito" | "error" | "calido";
 type PropsAviso = {
   texto: string;
   tono?: Tono;
+  titulo?: string;
+  // reemplaza al icono del tono
+  icono?: LucideIcon;
 };
 
 const ICONOS: Record<Tono, LucideIcon> = {
@@ -18,12 +21,15 @@ const ICONOS: Record<Tono, LucideIcon> = {
 // Mensaje general de un formulario o de una pantalla: un error que no es de
 // un campo ("Correo o contraseña incorrectos.") o un aviso ("Tu sesión
 // terminó..."). Los errores se anuncian de inmediato.
-export default function Aviso({ texto, tono = "error" }: PropsAviso) {
-  const Icono = ICONOS[tono];
+export default function Aviso({ texto, tono = "error", titulo, icono }: PropsAviso) {
+  const Icono = icono ?? ICONOS[tono];
   return (
     <p className={`${estilos.aviso} ${estilos[tono]}`} role={tono === "error" ? "alert" : "status"}>
       <Icono className={estilos.icono} aria-hidden="true" />
-      <span>{texto}</span>
+      <span className={estilos.contenido}>
+        {titulo && <strong className={estilos.titulo}>{titulo}</strong>}
+        {texto}
+      </span>
     </p>
   );
 }

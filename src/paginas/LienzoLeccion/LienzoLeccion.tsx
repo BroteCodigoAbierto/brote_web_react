@@ -7,8 +7,7 @@ import EstadoVacio from "../../componentes/EstadoVacio/EstadoVacio.tsx";
 import IndicadorCarga from "../../componentes/IndicadorCarga/IndicadorCarga.tsx";
 import { usePeticion } from "../../hooks/usePeticion.ts";
 import { esNoDisponible, leerErrorDeCarga } from "../../servicios/cursos.ts";
-import { esCursoPublicado, traerLeccionEnEditor } from "../../servicios/editor.ts";
-import { MENSAJES_EDITOR } from "../../tipos/contrato.ts";
+import { esCursoNoEditable, traerLeccionEnEditor } from "../../servicios/editor.ts";
 import EditorLeccion from "./EditorLeccion.tsx";
 import estilos from "./LienzoLeccion.module.css";
 
@@ -57,15 +56,15 @@ export default function LienzoLeccion() {
     );
   }
 
-  if (esCursoPublicado(error)) {
+  if (esCursoNoEditable(error)) {
     return (
       <div className={estilos.pantalla}>
         <div className={estilos.estado}>
           <EstadoVacio
             icono={CircleSlash}
-            titulo={MENSAJES_EDITOR.cursoPublicado}
+            titulo={leerErrorDeCarga(error)}
             anunciar
-            accion={<Link to={`/cursos/${idCurso}`}>Ver curso</Link>}
+            accion={<Link to={`/editor/${idCurso}`}>Volver al curso</Link>}
           />
         </div>
       </div>

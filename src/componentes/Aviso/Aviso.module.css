@@ -17,6 +17,16 @@
   flex-shrink: 0;
 }
 
+/* el motivo de un rechazo trae sus saltos de línea */
+.contenido {
+  white-space: pre-line;
+}
+
+.titulo {
+  display: block;
+  font-weight: 600;
+}
+
 .info {
   background: var(--color-primario-suave);
   color: var(--color-texto);

@@ -1,4 +1,12 @@
+import { MENSAJES_EDITOR } from "../tipos/contrato.ts";
+
 // Presentación y datos locales del editor (spec F05). Solo existe en la web.
+
+// Lo que se ve arriba del mapa después de que el curso cambia de estado (spec F06).
+export type AvisoEstado = {
+  texto: string;
+  tono: "exito" | "error";
+};
 
 let siguienteId = 0;
 
@@ -12,6 +20,12 @@ export function textoCantidadActividades(cantidad: number): string {
   if (cantidad === 0) return "Sin actividades";
   if (cantidad === 1) return "1 actividad";
   return `${cantidad} actividades`;
+}
+
+// El backend responde el mismo texto: la web lo necesita antes de preguntar nada.
+export function textoLeccionesVacias(cantidad: number): string {
+  if (cantidad === 1) return MENSAJES_EDITOR.unaLeccionVacia;
+  return MENSAJES_EDITOR.leccionesVacias.replace("{n}", String(cantidad));
 }
 
 export function textoIncompletas(cantidad: number): string {

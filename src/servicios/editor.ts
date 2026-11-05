@@ -77,16 +77,34 @@ export function borrarLeccion(idCurso: string, idLeccion: string) {
   return pedir<void>(rutaLeccion(idCurso, idLeccion), { method: "DELETE" });
 }
 
+export function enviarARevision(idCurso: string) {
+  return pedir<RespuestaCursoEnEditor>(`${rutaCurso(idCurso)}/revision`, { method: "POST" });
+}
+
+export function retirarDeRevision(idCurso: string) {
+  return pedir<RespuestaCursoEnEditor>(`${rutaCurso(idCurso)}/revision`, { method: "DELETE" });
+}
+
+export function retirarDelCatalogo(idCurso: string) {
+  return pedir<RespuestaCursoEnEditor>(`${rutaCurso(idCurso)}/publicacion`, { method: "DELETE" });
+}
+
 function tieneEstado(error: unknown, estado: number): boolean {
   return error instanceof ErrorHttp && error.estado === estado;
 }
 
-// El curso es de quien llama, pero está publicado (spec F05).
-export function esCursoPublicado(error: unknown): boolean {
+// El curso es de quien llama, pero está en revisión o publicado (spec F06).
+export function esCursoNoEditable(error: unknown): boolean {
   return tieneEstado(error, 403);
 }
 
-// Otra pestaña cambió la lección o la lista de lecciones.
+// Al enviar a revisión: le falta contenido.
+export function esContenidoIncompleto(error: unknown): boolean {
+  return tieneEstado(error, 400);
+}
+
+// Otra pestaña cambió la lección o la lista de lecciones; al enviar o retirar, el
+// curso ya no está en el estado de partida.
 export function esConflicto(error: unknown): boolean {
   return tieneEstado(error, 409);
 }
@@ -96,7 +114,7 @@ export function esSesionPerdida(error: unknown): boolean {
   return tieneEstado(error, 401);
 }
 
-// Con 403 y 404 el servidor sabe qué pasó (curso publicado o eliminado); en
+// Con 403 y 404 el servidor sabe qué pasó (curso que no se edita o eliminado); en
 // cualquier otro caso se muestra el mensaje de esa acción.
 export function leerErrorDeAccion(error: unknown, respaldo: string): string {
   if (error instanceof ErrorHttp && (error.estado === 403 || error.estado === 404)) {
