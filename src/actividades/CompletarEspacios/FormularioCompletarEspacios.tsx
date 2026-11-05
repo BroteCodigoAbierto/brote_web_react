@@ -8,7 +8,13 @@ import { idLocal } from "../../utilidades/editor.ts";
 import estilos from "../formulario.module.css";
 import type { PropsFormularioActividad } from "../tipos.ts";
 import type { BorradorCompletarEspacios } from "./editorCompletarEspacios.ts";
-import { ajustarGrupos, contarEspacios, type GrupoRespuestas } from "./grupos.ts";
+import {
+  ajustarGrupos,
+  contarEspacios,
+  crearGrupo,
+  esGrupoVacio,
+  type GrupoRespuestas,
+} from "./grupos.ts";
 
 // Formulario de completar espacios (spec F05, "Formulario de cada tipo").
 export default function FormularioCompletarEspacios({
@@ -23,7 +29,10 @@ export default function FormularioCompletarEspacios({
   const sobranGrupos = grupos.length > contarEspacios(texto);
 
   function cambiarTexto(nuevo: string) {
-    alCambiar({ texto: nuevo, grupos: ajustarGrupos(nuevo, grupos) });
+    alCambiar({
+      texto: nuevo,
+      grupos: ajustarGrupos(nuevo, grupos, { esVacio: esGrupoVacio, crear: crearGrupo }),
+    });
   }
 
   function cambiarGrupo(id: string, cambios: Partial<GrupoRespuestas>) {

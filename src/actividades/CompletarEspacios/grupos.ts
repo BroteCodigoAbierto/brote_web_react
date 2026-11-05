@@ -17,22 +17,32 @@ export function esGrupoVacio({ aceptadas }: GrupoRespuestas): boolean {
   return aceptadas.every(({ texto }) => texto.trim() === "");
 }
 
-function crearGrupo(): GrupoRespuestas {
+export function crearGrupo(): GrupoRespuestas {
   return { id: idLocal(), aceptadas: [{ id: idLocal(), texto: "" }] };
 }
 
+type ComoAjustarGrupos<G> = {
+  esVacio: (grupo: G) => boolean;
+  crear: () => G;
+};
+
 // Un grupo por cada ___. Si sobran, solo desaparecen los vacíos: los que tienen algo
-// escrito los quita el autor, que sabe cuál sobra (spec F05, "Formulario de cada tipo").
-export function ajustarGrupos(texto: string, grupos: GrupoRespuestas[]): GrupoRespuestas[] {
+// los quita el autor, que sabe cuál sobra (spec F05, "Formulario de cada tipo"). Lo usan
+// completar espacios y banco de palabras.
+export function ajustarGrupos<G>(
+  texto: string,
+  grupos: G[],
+  { esVacio, crear }: ComoAjustarGrupos<G>,
+): G[] {
   const marcas = contarEspacios(texto);
   if (grupos.length < marcas) {
-    return [...grupos, ...Array.from({ length: marcas - grupos.length }, crearGrupo)];
+    return [...grupos, ...Array.from({ length: marcas - grupos.length }, crear)];
   }
   let sobran = grupos.length - marcas;
   return grupos
     .toReversed()
     .filter((grupo) => {
-      if (sobran === 0 || !esGrupoVacio(grupo)) return true;
+      if (sobran === 0 || !esVacio(grupo)) return true;
       sobran -= 1;
       return false;
     })
