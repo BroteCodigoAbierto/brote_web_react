@@ -1,0 +1,6 @@
+/* lado a lado si caben, una debajo de otra si no: también en la vista previa */
+.categorias {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
+  gap: var(--espacio-4);
+}
