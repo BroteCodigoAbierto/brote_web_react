@@ -1,0 +1,8 @@
+/* respeta los saltos de línea y la sangría: muchas veces es código. El interlineado deja
+   lugar a los espacios, que van en línea con el texto */
+.texto {
+  font: var(--texto-cuerpo);
+  line-height: var(--alto-boton-chico);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
