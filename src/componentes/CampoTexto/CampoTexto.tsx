@@ -8,6 +8,8 @@ type PropsCampoTexto = {
   valor: string;
   alCambiar: (valor: string) => void;
   error?: string;
+  // inválido sin mensaje propio: el error se muestra en otro lado (F11)
+  invalido?: boolean;
   ayuda?: string;
   icono?: LucideIcon;
   tipo?: "text" | "email" | "password";
@@ -28,6 +30,7 @@ export default function CampoTexto({
   valor,
   alCambiar,
   error,
+  invalido = false,
   ayuda,
   icono: Icono,
   tipo = "text",
@@ -57,7 +60,7 @@ export default function CampoTexto({
           autoFocus={autoFocus}
           maxLength={maxLongitud}
           disabled={deshabilitado}
-          aria-invalid={error ? true : undefined}
+          aria-invalid={error || invalido ? true : undefined}
           aria-describedby={descripcion ? idDescripcion : undefined}
         />
         {accesorio}

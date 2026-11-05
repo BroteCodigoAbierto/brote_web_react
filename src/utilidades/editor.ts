@@ -16,6 +16,24 @@ export function idLocal(): string {
   return `${Date.now().toString(36)}-${siguienteId}`;
 }
 
+// Marca desde la segunda aparición de cada texto, con `clave.<id>`. Se compara recortado,
+// respetando las mayúsculas, como las opciones (spec F05). Los vacíos tienen su propio error.
+export function marcarRepetidos<T extends { id: string }>(
+  filas: T[],
+  leerTexto: (fila: T) => string,
+  clave: string,
+  mensaje: string,
+  errores: Record<string, string>,
+) {
+  const vistos = new Set<string>();
+  for (const fila of filas) {
+    const texto = leerTexto(fila).trim();
+    if (texto === "") continue;
+    if (vistos.has(texto)) errores[`${clave}.${fila.id}`] = mensaje;
+    vistos.add(texto);
+  }
+}
+
 export function textoCantidadActividades(cantidad: number): string {
   if (cantidad === 0) return "Sin actividades";
   if (cantidad === 1) return "1 actividad";

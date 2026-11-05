@@ -49,3 +49,38 @@
   flex-direction: column;
   gap: var(--espacio-2);
 }
+
+/* dos campos en una fila: las parejas, y un elemento con su categoría (F11) */
+.filaDoble {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: var(--espacio-3);
+}
+
+/* un campo con sus botones de orden, a la altura del recuadro (F11) */
+.filaConOrden {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--espacio-2);
+}
+
+.filaConOrden > :first-child {
+  flex: 1;
+  min-width: 0;
+}
+
+.botonesFila {
+  margin-top: 1.625rem;
+}
+
+.ayuda {
+  color: var(--color-texto-suave);
+  font: var(--texto-nota);
+}
+
+/* las fichas que valen en un espacio (F11) */
+.casillas {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0 var(--espacio-5);
+}
