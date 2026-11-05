@@ -1,10 +1,9 @@
-import { PencilLine } from "lucide-react";
 import { useEffect, useState } from "react";
 import Aviso from "../../componentes/Aviso/Aviso.tsx";
 import Boton from "../../componentes/Boton/Boton.tsx";
 import CampoArea from "../../componentes/CampoArea/CampoArea.tsx";
 import CampoTexto from "../../componentes/CampoTexto/CampoTexto.tsx";
-import Insignia from "../../componentes/Insignia/Insignia.tsx";
+import InsigniaEstadoCurso from "../../componentes/InsigniaEstadoCurso/InsigniaEstadoCurso.tsx";
 import PortadaCurso from "../../componentes/PortadaCurso/PortadaCurso.tsx";
 import Superficie from "../../componentes/Superficie/Superficie.tsx";
 import { useFormulario } from "../../hooks/useFormulario.ts";
@@ -80,7 +79,7 @@ export default function DatosCurso({
       <div className={estilos.encabezado}>
         <PortadaCurso id={curso.id} titulo={guardados.titulo} tamano="tarjeta" />
         <div>
-          <Insignia icono={PencilLine}>Borrador</Insignia>
+          <InsigniaEstadoCurso estado={curso.estado} />
         </div>
       </div>
       {/* noValidate: los mensajes son los de la spec, no los del navegador */}
