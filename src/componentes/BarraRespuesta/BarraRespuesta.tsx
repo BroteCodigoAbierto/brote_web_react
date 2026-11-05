@@ -14,6 +14,8 @@ type PropsBarraRespuesta = {
   detalle?: string;
   textoBoton: string;
   deshabilitado?: boolean;
+  // al ponerse en true, el foco pasa al botón (F11: la respuesta quedó completa)
+  enfocar?: boolean;
   alPulsar: () => void;
 };
 
@@ -33,6 +35,7 @@ export default function BarraRespuesta({
   detalle,
   textoBoton,
   deshabilitado = false,
+  enfocar = false,
   alPulsar,
 }: PropsBarraRespuesta) {
   const contenedor = useRef<HTMLDivElement>(null);
@@ -41,6 +44,10 @@ export default function BarraRespuesta({
   useEffect(() => {
     if (estado !== "neutro") contenedor.current?.querySelector("button")?.focus();
   }, [estado]);
+
+  useEffect(() => {
+    if (enfocar) contenedor.current?.querySelector("button")?.focus();
+  }, [enfocar]);
 
   useTeclasActividad((evento) => {
     if (evento.key !== "Enter" || evento.isComposing || evento.defaultPrevented) return;

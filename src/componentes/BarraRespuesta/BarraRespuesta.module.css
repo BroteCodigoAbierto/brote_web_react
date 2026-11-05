@@ -73,8 +73,11 @@
   flex-shrink: 0;
 }
 
-/* la respuesta correcta puede ser código: se respetan saltos y sangría */
+/* la respuesta correcta puede ser código: se respetan saltos y sangría. Si es muy
+   larga se desplaza, para no tapar "Continuar" (F11) */
 .detalle {
+  max-height: 11rem;
+  overflow-y: auto;
   color: var(--color-texto);
   font: var(--texto-cuerpo);
   white-space: pre-wrap;

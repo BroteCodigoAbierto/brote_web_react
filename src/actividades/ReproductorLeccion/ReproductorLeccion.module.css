@@ -67,7 +67,7 @@
   width: 100%;
   max-width: var(--ancho-leccion);
   margin: 0 auto;
-  padding: var(--espacio-3) var(--espacio-5) 16rem;
+  padding: var(--espacio-3) var(--espacio-5) 20rem;
 }
 
 @media (prefers-reduced-motion: reduce) {
