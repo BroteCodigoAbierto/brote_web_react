@@ -1,12 +1,5 @@
 import { BookOpen, CircleAlert, GripVertical, Plus } from "lucide-react";
-import {
-  useId,
-  useRef,
-  useState,
-  type Dispatch,
-  type FormEvent,
-  type SetStateAction,
-} from "react";
+import { useId, useRef, useState, type Dispatch, type FormEvent, type SetStateAction } from "react";
 import { Link } from "react-router";
 import Aviso from "../../componentes/Aviso/Aviso.tsx";
 import Boton from "../../componentes/Boton/Boton.tsx";
@@ -166,7 +159,9 @@ export default function ListaLecciones({
     ejecutar(
       async () => {
         await borrarLeccion(idCurso, id);
-        alCambiarLecciones((actuales) => renumerar(actuales.filter((leccion) => leccion.id !== id)));
+        alCambiarLecciones((actuales) =>
+          renumerar(actuales.filter((leccion) => leccion.id !== id)),
+        );
       },
       (error) => setAviso(leerErrorDeAccion(error, "No se pudo eliminar la lección.")),
     ).finally(() => {
