@@ -1,0 +1,75 @@
+.fila {
+  display: flex;
+  align-items: center;
+  gap: var(--espacio-3);
+}
+
+/* se queda en la línea del texto, con su ficha esperada al lado */
+.enLinea {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--espacio-3);
+  max-width: 100%;
+  margin: var(--espacio-1) 0;
+  line-height: normal;
+  vertical-align: middle;
+}
+
+.numero {
+  display: grid;
+  place-items: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  flex-shrink: 0;
+  border-radius: var(--radio-pildora);
+  color: var(--color-texto);
+  font: var(--texto-etiqueta);
+}
+
+.normal {
+  background: var(--color-primario-suave);
+}
+
+.correcto {
+  background: var(--color-brote-suave);
+}
+
+.incorrecto {
+  background: var(--color-error-suave);
+}
+
+.hueco {
+  flex: 1;
+  min-width: 0;
+  min-height: 3.5rem;
+  border-radius: var(--radio-medio);
+}
+
+.huecoEnLinea {
+  display: inline-flex;
+  max-width: 100%;
+  min-width: 4rem;
+  min-height: var(--area-tactil);
+  border-radius: var(--radio-medio);
+}
+
+.vacio {
+  border: 2px dashed var(--color-borde-fuerte);
+}
+
+/* sin borde propio, pero con el mismo grosor: resaltarlo no mueve al elemento */
+.lleno {
+  border: 2px solid transparent;
+}
+
+.resaltado {
+  border-color: var(--color-primario);
+  background: var(--color-primario-suave);
+}
+
+.esperada {
+  color: var(--color-brote-fuerte);
+  font: var(--texto-nota);
+  font-weight: 700;
+}
