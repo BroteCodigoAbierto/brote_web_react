@@ -1,6 +1,10 @@
 import type { TipoActividad } from "../tipos/contrato.ts";
+import { editorBancoPalabras } from "./BancoPalabras/editorBancoPalabras.ts";
+import { editorClasificar } from "./Clasificar/editorClasificar.ts";
 import { editorCompletarEspacios } from "./CompletarEspacios/editorCompletarEspacios.ts";
+import { editorEmparejar } from "./Emparejar/editorEmparejar.ts";
 import { editorOpcionMultiple } from "./OpcionMultiple/editorOpcionMultiple.ts";
+import { editorOrdenar } from "./Ordenar/editorOrdenar.ts";
 import { editorPreguntaAbierta } from "./PreguntaAbierta/editorPreguntaAbierta.ts";
 import { editorTarjeta } from "./TarjetaMemoria/editorTarjeta.ts";
 import { editorTeoria } from "./Teoria/editorTeoria.ts";
@@ -22,4 +26,8 @@ export const registroEditor: { [T in TipoActividad]: EditorActividad<T, unknown>
   opcionMultiple: registrar(editorOpcionMultiple),
   completarEspacios: registrar(editorCompletarEspacios),
   preguntaAbierta: registrar(editorPreguntaAbierta),
+  emparejar: registrar(editorEmparejar),
+  clasificar: registrar(editorClasificar),
+  ordenar: registrar(editorOrdenar),
+  bancoPalabras: registrar(editorBancoPalabras),
 };
