@@ -1,0 +1,27 @@
+.selector {
+  flex: 1;
+  min-width: 0;
+  min-height: var(--area-tactil);
+  border: 0;
+  background: transparent;
+  color: var(--color-texto);
+  font: var(--texto-cuerpo);
+  cursor: pointer;
+}
+
+/* el anillo de foco lo dibuja el recuadro */
+.selector:focus,
+.selector:focus-visible {
+  outline: none;
+}
+
+.selector:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* la lista desplegable no hereda el vidrio del campo */
+.selector option {
+  background: var(--color-vidrio-opaco);
+  color: var(--color-texto);
+}
