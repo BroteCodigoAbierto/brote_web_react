@@ -1,7 +1,11 @@
 import type { ComponentType } from "react";
 import type { Actividad, TipoActividad } from "../tipos/contrato.ts";
+import BancoPalabras from "./BancoPalabras/BancoPalabras.tsx";
+import Clasificar from "./Clasificar/Clasificar.tsx";
 import CompletarEspacios from "./CompletarEspacios/CompletarEspacios.tsx";
+import Emparejar from "./Emparejar/Emparejar.tsx";
 import OpcionMultiple from "./OpcionMultiple/OpcionMultiple.tsx";
+import Ordenar from "./Ordenar/Ordenar.tsx";
 import PreguntaAbierta from "./PreguntaAbierta/PreguntaAbierta.tsx";
 import TarjetaMemoria from "./TarjetaMemoria/TarjetaMemoria.tsx";
 import Teoria from "./Teoria/Teoria.tsx";
@@ -18,6 +22,10 @@ export const registroActividades: {
   opcionMultiple: OpcionMultiple,
   completarEspacios: CompletarEspacios,
   preguntaAbierta: PreguntaAbierta,
+  emparejar: Emparejar,
+  clasificar: Clasificar,
+  ordenar: Ordenar,
+  bancoPalabras: BancoPalabras,
 };
 
 // Una versión vieja del cliente puede recibir un tipo que todavía no conoce:
