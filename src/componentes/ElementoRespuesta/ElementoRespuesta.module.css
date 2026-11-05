@@ -1,0 +1,135 @@
+/* Mismos estados que OpcionRespuesta (docs/diseno.md, sección 6, "Opciones"). */
+.elemento {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espacio-3);
+  max-width: 100%;
+  border: 2px solid var(--color-borde);
+  border-radius: var(--radio-medio);
+  background: var(--color-vidrio);
+  box-shadow: var(--brillo-vidrio);
+  -webkit-backdrop-filter: var(--desenfoque);
+  backdrop-filter: var(--desenfoque);
+  color: var(--color-texto);
+  text-align: left;
+  cursor: pointer;
+  transition:
+    border-color var(--duracion-rapida) var(--curva),
+    background-color var(--duracion-rapida) var(--curva),
+    box-shadow var(--duracion-rapida) var(--curva),
+    opacity var(--duracion-rapida) var(--curva),
+    transform var(--duracion-rapida) var(--curva);
+}
+
+.tarjeta {
+  width: 100%;
+  min-height: 3.5rem;
+  padding: var(--espacio-4) var(--espacio-5);
+}
+
+.compacta {
+  min-height: var(--area-tactil);
+  padding: var(--espacio-3) var(--espacio-4);
+}
+
+.elemento:hover:not(:disabled) {
+  border-color: var(--color-borde-fuerte);
+}
+
+.elemento:active:not(:disabled) {
+  transform: scale(0.98);
+}
+
+/* después de comprobar ya no se puede cambiar, pero se lee igual */
+.elemento:disabled {
+  cursor: default;
+}
+
+.seleccionada,
+.seleccionada:hover:not(:disabled) {
+  border-color: var(--color-primario);
+  background: var(--color-primario-suave);
+  box-shadow: var(--brillo-vidrio), var(--sombra-elevada);
+}
+
+.correcta,
+.correcta:hover:not(:disabled) {
+  border-color: var(--color-brote-fuerte);
+  background: var(--color-brote-suave);
+}
+
+.incorrecta,
+.incorrecta:hover:not(:disabled) {
+  border-color: var(--color-error);
+  background: var(--color-error-suave);
+  animation: sacudir var(--duracion-lenta) var(--curva);
+}
+
+.atenuada {
+  opacity: 0.4;
+}
+
+/* el destino del arrastre: como seleccionada, sin sombra */
+.resaltada,
+.resaltada:hover:not(:disabled) {
+  border-color: var(--color-primario);
+  background: var(--color-primario-suave);
+}
+
+.marca {
+  display: grid;
+  place-items: center;
+  width: 1.5rem;
+  height: 1.5rem;
+  flex-shrink: 0;
+  border-radius: var(--radio-pildora);
+  background: var(--color-primario-suave);
+  color: var(--color-primario);
+  font: var(--texto-etiqueta);
+}
+
+/* muchas veces es una línea de código: se respeta la sangría */
+.texto {
+  min-width: 0;
+  font: var(--texto-cuerpo);
+  font-weight: 500;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.icono {
+  width: 1.375rem;
+  height: 1.375rem;
+  flex-shrink: 0;
+  margin-left: auto;
+}
+
+.correcta .icono {
+  color: var(--color-brote-fuerte);
+}
+
+.incorrecta .icono {
+  color: var(--color-error);
+}
+
+@keyframes sacudir {
+  20%,
+  60% {
+    transform: translateX(-6px);
+  }
+  40%,
+  80% {
+    transform: translateX(6px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .incorrecta,
+  .incorrecta:hover:not(:disabled) {
+    animation: none;
+  }
+
+  .elemento:active:not(:disabled) {
+    transform: none;
+  }
+}
