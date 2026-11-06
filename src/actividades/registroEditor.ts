@@ -3,11 +3,14 @@ import { editorBancoPalabras } from "./BancoPalabras/editorBancoPalabras.ts";
 import { editorClasificar } from "./Clasificar/editorClasificar.ts";
 import { editorCompletarEspacios } from "./CompletarEspacios/editorCompletarEspacios.ts";
 import { editorEmparejar } from "./Emparejar/editorEmparejar.ts";
+import { editorGrafoCommits } from "./GrafoCommits/editorGrafoCommits.ts";
 import { editorOpcionMultiple } from "./OpcionMultiple/editorOpcionMultiple.ts";
 import { editorOrdenar } from "./Ordenar/editorOrdenar.ts";
 import { editorPreguntaAbierta } from "./PreguntaAbierta/editorPreguntaAbierta.ts";
+import { editorRetoCodigo } from "./RetoCodigo/editorRetoCodigo.ts";
 import { editorTarjeta } from "./TarjetaMemoria/editorTarjeta.ts";
 import { editorTeoria } from "./Teoria/editorTeoria.ts";
+import { editorTerminalSimulada } from "./TerminalSimulada/editorTerminalSimulada.ts";
 import type { EditorActividad } from "./tipos.ts";
 
 // Quien usa el registro no conoce la forma de cada borrador: solo lo pasa de un
@@ -30,4 +33,7 @@ export const registroEditor: { [T in TipoActividad]: EditorActividad<T, unknown>
   clasificar: registrar(editorClasificar),
   ordenar: registrar(editorOrdenar),
   bancoPalabras: registrar(editorBancoPalabras),
+  retoCodigo: registrar(editorRetoCodigo),
+  terminalSimulada: registrar(editorTerminalSimulada),
+  grafoCommits: registrar(editorGrafoCommits),
 };

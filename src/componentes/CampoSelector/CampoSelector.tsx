@@ -16,6 +16,10 @@ type PropsCampoSelector = {
   textoVacio: string;
   alCambiar: (valor: string | null) => void;
   error?: string;
+  // F12: como en CampoTexto
+  ayuda?: string;
+  // inválido sin mensaje propio: el error se muestra en otro lado
+  invalido?: boolean;
   deshabilitado?: boolean;
 };
 
@@ -28,9 +32,12 @@ export default function CampoSelector({
   textoVacio,
   alCambiar,
   error,
+  ayuda,
+  invalido = false,
   deshabilitado = false,
 }: PropsCampoSelector) {
   const idDescripcion = `${id}-descripcion`;
+  const descripcion = error ?? ayuda;
 
   return (
     <div className={base.campo}>
@@ -44,8 +51,8 @@ export default function CampoSelector({
           value={valor ?? ""}
           onChange={(evento) => alCambiar(evento.target.value || null)}
           disabled={deshabilitado}
-          aria-invalid={error ? true : undefined}
-          aria-describedby={error ? idDescripcion : undefined}
+          aria-invalid={error || invalido ? true : undefined}
+          aria-describedby={descripcion ? idDescripcion : undefined}
         >
           <option value="">{textoVacio}</option>
           {opciones.map((opcion) => (
@@ -55,10 +62,10 @@ export default function CampoSelector({
           ))}
         </select>
       </div>
-      {error && (
-        <p id={idDescripcion} className={base.error}>
-          <CircleAlert className={base.iconoError} aria-hidden="true" />
-          {error}
+      {descripcion && (
+        <p id={idDescripcion} className={error ? base.error : base.ayuda}>
+          {error && <CircleAlert className={base.iconoError} aria-hidden="true" />}
+          {descripcion}
         </p>
       )}
     </div>

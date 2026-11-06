@@ -84,3 +84,17 @@
   flex-wrap: wrap;
   gap: 0 var(--espacio-5);
 }
+
+/* un commit del grafo: su nombre (de hasta 4 caracteres) y sus dos padres (F12) */
+.filaCommit {
+  display: grid;
+  grid-template-columns: 6rem minmax(0, 1fr) minmax(0, 1fr);
+  gap: var(--espacio-3);
+}
+
+/* el primero no tiene selectores: la nota va a la altura del recuadro */
+.primerCommit {
+  grid-column: span 2;
+  align-self: center;
+  margin-top: 1.625rem;
+}
