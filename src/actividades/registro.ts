@@ -4,10 +4,13 @@ import BancoPalabras from "./BancoPalabras/BancoPalabras.tsx";
 import Clasificar from "./Clasificar/Clasificar.tsx";
 import CompletarEspacios from "./CompletarEspacios/CompletarEspacios.tsx";
 import Emparejar from "./Emparejar/Emparejar.tsx";
+import GrafoCommits from "./GrafoCommits/GrafoCommits.tsx";
 import OpcionMultiple from "./OpcionMultiple/OpcionMultiple.tsx";
 import Ordenar from "./Ordenar/Ordenar.tsx";
 import PreguntaAbierta from "./PreguntaAbierta/PreguntaAbierta.tsx";
+import RetoCodigo from "./RetoCodigo/RetoCodigo.tsx";
 import TarjetaMemoria from "./TarjetaMemoria/TarjetaMemoria.tsx";
+import TerminalSimulada from "./TerminalSimulada/TerminalSimulada.tsx";
 import Teoria from "./Teoria/Teoria.tsx";
 import type { PropsActividad } from "./tipos.ts";
 
@@ -26,6 +29,9 @@ export const registroActividades: {
   clasificar: Clasificar,
   ordenar: Ordenar,
   bancoPalabras: BancoPalabras,
+  retoCodigo: RetoCodigo,
+  terminalSimulada: TerminalSimulada,
+  grafoCommits: GrafoCommits,
 };
 
 // Una versión vieja del cliente puede recibir un tipo que todavía no conoce:

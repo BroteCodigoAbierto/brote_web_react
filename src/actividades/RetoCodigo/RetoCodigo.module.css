@@ -1,0 +1,39 @@
+/* Como la pregunta abierta (docs/diseno.md, sección 6) */
+
+.solucion {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-3);
+  padding: var(--espacio-6);
+  animation: aparecer var(--duracion-media) var(--curva);
+}
+
+.seccion {
+  color: var(--color-texto-suave);
+  font: var(--texto-seccion);
+  letter-spacing: var(--espaciado-seccion);
+  text-transform: uppercase;
+}
+
+.autoevaluacion {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-4);
+}
+
+.preguntaAuto {
+  font: var(--texto-titulo3);
+  letter-spacing: var(--espaciado-titulo3);
+}
+
+.botones {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espacio-4);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .solucion {
+    animation: none;
+  }
+}
