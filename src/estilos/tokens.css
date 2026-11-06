@@ -58,6 +58,11 @@
   --color-codigo-eliminado: #fda4af;
   --color-codigo-eliminado-fondo: rgba(255, 107, 133, 0.16);
   --color-codigo-encabezado: #a29dff;
+  /* F12: la carpeta de la terminal, la etiqueta del lenguaje y el código de solo
+     lectura; el cursor y el $ ("cursor brote"); y el fondo de la etiqueta */
+  --color-codigo-tenue: #a9a6c9;
+  --color-codigo-cursor: #a3e635;
+  --color-codigo-etiqueta-fondo: rgba(255, 255, 255, 0.1);
 
   --sombra-suave: 0 8px 28px rgba(49, 46, 129, 0.08);
   --sombra-elevada: 0 16px 44px rgba(49, 46, 129, 0.14), 0 2px 6px rgba(49, 46, 129, 0.05);
