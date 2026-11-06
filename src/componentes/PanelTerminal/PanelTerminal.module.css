@@ -1,0 +1,71 @@
+/* Oscuro también en modo claro (docs/diseno.md, sección 2.1, "Código") */
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-2);
+  padding: var(--espacio-5);
+  border-radius: var(--radio-medio);
+  background: var(--color-codigo-fondo);
+  color: var(--color-codigo-texto);
+  font: var(--texto-codigo);
+  cursor: text;
+}
+
+/* el anillo de foco lo dibuja el panel (sección 7) */
+.panel:focus-within {
+  outline: 2px solid var(--color-primario);
+  outline-offset: 3px;
+}
+
+/* como en una terminal: saltos, líneas en blanco, sangría y tabulaciones, y una línea
+   larga pasa a la siguiente */
+.salida {
+  margin: 0;
+  font: inherit;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  tab-size: 4;
+}
+
+/* la carpeta y el $; si la carpeta es larga, el comando sigue debajo */
+.linea {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  column-gap: 1ch;
+}
+
+.indicador {
+  display: flex;
+  gap: 1ch;
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
+.carpeta {
+  color: var(--color-codigo-tenue);
+}
+
+.dolar {
+  color: var(--color-codigo-cursor);
+}
+
+.comando {
+  flex: 1 1 12ch;
+  min-width: 12ch;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  caret-color: var(--color-codigo-cursor);
+  resize: none;
+  overflow: hidden;
+  overflow-wrap: anywhere;
+}
+
+.comando:focus,
+.comando:focus-visible {
+  outline: none;
+}

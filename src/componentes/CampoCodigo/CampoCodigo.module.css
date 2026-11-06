@@ -1,0 +1,58 @@
+/* Oscuro también en modo claro (docs/diseno.md, sección 2.1, "Código"), como
+   BloqueCodigo */
+
+.campo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-3);
+  min-width: 0;
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  border-radius: var(--radio-medio);
+  background: var(--color-codigo-fondo);
+}
+
+/* el anillo de foco lo dibuja el panel (sección 7) */
+.panel:focus-within {
+  outline: 2px solid var(--color-primario);
+  outline-offset: 3px;
+}
+
+.entrada {
+  width: 100%;
+  padding: var(--espacio-5);
+  border: 0;
+  border-radius: var(--radio-medio);
+  background: transparent;
+  color: var(--color-codigo-texto);
+  font: var(--texto-codigo);
+  caret-color: var(--color-codigo-cursor);
+  resize: none;
+  /* sin ajuste de línea: una línea larga se desplaza hacia los lados */
+  white-space: pre;
+  overflow-x: auto;
+  tab-size: 2;
+}
+
+.entrada:focus,
+.entrada:focus-visible {
+  outline: none;
+}
+
+/* con la etiqueta encima, el código empieza más cerca */
+.panel > span + .entrada {
+  padding-top: var(--espacio-2);
+}
+
+.soloLectura {
+  color: var(--color-codigo-tenue);
+}
+
+.ayuda {
+  padding: 0 var(--espacio-1);
+  color: var(--color-texto-suave);
+  font: var(--texto-nota);
+}

@@ -1,0 +1,153 @@
+/* El grafo de commits (docs/diseno.md, sección 4). Las posiciones y los tamaños salen de
+   medirGrafo; aquí solo va el aspecto. */
+
+.superficie {
+  padding: var(--espacio-5);
+}
+
+/* lo que mide useAncho; si el grafo no cabe (letra grande), se desplaza hacia los lados */
+.disponible {
+  overflow-x: auto;
+}
+
+/* no se estira de más: va al centro */
+.caja {
+  position: relative;
+  margin: 0 auto;
+}
+
+.lineas {
+  position: absolute;
+  inset: 0;
+  overflow: visible;
+}
+
+.lineas path {
+  fill: none;
+  stroke: var(--color-texto-tenue);
+  stroke-width: 2;
+}
+
+.etiqueta {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radio-pildora);
+  font: var(--texto-codigo);
+  white-space: pre;
+}
+
+.rama {
+  background:
+    linear-gradient(var(--color-primario-suave), var(--color-primario-suave)),
+    var(--color-vidrio-opaco);
+  color: var(--color-primario);
+}
+
+.head {
+  background: var(--color-primario);
+  color: var(--color-sobre-primario);
+}
+
+/* el área que se pulsa (44 px); el círculo va dentro */
+.commit {
+  position: absolute;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: var(--radio-pildora);
+  background: transparent;
+  color: var(--color-texto);
+  cursor: pointer;
+}
+
+.commit:disabled {
+  cursor: default;
+}
+
+.circulo {
+  position: relative;
+  display: grid;
+  place-items: center;
+  border: 2px solid var(--color-texto-tenue);
+  border-radius: var(--radio-pildora);
+  background: var(--color-vidrio-opaco);
+  font: var(--texto-codigo);
+  white-space: pre;
+  transition:
+    border-color var(--duracion-rapida) var(--curva),
+    background-color var(--duracion-rapida) var(--curva),
+    transform var(--duracion-rapida) var(--curva);
+}
+
+.normal:hover:not(:disabled) .circulo {
+  border-color: var(--color-texto-suave);
+}
+
+.commit:active:not(:disabled) .circulo {
+  transform: scale(0.98);
+}
+
+/* los tonos suaves son translúcidos en modo oscuro: van sobre el vidrio opaco para que la
+   línea no se vea a través del círculo */
+.elegido .circulo {
+  border-color: var(--color-primario);
+  background:
+    linear-gradient(var(--color-primario-suave), var(--color-primario-suave)),
+    var(--color-vidrio-opaco);
+}
+
+.correcto .circulo {
+  border-color: var(--color-brote-fuerte);
+  background:
+    linear-gradient(var(--color-brote-suave), var(--color-brote-suave)), var(--color-vidrio-opaco);
+}
+
+.incorrecto .circulo {
+  border-color: var(--color-error);
+  background:
+    linear-gradient(var(--color-error-suave), var(--color-error-suave)), var(--color-vidrio-opaco);
+  animation: sacudir var(--duracion-lenta) var(--curva);
+}
+
+/* en la esquina, sobre un círculo opaco, para que se vea encima del borde */
+.icono {
+  position: absolute;
+  top: -0.375rem;
+  right: -0.375rem;
+  width: 1rem;
+  height: 1rem;
+  border-radius: var(--radio-pildora);
+  background: var(--color-vidrio-opaco);
+}
+
+.correcto .icono {
+  color: var(--color-brote-fuerte);
+}
+
+.incorrecto .icono {
+  color: var(--color-error);
+}
+
+@keyframes sacudir {
+  20%,
+  60% {
+    transform: translateX(-6px);
+  }
+  40%,
+  80% {
+    transform: translateX(6px);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .incorrecto .circulo {
+    animation: none;
+  }
+
+  .commit:active:not(:disabled) .circulo {
+    transform: none;
+  }
+}
