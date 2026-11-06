@@ -73,6 +73,11 @@
   outline: none;
 }
 
+/* F12: comandos y nombres de Git */
+.codigo {
+  font: var(--texto-codigo);
+}
+
 .entrada:disabled {
   opacity: 0.6;
   cursor: not-allowed;

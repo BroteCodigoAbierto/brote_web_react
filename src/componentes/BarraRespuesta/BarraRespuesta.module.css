@@ -73,13 +73,28 @@
   flex-shrink: 0;
 }
 
-/* la respuesta correcta puede ser código: se respetan saltos y sangría. Si es muy
-   larga se desplaza, para no tapar "Continuar" (F11) */
-.detalle {
+/* si la respuesta es muy larga se desplaza, para no tapar "Continuar" (F11). El código
+   (F12) va en la misma zona */
+.desplazable {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-2);
   max-height: 11rem;
   overflow-y: auto;
+}
+
+/* la respuesta correcta puede ser código: se respetan saltos y sangría */
+.detalle {
   color: var(--color-texto);
   font: var(--texto-cuerpo);
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+/* F12: sin panel, porque la barra ya tiene su color */
+.codigo {
+  color: var(--color-texto);
+  font: var(--texto-codigo);
   white-space: pre-wrap;
   overflow-wrap: anywhere;
 }

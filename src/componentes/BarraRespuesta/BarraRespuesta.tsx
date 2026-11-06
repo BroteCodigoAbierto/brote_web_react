@@ -11,6 +11,8 @@ export type EstadoRespuesta = "neutro" | "correcto" | "incorrecto";
 type PropsBarraRespuesta = {
   estado: EstadoRespuesta;
   titulo?: string;
+  // F12: un comando o el nombre de un commit, en letra de código, entre el título y el detalle
+  codigo?: string;
   detalle?: string;
   textoBoton: string;
   deshabilitado?: boolean;
@@ -32,6 +34,7 @@ function enterPropio(objetivo: EventTarget | null): boolean {
 export default function BarraRespuesta({
   estado,
   titulo,
+  codigo,
   detalle,
   textoBoton,
   deshabilitado = false,
@@ -68,7 +71,13 @@ export default function BarraRespuesta({
               {titulo}
             </p>
           )}
-          {detalle && <p className={estilos.detalle}>{detalle}</p>}
+          {/* el código y el detalle se desplazan juntos, y "Continuar" sigue a la vista */}
+          {(codigo || detalle) && (
+            <div className={estilos.desplazable}>
+              {codigo && <p className={estilos.codigo}>{codigo}</p>}
+              {detalle && <p className={estilos.detalle}>{detalle}</p>}
+            </div>
+          )}
         </div>
         <Boton anchoCompleto deshabilitado={deshabilitado} alPulsar={alPulsar}>
           {textoBoton}

@@ -17,6 +17,8 @@ type PropsCampoTexto = {
   autoFocus?: boolean;
   maxLongitud?: number;
   deshabilitado?: boolean;
+  // F12: letra monoespaciada y sin corrector, para comandos y nombres de Git
+  codigo?: boolean;
   // algo que va dentro del recuadro, a la derecha (p. ej. "Mostrar" en la contraseña)
   accesorio?: ReactNode;
 };
@@ -38,6 +40,7 @@ export default function CampoTexto({
   autoFocus,
   maxLongitud,
   deshabilitado = false,
+  codigo = false,
   accesorio,
 }: PropsCampoTexto) {
   const idDescripcion = `${id}-descripcion`;
@@ -52,11 +55,14 @@ export default function CampoTexto({
         {Icono && <Icono className={estilos.icono} aria-hidden="true" />}
         <input
           id={id}
-          className={estilos.entrada}
+          className={`${estilos.entrada} ${codigo ? estilos.codigo : ""}`}
           type={tipo}
           value={valor}
           onChange={(evento) => alCambiar(evento.target.value)}
-          autoComplete={autoComplete}
+          autoComplete={codigo ? "off" : autoComplete}
+          spellCheck={codigo ? false : undefined}
+          autoCapitalize={codigo ? "off" : undefined}
+          autoCorrect={codigo ? "off" : undefined}
           autoFocus={autoFocus}
           maxLength={maxLongitud}
           disabled={deshabilitado}

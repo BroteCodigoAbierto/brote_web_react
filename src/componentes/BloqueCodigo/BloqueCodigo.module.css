@@ -35,3 +35,27 @@
 .encabezado {
   color: var(--color-codigo-encabezado);
 }
+
+/* F12: con la etiqueta del lenguaje, el panel la lleva arriba a la derecha. La usa
+   también CampoCodigo */
+.conEtiqueta {
+  display: flex;
+  flex-direction: column;
+  border-radius: var(--radio-medio);
+  background: var(--color-codigo-fondo);
+}
+
+.conEtiqueta > .bloque {
+  padding-top: var(--espacio-2);
+  border-radius: 0 0 var(--radio-medio) var(--radio-medio);
+}
+
+.etiquetaLenguaje {
+  align-self: flex-end;
+  margin: var(--espacio-4) var(--espacio-4) 0 0;
+  padding: var(--espacio-1) var(--espacio-4);
+  border-radius: var(--radio-pildora);
+  background: var(--color-codigo-etiqueta-fondo);
+  color: var(--color-codigo-tenue);
+  font: var(--texto-nota);
+}
