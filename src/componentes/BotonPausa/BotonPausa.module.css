@@ -1,0 +1,40 @@
+/* docs/diseno.md, sección 4, BotonPausa */
+.boton {
+  position: absolute;
+  bottom: var(--espacio-3);
+  left: var(--espacio-3);
+  z-index: 1;
+  display: grid;
+  place-items: center;
+  width: var(--area-tactil);
+  height: var(--area-tactil);
+  border: 1px solid var(--color-vidrio-borde);
+  border-radius: 50%;
+  background: var(--color-vidrio-opaco);
+  box-shadow: var(--sombra-suave);
+  color: var(--color-texto);
+  cursor: pointer;
+  transition:
+    opacity var(--duracion-rapida) var(--curva),
+    transform var(--duracion-rapida) var(--curva);
+}
+
+.boton:hover {
+  opacity: 0.94;
+}
+
+.boton:active {
+  transform: scale(0.98);
+  opacity: 0.9;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .boton:active {
+    transform: none;
+  }
+}
+
+.icono {
+  width: 20px;
+  height: 20px;
+}
