@@ -1,7 +1,10 @@
 import Aviso from "../../componentes/Aviso/Aviso.tsx";
 import CampoArea from "../../componentes/CampoArea/CampoArea.tsx";
+import CampoImagen from "../../componentes/CampoImagen/CampoImagen.tsx";
 import CampoTexto from "../../componentes/CampoTexto/CampoTexto.tsx";
 import ListaEditable from "../../componentes/ListaEditable/ListaEditable.tsx";
+import { useSubidas } from "../../contextos/ContextoSubidas.ts";
+import { aValorImagen, type ValorImagen } from "../../editor/imagenes.ts";
 import { LIMITES_ACTIVIDADES } from "../../tipos/contrato.ts";
 import { idLocal } from "../../utilidades/editor.ts";
 import estilos from "../formulario.module.css";
@@ -11,9 +14,11 @@ import type { BorradorOpcionMultiple, TipoOpciones } from "./editorOpcionMultipl
 const TIPOS_OPCIONES: { tipo: TipoOpciones; etiqueta: string }[] = [
   { tipo: "texto", etiqueta: "Texto" },
   { tipo: "simbolo", etiqueta: "Símbolo" },
+  { tipo: "imagen", etiqueta: "Imagen" },
 ];
 
-// Formulario de la opción múltiple (spec F05, "Formulario de cada tipo").
+// Formulario de la opción múltiple (spec F05, "Formulario de cada tipo"). Desde F13, la
+// imagen de la pregunta y las opciones de imagen; al cambiar de tipo se conserva todo.
 export default function FormularioOpcionMultiple({
   borrador,
   alCambiar,
@@ -23,6 +28,8 @@ export default function FormularioOpcionMultiple({
 }: PropsFormularioActividad<BorradorOpcionMultiple>) {
   const { opciones, tipoOpciones, idCorrecta } = borrador;
   const conSimbolos = tipoOpciones === "simbolo";
+  const conImagenes = tipoOpciones === "imagen";
+  const { subir } = useSubidas();
 
   function cambiar(cambios: Partial<BorradorOpcionMultiple>) {
     alCambiar({ ...borrador, ...cambios });
@@ -31,6 +38,12 @@ export default function FormularioOpcionMultiple({
   function cambiarOpcion(id: string, valor: string) {
     cambiar({
       opciones: opciones.map((opcion) => (opcion.id === id ? { ...opcion, valor } : opcion)),
+    });
+  }
+
+  function cambiarImagenOpcion(id: string, imagen: ValorImagen) {
+    cambiar({
+      opciones: opciones.map((opcion) => (opcion.id === id ? { ...opcion, imagen } : opcion)),
     });
   }
 
@@ -51,6 +64,15 @@ export default function FormularioOpcionMultiple({
         error={errores.pregunta}
         maxLongitud={LIMITES_ACTIVIDADES.preguntaMax}
         filas={2}
+        deshabilitado={deshabilitado}
+      />
+      <CampoImagen
+        id={`${idBase}-imagen-pregunta`}
+        etiqueta="Imagen de la pregunta"
+        valor={borrador.imagenPregunta}
+        alCambiar={(imagenPregunta) => cambiar({ imagenPregunta })}
+        alElegirArchivo={subir}
+        error={errores.imagenPregunta}
         deshabilitado={deshabilitado}
       />
       <CampoArea
@@ -87,19 +109,31 @@ export default function FormularioOpcionMultiple({
           filas={opciones}
           dibujarFila={(opcion, indice) => (
             <div className={estilos.filaOpcion}>
-              <CampoTexto
-                id={`${idBase}-opcion-${opcion.id}`}
-                etiqueta={`Opción ${indice + 1}`}
-                valor={opcion.valor}
-                alCambiar={(valor) => cambiarOpcion(opcion.id, valor)}
-                error={errores[`opciones.${opcion.id}`]}
-                maxLongitud={
-                  conSimbolos
-                    ? LIMITES_ACTIVIDADES.opcionSimboloMax
-                    : LIMITES_ACTIVIDADES.opcionTextoMax
-                }
-                deshabilitado={deshabilitado}
-              />
+              {conImagenes ? (
+                <CampoImagen
+                  id={`${idBase}-opcion-${opcion.id}`}
+                  etiqueta={`Opción ${indice + 1}`}
+                  valor={opcion.imagen}
+                  alCambiar={(imagen) => cambiarImagenOpcion(opcion.id, imagen)}
+                  alElegirArchivo={subir}
+                  error={errores[`opciones.${opcion.id}`]}
+                  deshabilitado={deshabilitado}
+                />
+              ) : (
+                <CampoTexto
+                  id={`${idBase}-opcion-${opcion.id}`}
+                  etiqueta={`Opción ${indice + 1}`}
+                  valor={opcion.valor}
+                  alCambiar={(valor) => cambiarOpcion(opcion.id, valor)}
+                  error={errores[`opciones.${opcion.id}`]}
+                  maxLongitud={
+                    conSimbolos
+                      ? LIMITES_ACTIVIDADES.opcionSimboloMax
+                      : LIMITES_ACTIVIDADES.opcionTextoMax
+                  }
+                  deshabilitado={deshabilitado}
+                />
+              )}
               <label className={estilos.radio}>
                 <input
                   type="radio"
@@ -113,7 +147,11 @@ export default function FormularioOpcionMultiple({
               </label>
             </div>
           )}
-          alAgregar={() => cambiar({ opciones: [...opciones, { id: idLocal(), valor: "" }] })}
+          alAgregar={() =>
+            cambiar({
+              opciones: [...opciones, { id: idLocal(), valor: "", imagen: aValorImagen() }],
+            })
+          }
           alQuitar={quitarOpcion}
           textoAgregar="Agregar opción"
           minimo={LIMITES_ACTIVIDADES.opcionesMin}
