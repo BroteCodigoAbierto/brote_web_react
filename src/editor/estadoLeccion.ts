@@ -1,7 +1,8 @@
 import { registroEditor } from "../actividades/registroEditor.ts";
 import type { EditorActividad } from "../actividades/tipos.ts";
-import type { Actividad, LeccionEnEditor, TipoActividad } from "../tipos/contrato.ts";
+import type { Actividad, Imagen, LeccionEnEditor, TipoActividad } from "../tipos/contrato.ts";
 import { idLocal } from "../utilidades/editor.ts";
+import { limpiarSubidas, reemplazarImagenes } from "./imagenes.ts";
 
 // La lección mientras se edita (spec F05). Sin red: el guardado está en
 // useEditorLeccion. Cada actividad es un bloque con su borrador, porque una
@@ -39,7 +40,12 @@ export type AccionLeccion =
   | { tipo: "quitar"; id: string }
   | { tipo: "seleccionar"; id: string | null }
   | { tipo: "mostrarErrores"; idPrimero: string | null }
-  | { tipo: "guardada"; version: number };
+  | { tipo: "guardada"; version: number }
+  // F13: terminó una subida, con su imagen o su error
+  | { tipo: "imagenSubida"; idSubida: string; imagen: Imagen }
+  | { tipo: "imagenNoSubida"; idSubida: string; error: string }
+  // F13: el servidor dijo que estas imágenes ya no están
+  | { tipo: "marcarImagenesPerdidas"; ids: string[] };
 
 function editorDe(tipo: TipoActividad) {
   // TypeScript no relaciona el tipo del bloque con el de su editor
@@ -74,7 +80,8 @@ export function aActividad({ tipo, borrador }: Bloque): Actividad {
 export function estadoInicial(leccion: LeccionEnEditor, copia: CopiaLeccion | null): EstadoLeccion {
   return {
     titulo: copia?.titulo ?? leccion.titulo,
-    bloques: copia?.bloques ?? leccion.actividades.map(aBloque),
+    // F13: lo que se estaba subiendo cuando expiró la sesión no llegó
+    bloques: copia ? limpiarSubidas(copia.bloques) : leccion.actividades.map(aBloque),
     idSeleccionado: null,
     version: copia?.version ?? leccion.version,
     hayCambios: copia !== null,
@@ -134,5 +141,32 @@ export function reducirLeccion(estado: EstadoLeccion, accion: AccionLeccion): Es
       };
     case "guardada":
       return { ...estado, version: accion.version, hayCambios: false, mostrarErrores: false };
+    case "imagenSubida":
+      return {
+        ...estado,
+        bloques: reemplazarImagenes(estado.bloques, (valor) =>
+          valor.subida === accion.idSubida
+            ? { ...valor, imagen: accion.imagen, subida: null, error: null, perdida: false }
+            : valor,
+        ),
+      };
+    case "imagenNoSubida":
+      return {
+        ...estado,
+        bloques: reemplazarImagenes(estado.bloques, (valor) =>
+          valor.subida === accion.idSubida
+            ? { ...valor, subida: null, error: accion.error }
+            : valor,
+        ),
+      };
+    case "marcarImagenesPerdidas":
+      return {
+        ...estado,
+        bloques: reemplazarImagenes(estado.bloques, (valor) =>
+          valor.imagen && accion.ids.includes(valor.imagen.id)
+            ? { ...valor, perdida: true }
+            : valor,
+        ),
+      };
   }
 }
