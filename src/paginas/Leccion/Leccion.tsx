@@ -127,7 +127,12 @@ function CursarLeccion({ idCurso, idLeccion, leccion, actividades, alSalir }: Pr
 
   return (
     <>
-      <ReproductorLeccion actividades={actividades} reproductor={reproductor} alSalir={alSalir} />
+      <ReproductorLeccion
+        actividades={actividades}
+        idioma={leccion.idioma}
+        reproductor={reproductor}
+        alSalir={alSalir}
+      />
       <Dialogo
         abierto={bloqueo.state === "blocked"}
         titulo="¿Salir de la lección?"

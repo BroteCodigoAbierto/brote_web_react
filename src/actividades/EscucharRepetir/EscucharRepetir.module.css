@@ -1,0 +1,43 @@
+/* docs/diseno.md, sección 6, "Escuchar y repetir": la frase y sus botones en un panel, la
+   grabación debajo y la autoevaluación como en la pregunta abierta */
+
+.panel {
+  align-items: center;
+  text-align: center;
+}
+
+.botones {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--espacio-4);
+}
+
+.grabar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--espacio-4);
+}
+
+.autoevaluacion {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-4);
+  animation: aparecer var(--duracion-media) var(--curva);
+}
+
+.autoevaluacion .botones {
+  justify-content: flex-start;
+}
+
+.preguntaAuto {
+  font: var(--texto-titulo3);
+  letter-spacing: var(--espaciado-titulo3);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .autoevaluacion {
+    animation: none;
+  }
+}

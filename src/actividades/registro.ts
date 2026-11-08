@@ -4,6 +4,7 @@ import BancoPalabras from "./BancoPalabras/BancoPalabras.tsx";
 import Clasificar from "./Clasificar/Clasificar.tsx";
 import CompletarEspacios from "./CompletarEspacios/CompletarEspacios.tsx";
 import Emparejar from "./Emparejar/Emparejar.tsx";
+import EscucharRepetir from "./EscucharRepetir/EscucharRepetir.tsx";
 import GrafoCommits from "./GrafoCommits/GrafoCommits.tsx";
 import OpcionMultiple from "./OpcionMultiple/OpcionMultiple.tsx";
 import Ordenar from "./Ordenar/Ordenar.tsx";
@@ -32,6 +33,7 @@ export const registroActividades: {
   retoCodigo: RetoCodigo,
   terminalSimulada: TerminalSimulada,
   grafoCommits: GrafoCommits,
+  escucharRepetir: EscucharRepetir,
 };
 
 // Una versión vieja del cliente puede recibir un tipo que todavía no conoce:
