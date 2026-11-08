@@ -7,6 +7,8 @@ type PropsLugarElemento = {
   numero?: number;
   // espacio del banco, dentro del texto
   enLinea?: boolean;
+  // F13: el lugar de un elemento de imagen, del tamaño de un mosaico
+  mosaico?: boolean;
   estado?: EstadoEspacio;
   // la ficha esperada, que se muestra al lado si es incorrecto
   esperada?: string;
@@ -23,6 +25,7 @@ type PropsLugarElemento = {
 export default function LugarElemento({
   numero,
   enLinea = false,
+  mosaico = false,
   estado = "normal",
   esperada,
   resaltado = false,
@@ -34,6 +37,7 @@ export default function LugarElemento({
   const Contenedor = enLinea ? "span" : "div";
   const clases = [
     enLinea ? estilos.huecoEnLinea : estilos.hueco,
+    mosaico ? estilos.huecoMosaico : "",
     vacio ? estilos.vacio : estilos.lleno,
     resaltado ? estilos.resaltado : "",
   ].join(" ");

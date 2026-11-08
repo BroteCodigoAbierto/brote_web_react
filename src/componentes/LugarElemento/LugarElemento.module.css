@@ -46,6 +46,14 @@
   border-radius: var(--radio-medio);
 }
 
+/* F13: el lugar de un mosaico de imagen */
+.huecoMosaico {
+  flex: none;
+  width: var(--mosaico-elemento);
+  height: var(--mosaico-elemento);
+  min-height: 0;
+}
+
 .huecoEnLinea {
   display: inline-flex;
   max-width: 100%;

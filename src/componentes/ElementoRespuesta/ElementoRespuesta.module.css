@@ -112,6 +112,56 @@
   color: var(--color-error);
 }
 
+/* F13: elemento de imagen, un mosaico con la marca y el icono como insignias */
+.mosaico {
+  position: relative;
+  flex-direction: column;
+  width: var(--mosaico-elemento);
+  height: var(--mosaico-elemento);
+  padding: var(--espacio-1);
+}
+
+.mosaico.llenar {
+  width: 100%;
+  height: auto;
+  aspect-ratio: 1;
+}
+
+.contenido {
+  flex: 1;
+  width: 100%;
+  min-height: 0;
+}
+
+.insignia {
+  position: absolute;
+  top: var(--espacio-2);
+  left: var(--espacio-2);
+  z-index: 1;
+}
+
+.mosaico .icono {
+  position: absolute;
+  top: var(--espacio-2);
+  right: var(--espacio-2);
+  z-index: 1;
+  width: 22px;
+  height: 22px;
+  margin: 0;
+  border-radius: 50%;
+  background: var(--color-vidrio-opaco);
+}
+
+.conPausa {
+  position: relative;
+  display: inline-flex;
+}
+
+.llenarPausa {
+  display: flex;
+  width: 100%;
+}
+
 @keyframes sacudir {
   20%,
   60% {
