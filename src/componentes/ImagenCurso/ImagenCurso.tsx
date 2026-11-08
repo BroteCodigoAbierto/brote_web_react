@@ -42,14 +42,19 @@ export default function ImagenCurso({
   alFallar: avisarFallo,
 }: PropsImagenCurso) {
   const { intento } = useImagenes();
-  const [estado, setEstado] = useState<{ fase: Fase; intento: number }>({
+  // `vuelta`: cuántas veces se volvió a pedir; la primera usa la dirección de la precarga
+  const [estado, setEstado] = useState<{ fase: Fase; intento: number; vuelta: number }>({
     fase: "cargando",
     intento,
+    vuelta: 0,
   });
   // si falló y el reproductor pasó de actividad, otra vez (research de F13, punto 11)
-  if (estado.fase === "fallo" && intento > estado.intento) setEstado({ fase: "cargando", intento });
+  if (estado.fase === "fallo" && intento > estado.intento) {
+    setEstado({ fase: "cargando", intento, vuelta: estado.vuelta + 1 });
+  }
 
-  const reintento = estado.intento > 0 ? `?r=${estado.intento}` : "";
+  // una dirección nueva, para que el navegador no reuse el error
+  const reintento = estado.vuelta > 0 ? `?r=${estado.vuelta}` : "";
   const tamano: CSSProperties = llenar ? {} : { aspectRatio: `${imagen.ancho} / ${imagen.alto}` };
   const clases = [
     estilos.imagen,
@@ -77,7 +82,7 @@ export default function ImagenCurso({
         </div>
       ) : esGif(imagen) ? (
         <Gif
-          key={estado.intento}
+          key={estado.vuelta}
           imagen={imagen}
           url={urlImagen(imagen.id) + reintento}
           quieta={quieta}
@@ -87,7 +92,7 @@ export default function ImagenCurso({
         />
       ) : (
         <img
-          key={estado.intento}
+          key={estado.vuelta}
           src={urlImagen(imagen.id) + reintento}
           alt=""
           decoding="async"
