@@ -1,0 +1,44 @@
+/* docs/diseno.md, sección 4, BotonGrabar */
+
+.grabar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--espacio-4);
+}
+
+.tiempo {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espacio-3);
+  color: var(--color-texto-suave);
+  font: var(--texto-nota);
+  font-variant-numeric: tabular-nums;
+}
+
+.punto {
+  width: 8px;
+  height: 8px;
+  flex-shrink: 0;
+  border-radius: var(--radio-pildora);
+  background: var(--color-error);
+  animation: latir var(--duracion-lenta) var(--curva) infinite alternate;
+}
+
+@keyframes latir {
+  from {
+    opacity: 1;
+    transform: scale(1);
+  }
+
+  to {
+    opacity: 0.35;
+    transform: scale(0.75);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .punto {
+    animation: none;
+  }
+}

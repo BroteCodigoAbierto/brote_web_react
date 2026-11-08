@@ -1,0 +1,22 @@
+/* docs/diseno.md, sección 4, FraseEscuchar */
+
+.frase {
+  font: var(--texto-titulo2);
+  letter-spacing: var(--espaciado-titulo2);
+  text-align: center;
+  overflow-wrap: anywhere;
+  animation: aparecer var(--duracion-media) var(--curva);
+}
+
+.oculta {
+  color: var(--color-texto-suave);
+  font: var(--texto-cuerpo);
+  letter-spacing: var(--espaciado-cuerpo);
+  text-align: center;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .frase {
+    animation: none;
+  }
+}

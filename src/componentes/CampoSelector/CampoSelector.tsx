@@ -12,8 +12,8 @@ type PropsCampoSelector = {
   etiqueta: string;
   valor: string | null;
   opciones: OpcionSelector[];
-  // la primera opción, sin valor
-  textoVacio: string;
+  // la primera opción, sin valor; sin él no hay opción vacía (F14: el idioma del curso)
+  textoVacio?: string;
   alCambiar: (valor: string | null) => void;
   error?: string;
   // F12: como en CampoTexto
@@ -54,7 +54,7 @@ export default function CampoSelector({
           aria-invalid={error || invalido ? true : undefined}
           aria-describedby={descripcion ? idDescripcion : undefined}
         >
-          <option value="">{textoVacio}</option>
+          {textoVacio !== undefined && <option value="">{textoVacio}</option>}
           {opciones.map((opcion) => (
             <option key={opcion.valor} value={opcion.valor}>
               {opcion.texto}

@@ -1,0 +1,17 @@
+/* docs/diseno.md, sección 4, EstadoAudio */
+
+.estado {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--espacio-3);
+  color: var(--color-texto-suave);
+  font: var(--texto-nota);
+}
+
+.icono {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+  color: var(--color-texto-tenue);
+}

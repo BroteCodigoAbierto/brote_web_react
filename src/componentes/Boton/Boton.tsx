@@ -15,6 +15,8 @@ type PropsBoton = {
   // mientras se envía queda deshabilitado, para que no se envíe dos veces
   enviando?: boolean;
   textoEnviando?: string;
+  // F14: el nombre accesible, cuando el texto no basta ("Escuchar" → "Escuchar la frase")
+  etiqueta?: string;
   alPulsar?: () => void;
 };
 
@@ -31,6 +33,7 @@ export default function Boton({
   deshabilitado = false,
   enviando = false,
   textoEnviando = "Enviando...",
+  etiqueta,
   alPulsar,
 }: PropsBoton) {
   const clases = [
@@ -47,6 +50,7 @@ export default function Boton({
       className={clases}
       disabled={deshabilitado || enviando}
       aria-busy={enviando || undefined}
+      aria-label={etiqueta}
       onClick={alPulsar}
     >
       {enviando ? (
