@@ -1,6 +1,9 @@
 import CampoArea from "../../componentes/CampoArea/CampoArea.tsx";
 import CampoSelector from "../../componentes/CampoSelector/CampoSelector.tsx";
+import CampoImagen from "../../componentes/CampoImagen/CampoImagen.tsx";
 import CampoTexto from "../../componentes/CampoTexto/CampoTexto.tsx";
+import { useSubidas } from "../../contextos/ContextoSubidas.ts";
+import SelectorTipoContenido from "../../editor/SelectorTipoContenido/SelectorTipoContenido.tsx";
 import ListaEditable from "../../componentes/ListaEditable/ListaEditable.tsx";
 import { CONSIGNA_POR_DEFECTO, LIMITES_ACTIVIDADES } from "../../tipos/contrato.ts";
 import estilos from "../formulario.module.css";
@@ -20,7 +23,8 @@ export default function FormularioClasificar({
   idBase,
   deshabilitado,
 }: PropsFormularioActividad<BorradorClasificar>) {
-  const { consigna, categorias, elementos } = borrador;
+  const { consigna, categorias, elementos, tipoElementos } = borrador;
+  const { subir } = useSubidas();
   const opciones = categorias.map(({ id, texto }, indice) => ({
     valor: id,
     texto: texto.trim() !== "" ? texto : `Categoría ${indice + 1}`,
@@ -88,21 +92,40 @@ export default function FormularioClasificar({
           deshabilitada={deshabilitado}
         />
       </fieldset>
+      <SelectorTipoContenido
+        nombre={`${idBase}-tipo-elementos`}
+        etiqueta="Tipo de elementos"
+        valor={tipoElementos}
+        alCambiar={(tipo) => alCambiar({ ...borrador, tipoElementos: tipo })}
+        deshabilitado={deshabilitado}
+      />
       <fieldset className={estilos.grupo}>
         <legend className={estilos.etiqueta}>Elementos</legend>
         <ListaEditable
           filas={elementos}
           dibujarFila={(elemento, indice) => (
             <div className={estilos.filaDoble}>
-              <CampoTexto
-                id={`${idBase}-elemento-${elemento.id}`}
-                etiqueta={`Elemento ${indice + 1}`}
-                valor={elemento.texto}
-                alCambiar={(texto) => cambiarElemento(elemento.id, { texto })}
-                error={errores[`elementos.${elemento.id}`]}
-                maxLongitud={LIMITES_ACTIVIDADES.elementoClasificarMax}
-                deshabilitado={deshabilitado}
-              />
+              {tipoElementos === "imagen" ? (
+                <CampoImagen
+                  id={`${idBase}-elemento-${elemento.id}`}
+                  etiqueta={`Elemento ${indice + 1}`}
+                  valor={elemento.imagen}
+                  alCambiar={(imagen) => cambiarElemento(elemento.id, { imagen })}
+                  alElegirArchivo={subir}
+                  error={errores[`elementos.${elemento.id}`]}
+                  deshabilitado={deshabilitado}
+                />
+              ) : (
+                <CampoTexto
+                  id={`${idBase}-elemento-${elemento.id}`}
+                  etiqueta={`Elemento ${indice + 1}`}
+                  valor={elemento.texto}
+                  alCambiar={(texto) => cambiarElemento(elemento.id, { texto })}
+                  error={errores[`elementos.${elemento.id}`]}
+                  maxLongitud={LIMITES_ACTIVIDADES.elementoClasificarMax}
+                  deshabilitado={deshabilitado}
+                />
+              )}
               <CampoSelector
                 id={`${idBase}-categoria-de-${elemento.id}`}
                 etiqueta="Categoría"

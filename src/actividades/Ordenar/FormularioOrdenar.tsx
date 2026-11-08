@@ -1,6 +1,10 @@
 import BotonesOrden from "../../componentes/BotonesOrden/BotonesOrden.tsx";
 import CampoArea from "../../componentes/CampoArea/CampoArea.tsx";
+import CampoImagen from "../../componentes/CampoImagen/CampoImagen.tsx";
 import CampoTexto from "../../componentes/CampoTexto/CampoTexto.tsx";
+import { useSubidas } from "../../contextos/ContextoSubidas.ts";
+import type { ValorImagen } from "../../editor/imagenes.ts";
+import SelectorTipoContenido from "../../editor/SelectorTipoContenido/SelectorTipoContenido.tsx";
 import ListaEditable from "../../componentes/ListaEditable/ListaEditable.tsx";
 import { LIMITES_ACTIVIDADES } from "../../tipos/contrato.ts";
 import estilos from "../formulario.module.css";
@@ -16,12 +20,13 @@ export default function FormularioOrdenar({
   idBase,
   deshabilitado,
 }: PropsFormularioActividad<BorradorOrdenar>) {
-  const { consigna, elementos } = borrador;
+  const { consigna, elementos, tipoElementos } = borrador;
+  const { subir } = useSubidas();
 
-  function cambiarElemento(id: string, texto: string) {
+  function cambiarElemento(id: string, cambios: { texto?: string; imagen?: ValorImagen }) {
     alCambiar({
       ...borrador,
-      elementos: elementos.map((fila) => (fila.id === id ? { ...fila, texto } : fila)),
+      elementos: elementos.map((fila) => (fila.id === id ? { ...fila, ...cambios } : fila)),
     });
   }
 
@@ -44,6 +49,13 @@ export default function FormularioOrdenar({
         filas={2}
         deshabilitado={deshabilitado}
       />
+      <SelectorTipoContenido
+        nombre={`${idBase}-tipo-elementos`}
+        etiqueta="Tipo de elementos"
+        valor={tipoElementos}
+        alCambiar={(tipo) => alCambiar({ ...borrador, tipoElementos: tipo })}
+        deshabilitado={deshabilitado}
+      />
       <fieldset className={estilos.grupo}>
         <legend className={estilos.etiqueta}>Elementos</legend>
         <p className={estilos.ayuda}>
@@ -53,15 +65,27 @@ export default function FormularioOrdenar({
           filas={elementos}
           dibujarFila={(elemento, indice) => (
             <div className={estilos.filaConOrden}>
-              <CampoTexto
-                id={`${idBase}-elemento-${elemento.id}`}
-                etiqueta={`Elemento ${indice + 1}`}
-                valor={elemento.texto}
-                alCambiar={(texto) => cambiarElemento(elemento.id, texto)}
-                error={errores[`elementos.${elemento.id}`]}
-                maxLongitud={LIMITES_ACTIVIDADES.elementoOrdenarMax}
-                deshabilitado={deshabilitado}
-              />
+              {tipoElementos === "imagen" ? (
+                <CampoImagen
+                  id={`${idBase}-elemento-${elemento.id}`}
+                  etiqueta={`Elemento ${indice + 1}`}
+                  valor={elemento.imagen}
+                  alCambiar={(imagen) => cambiarElemento(elemento.id, { imagen })}
+                  alElegirArchivo={subir}
+                  error={errores[`elementos.${elemento.id}`]}
+                  deshabilitado={deshabilitado}
+                />
+              ) : (
+                <CampoTexto
+                  id={`${idBase}-elemento-${elemento.id}`}
+                  etiqueta={`Elemento ${indice + 1}`}
+                  valor={elemento.texto}
+                  alCambiar={(texto) => cambiarElemento(elemento.id, { texto })}
+                  error={errores[`elementos.${elemento.id}`]}
+                  maxLongitud={LIMITES_ACTIVIDADES.elementoOrdenarMax}
+                  deshabilitado={deshabilitado}
+                />
+              )}
               <div className={estilos.botonesFila}>
                 <BotonesOrden
                   alSubir={() => mover(indice, indice - 1)}
