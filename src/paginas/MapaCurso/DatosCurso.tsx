@@ -2,13 +2,26 @@ import { useEffect, useState } from "react";
 import Aviso from "../../componentes/Aviso/Aviso.tsx";
 import Boton from "../../componentes/Boton/Boton.tsx";
 import CampoArea from "../../componentes/CampoArea/CampoArea.tsx";
+import CampoImagen from "../../componentes/CampoImagen/CampoImagen.tsx";
+import PesoImagenes from "../../componentes/PesoImagenes/PesoImagenes.tsx";
+import VistaPortada from "../../componentes/VistaPortada/VistaPortada.tsx";
+import { aValorImagen, type ValorImagen } from "../../editor/imagenes.ts";
 import CampoTexto from "../../componentes/CampoTexto/CampoTexto.tsx";
 import InsigniaEstadoCurso from "../../componentes/InsigniaEstadoCurso/InsigniaEstadoCurso.tsx";
-import PortadaCurso from "../../componentes/PortadaCurso/PortadaCurso.tsx";
 import Superficie from "../../componentes/Superficie/Superficie.tsx";
 import { useFormulario } from "../../hooks/useFormulario.ts";
+import { ErrorHttp } from "../../servicios/api.ts";
 import { actualizarCurso, esSesionPerdida, leerErrorDeFormulario } from "../../servicios/editor.ts";
-import { LIMITES_CURSO, type CursoEnEditor } from "../../tipos/contrato.ts";
+import { leerErrorDeSubida, subirImagen } from "../../servicios/imagenes.ts";
+import {
+  LIMITES_CURSO,
+  LIMITES_IMAGENES,
+  MENSAJES_IMAGENES,
+  type CursoEnEditor,
+  type RespuestaError,
+} from "../../tipos/contrato.ts";
+import { idLocal } from "../../utilidades/editor.ts";
+import { prepararImagen } from "../../utilidades/imagenes.ts";
 import { validarDatosCurso, type CampoCurso } from "../../validacion/curso.ts";
 import estilos from "./MapaCurso.module.css";
 
@@ -40,6 +53,14 @@ export default function DatosCurso({
     descripcion: curso.descripcion,
   });
   const [recienGuardado, setRecienGuardado] = useState(false);
+  // F13: la portada elegida (se guarda con "Guardar cambios") y el peso de las imágenes
+  const [portada, setPortada] = useState<ValorImagen>(() =>
+    aValorImagen(curso.portada ?? undefined),
+  );
+  const [portadaGuardada, setPortadaGuardada] = useState(curso.portada?.id ?? null);
+  const [pesoImagenes, setPesoImagenes] = useState(curso.pesoImagenes);
+  const idPortada = portada.imagen?.id ?? null;
+  const cambioPortada = idPortada !== portadaGuardada;
 
   const { valores, errores, general, enviando, cambiar, manejarEnvio } = useFormulario<CampoCurso>({
     inicial: inicial ? { titulo: inicial.titulo, descripcion: inicial.descripcion } : guardados,
@@ -48,13 +69,19 @@ export default function DatosCurso({
     enviar: async (datos) => {
       alCambiarOcupado(true);
       try {
-        const { curso: guardado } = await actualizarCurso(curso.id, datos);
+        const { curso: guardado } = await actualizarCurso(curso.id, {
+          ...datos,
+          ...(cambioPortada && { idPortada }),
+        });
         // el servidor recorta el título: lo guardado es lo que devuelve
         cambiar("titulo", guardado.titulo);
         setGuardados({ titulo: guardado.titulo, descripcion: guardado.descripcion });
+        setPortadaGuardada(guardado.portada?.id ?? null);
+        setPesoImagenes(guardado.pesoImagenes);
         setRecienGuardado(true);
       } catch (error) {
         if (esSesionPerdida(error)) alSesionPerdida();
+        marcarErrorPortada(error);
         throw error;
       } finally {
         alCambiarOcupado(false);
@@ -63,7 +90,51 @@ export default function DatosCurso({
   });
 
   const hayCambios =
-    valores.titulo !== guardados.titulo || valores.descripcion !== guardados.descripcion;
+    valores.titulo !== guardados.titulo ||
+    valores.descripcion !== guardados.descripcion ||
+    cambioPortada ||
+    portada.subida !== null;
+
+  // F13: un 400 con campos.portada (no es del curso o es un GIF) va en su campo
+  function marcarErrorPortada(error: unknown) {
+    if (!(error instanceof ErrorHttp) || error.estado !== 400) return;
+    const mensaje = (error.cuerpo as Partial<RespuestaError> | null)?.campos?.portada;
+    if (!mensaje) return;
+    setPortada((actual) =>
+      mensaje === MENSAJES_IMAGENES.imagenNoEsta
+        ? { ...actual, perdida: true }
+        : { ...actual, error: mensaje },
+    );
+  }
+
+  // F13: sube la portada; al terminar, la pone solo si sigue siendo la que se eligió
+  function subirPortada(archivo: File): string {
+    const idSubida = idLocal();
+    function terminar(cambios: Partial<ValorImagen>) {
+      setPortada((actual) =>
+        actual.subida === idSubida ? { ...actual, subida: null, ...cambios } : actual,
+      );
+    }
+    void (async () => {
+      let preparada: Blob;
+      try {
+        preparada = await prepararImagen(archivo, { soloFotos: true });
+      } catch (error) {
+        terminar({
+          error: error instanceof Error ? error.message : MENSAJES_IMAGENES.subidaFallida,
+        });
+        return;
+      }
+      try {
+        const { imagen } = await subirImagen(curso.id, preparada);
+        terminar({ imagen, error: null, perdida: false });
+      } catch (error) {
+        terminar(esSesionPerdida(error) ? {} : { error: leerErrorDeSubida(error) });
+        if (esSesionPerdida(error)) alSesionPerdida();
+      }
+    })();
+    return idSubida;
+  }
 
   useEffect(() => {
     alCambiarPendientes(hayCambios);
@@ -77,13 +148,22 @@ export default function DatosCurso({
   return (
     <Superficie className={estilos.panel}>
       <div className={estilos.encabezado}>
-        <PortadaCurso id={curso.id} titulo={guardados.titulo} tamano="tarjeta" />
+        <VistaPortada idCurso={curso.id} titulo={guardados.titulo} idPortada={idPortada} />
         <div>
           <InsigniaEstadoCurso estado={curso.estado} />
         </div>
       </div>
       {/* noValidate: los mensajes son los de la spec, no los del navegador */}
       <form className={estilos.formulario} noValidate onSubmit={manejarEnvio}>
+        <CampoImagen
+          id="portada-curso"
+          etiqueta="Portada"
+          valor={portada}
+          alCambiar={setPortada}
+          alElegirArchivo={subirPortada}
+          soloFotos
+          deshabilitado={ocupado}
+        />
         <CampoTexto
           id="titulo-curso"
           etiqueta="Título"
@@ -102,8 +182,18 @@ export default function DatosCurso({
           maxLongitud={LIMITES_CURSO.descripcionMax}
           deshabilitado={ocupado}
         />
+        {pesoImagenes > 0 && (
+          <PesoImagenes
+            peso={pesoImagenes}
+            maximo={LIMITES_IMAGENES.pesoCursoMax}
+            texto="Imágenes del curso"
+          />
+        )}
         {general && <Aviso texto={general} />}
         <div className={estilos.acciones}>
+          {portada.subida !== null && (
+            <p className={estilos.guardado}>{MENSAJES_IMAGENES.esperarSubidas}</p>
+          )}
           {recienGuardado && !hayCambios && (
             <p className={estilos.guardado} role="status">
               Cambios guardados
@@ -113,7 +203,7 @@ export default function DatosCurso({
             tipo="submit"
             enviando={enviando}
             textoEnviando="Guardar cambios"
-            deshabilitado={!hayCambios || ocupado}
+            deshabilitado={!hayCambios || ocupado || portada.subida !== null}
           >
             Guardar cambios
           </Boton>
