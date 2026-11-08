@@ -1,0 +1,16 @@
+/* docs/diseno.md, sección 4, ImagenAmpliable */
+.contenedor {
+  position: relative;
+  margin-inline: auto;
+}
+
+.boton {
+  display: block;
+  width: 100%;
+  padding: 0;
+  overflow: hidden;
+  border: none;
+  border-radius: var(--radio-medio);
+  background: none;
+  cursor: zoom-in;
+}
