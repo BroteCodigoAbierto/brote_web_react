@@ -3,6 +3,7 @@ import Aviso from "../../componentes/Aviso/Aviso.tsx";
 import Boton from "../../componentes/Boton/Boton.tsx";
 import CampoArea from "../../componentes/CampoArea/CampoArea.tsx";
 import CampoImagen from "../../componentes/CampoImagen/CampoImagen.tsx";
+import CampoSelector from "../../componentes/CampoSelector/CampoSelector.tsx";
 import PesoArchivos from "../../componentes/PesoArchivos/PesoArchivos.tsx";
 import VistaPortada from "../../componentes/VistaPortada/VistaPortada.tsx";
 import { aValorImagen, type ValorImagen } from "../../editor/imagenes.ts";
@@ -14,10 +15,14 @@ import { ErrorHttp } from "../../servicios/api.ts";
 import { actualizarCurso, esSesionPerdida, leerErrorDeFormulario } from "../../servicios/editor.ts";
 import { leerErrorDeSubida, subirImagen } from "../../servicios/imagenes.ts";
 import {
+  IDIOMAS_CURSO,
+  LIMITES_ARCHIVOS,
   LIMITES_CURSO,
-  LIMITES_IMAGENES,
+  MENSAJES_ARCHIVOS,
   MENSAJES_IMAGENES,
+  NOMBRE_IDIOMA,
   type CursoEnEditor,
+  type IdiomaCurso,
   type RespuestaError,
 } from "../../tipos/contrato.ts";
 import { idLocal } from "../../utilidades/editor.ts";
@@ -27,18 +32,28 @@ import estilos from "./MapaCurso.module.css";
 
 type ValoresCurso = Record<CampoCurso, string>;
 
+// F14: el idioma va con el título y la descripción en la copia que se recupera al volver a
+// entrar (una copia de antes no lo trae)
+type CapturadoCurso = ValoresCurso & { idioma?: IdiomaCurso };
+
+const OPCIONES_IDIOMA = IDIOMAS_CURSO.map((idioma) => ({
+  valor: idioma,
+  texto: NOMBRE_IDIOMA[idioma],
+}));
+
 type PropsDatosCurso = {
   curso: CursoEnEditor;
   // lo que estaba sin guardar cuando expiró la sesión
-  inicial: ValoresCurso | null;
+  inicial: CapturadoCurso | null;
   ocupado: boolean;
   alCambiarOcupado: (ocupado: boolean) => void;
   alCambiarPendientes: (hayCambios: boolean) => void;
-  alCambiarCapturado: (valores: ValoresCurso) => void;
+  alCambiarCapturado: (valores: CapturadoCurso) => void;
   alSesionPerdida: () => void;
 };
 
-// Título y descripción del curso (spec F05, "Editar los datos del curso").
+// Los datos del curso (spec F05, "Editar los datos del curso"): la portada (F13), el título,
+// la descripción y el idioma (F14), que se guardan juntos con "Guardar cambios".
 export default function DatosCurso({
   curso,
   inicial,
@@ -58,9 +73,14 @@ export default function DatosCurso({
     aValorImagen(curso.portada ?? undefined),
   );
   const [portadaGuardada, setPortadaGuardada] = useState(curso.portada?.id ?? null);
-  const [pesoImagenes, setPesoArchivos] = useState(curso.pesoImagenes);
+  // F14: el peso cuenta imágenes y audios
+  const [pesoArchivos, setPesoArchivos] = useState(curso.pesoArchivos);
   const idPortada = portada.imagen?.id ?? null;
   const cambioPortada = idPortada !== portadaGuardada;
+  // F14: el idioma, como la portada: se manda solo si cambió
+  const [idioma, setIdioma] = useState<IdiomaCurso>(inicial?.idioma ?? curso.idioma);
+  const [idiomaGuardado, setIdiomaGuardado] = useState(curso.idioma);
+  const cambioIdioma = idioma !== idiomaGuardado;
 
   const { valores, errores, general, enviando, cambiar, manejarEnvio } = useFormulario<CampoCurso>({
     inicial: inicial ? { titulo: inicial.titulo, descripcion: inicial.descripcion } : guardados,
@@ -72,12 +92,14 @@ export default function DatosCurso({
         const { curso: guardado } = await actualizarCurso(curso.id, {
           ...datos,
           ...(cambioPortada && { idPortada }),
+          ...(cambioIdioma && { idioma }),
         });
         // el servidor recorta el título: lo guardado es lo que devuelve
         cambiar("titulo", guardado.titulo);
         setGuardados({ titulo: guardado.titulo, descripcion: guardado.descripcion });
         setPortadaGuardada(guardado.portada?.id ?? null);
-        setPesoArchivos(guardado.pesoImagenes);
+        setIdiomaGuardado(guardado.idioma);
+        setPesoArchivos(guardado.pesoArchivos);
         setRecienGuardado(true);
       } catch (error) {
         if (esSesionPerdida(error)) alSesionPerdida();
@@ -93,6 +115,7 @@ export default function DatosCurso({
     valores.titulo !== guardados.titulo ||
     valores.descripcion !== guardados.descripcion ||
     cambioPortada ||
+    cambioIdioma ||
     portada.subida !== null;
 
   // F13: un 400 con campos.portada (no es del curso o es un GIF) va en su campo
@@ -142,8 +165,8 @@ export default function DatosCurso({
 
   const { titulo, descripcion } = valores;
   useEffect(() => {
-    alCambiarCapturado({ titulo, descripcion });
-  }, [titulo, descripcion, alCambiarCapturado]);
+    alCambiarCapturado({ titulo, descripcion, idioma });
+  }, [titulo, descripcion, idioma, alCambiarCapturado]);
 
   return (
     <Superficie className={estilos.panel}>
@@ -182,17 +205,26 @@ export default function DatosCurso({
           maxLongitud={LIMITES_CURSO.descripcionMax}
           deshabilitado={ocupado}
         />
-        {pesoImagenes > 0 && (
+        <CampoSelector
+          id="idioma-curso"
+          etiqueta="Idioma"
+          valor={idioma}
+          opciones={OPCIONES_IDIOMA}
+          alCambiar={(valor) => valor && setIdioma(valor as IdiomaCurso)}
+          ayuda="El idioma de la voz que lee las frases de escuchar y repetir."
+          deshabilitado={ocupado}
+        />
+        {pesoArchivos > 0 && (
           <PesoArchivos
-            peso={pesoImagenes}
-            maximo={LIMITES_IMAGENES.pesoCursoMax}
-            texto="Imágenes del curso"
+            peso={pesoArchivos}
+            maximo={LIMITES_ARCHIVOS.pesoCursoMax}
+            texto="Archivos del curso"
           />
         )}
         {general && <Aviso texto={general} />}
         <div className={estilos.acciones}>
           {portada.subida !== null && (
-            <p className={estilos.guardado}>{MENSAJES_IMAGENES.esperarSubidas}</p>
+            <p className={estilos.guardado}>{MENSAJES_ARCHIVOS.esperarSubidas}</p>
           )}
           {recienGuardado && !hayCambios && (
             <p className={estilos.guardado} role="status">

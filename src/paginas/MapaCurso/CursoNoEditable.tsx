@@ -18,6 +18,7 @@ import {
 } from "../../servicios/editor.ts";
 import {
   MENSAJES_EDITOR,
+  NOMBRE_IDIOMA,
   type CursoEnEditor,
   type RespuestaCursoEnEditor,
 } from "../../tipos/contrato.ts";
@@ -101,6 +102,8 @@ export default function CursoNoEditable({
           <div>
             <InsigniaEstadoCurso estado={curso.estado} />
           </div>
+          {/* F14: como texto, porque no se edita */}
+          <p className={estilos.idiomaCurso}>Idioma: {NOMBRE_IDIOMA[curso.idioma]}</p>
         </div>
       </div>
       <div className={estilos.explicacion}>

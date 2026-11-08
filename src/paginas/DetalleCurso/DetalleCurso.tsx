@@ -19,7 +19,11 @@ import PortadaCurso from "../../componentes/PortadaCurso/PortadaCurso.tsx";
 import Superficie from "../../componentes/Superficie/Superficie.tsx";
 import { usePeticion } from "../../hooks/usePeticion.ts";
 import { esNoDisponible, leerErrorDeCarga, traerCurso } from "../../servicios/cursos.ts";
-import { MENSAJES_CATALOGO, type DetalleCurso as Curso } from "../../tipos/contrato.ts";
+import {
+  MENSAJES_CATALOGO,
+  NOMBRE_IDIOMA,
+  type DetalleCurso as Curso,
+} from "../../tipos/contrato.ts";
 import { textoCantidadLecciones } from "../../utilidades/cursos.ts";
 import { ESTADO_DESDE_CURSO } from "../../utilidades/navegacion.ts";
 import { avanceCurso, textoAciertos, textoBotonSiguiente } from "../../utilidades/progreso.ts";
@@ -67,6 +71,8 @@ export default function DetalleCurso() {
         <div className={estilos.datos}>
           <h1 className={estilos.titulo}>{curso.titulo}</h1>
           <p className={estilos.autor}>Por {curso.autor.nombre}</p>
+          {/* F14: el de la voz de escuchar y repetir */}
+          <p className={estilos.idioma}>Idioma: {NOMBRE_IDIOMA[curso.idioma]}</p>
           <Insignia tono="primario" icono={BookOpen}>
             {textoCantidadLecciones(curso.cantidadLecciones)}
           </Insignia>

@@ -191,3 +191,9 @@
   color: var(--color-texto-suave);
   font: var(--texto-cuerpo);
 }
+
+/* F14: el idioma de un curso que no se edita */
+.idiomaCurso {
+  color: var(--color-texto-suave);
+  font: var(--texto-nota);
+}

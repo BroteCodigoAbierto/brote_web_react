@@ -17,7 +17,7 @@ import {
   leerErrorDeAccion,
   traerCursoEnEditor,
 } from "../../servicios/editor.ts";
-import type { CursoEnEditor } from "../../tipos/contrato.ts";
+import type { CursoEnEditor, IdiomaCurso } from "../../tipos/contrato.ts";
 import { guardarCopia, tomarCopia } from "../../utilidades/copiaEditor.ts";
 import type { AvisoEstado } from "../../utilidades/editor.ts";
 import CursoNoEditable from "./CursoNoEditable.tsx";
@@ -115,6 +115,7 @@ function PantallaCurso({ cursoInicial }: PropsPantallaCurso) {
 type CopiaMapa = {
   titulo: string;
   descripcion: string;
+  idioma?: IdiomaCurso; // F14; una copia de antes no lo trae
   nuevaLeccion: string;
 };
 
@@ -135,7 +136,12 @@ function ContenidoMapa({ curso, alCambiarCurso, alLimpiarAviso }: PropsContenido
   // una sola vez: tomarCopia la borra
   const [copia] = useState(() => tomarCopia<CopiaMapa>(idUsuario, pathname));
   const capturado = useRef<CopiaMapa>(
-    copia ?? { titulo: curso.titulo, descripcion: curso.descripcion, nuevaLeccion: "" },
+    copia ?? {
+      titulo: curso.titulo,
+      descripcion: curso.descripcion,
+      idioma: curso.idioma,
+      nuevaLeccion: "",
+    },
   );
   const [lecciones, setLecciones] = useState(curso.lecciones);
   const [marcadas, setMarcadas] = useState(SIN_MARCADAS);
@@ -147,8 +153,8 @@ function ContenidoMapa({ curso, alCambiarCurso, alLimpiarAviso }: PropsContenido
   const { propsDialogo, salirSinPreguntar } = useSalirSinGuardar(hayCambios);
 
   const capturarDatos = useCallback(
-    ({ titulo, descripcion }: Pick<CopiaMapa, "titulo" | "descripcion">) => {
-      capturado.current = { ...capturado.current, titulo, descripcion };
+    ({ titulo, descripcion, idioma }: Pick<CopiaMapa, "titulo" | "descripcion" | "idioma">) => {
+      capturado.current = { ...capturado.current, titulo, descripcion, idioma };
     },
     [],
   );

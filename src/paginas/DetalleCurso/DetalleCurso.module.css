@@ -40,6 +40,12 @@
   font-weight: 600;
 }
 
+/* F14 */
+.idioma {
+  color: var(--color-texto-suave);
+  font: var(--texto-nota);
+}
+
 /* respeta los saltos de línea que escribió el autor */
 .descripcion {
   color: var(--color-texto-suave);
