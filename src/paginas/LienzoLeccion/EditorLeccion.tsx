@@ -13,7 +13,7 @@ import ProbarLeccion from "../../editor/ProbarLeccion/ProbarLeccion.tsx";
 import Secuencia from "../../editor/Secuencia/Secuencia.tsx";
 import { useArrastrar } from "../../hooks/useArrastrar.ts";
 import { useEditorLeccion } from "../../hooks/useEditorLeccion.ts";
-import PesoImagenes from "../../componentes/PesoImagenes/PesoImagenes.tsx";
+import PesoArchivos from "../../componentes/PesoArchivos/PesoArchivos.tsx";
 import { ContextoSubidas } from "../../contextos/ContextoSubidas.ts";
 import { useSalirSinGuardar } from "../../hooks/useSalirSinGuardar.ts";
 import {
@@ -130,7 +130,7 @@ export default function EditorLeccion({ idCurso, leccion }: PropsEditorLeccion) 
         <div className={estilos.acciones}>
           {/* F13: cuánto pesan las imágenes, y esperar a que terminen de subir */}
           {editor.conImagenes && (
-            <PesoImagenes
+            <PesoArchivos
               peso={editor.pesoImagenes}
               maximo={LIMITES_IMAGENES.pesoLeccionMax}
               texto="Imágenes de esta lección"

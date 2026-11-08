@@ -3,7 +3,7 @@ import Aviso from "../../componentes/Aviso/Aviso.tsx";
 import Boton from "../../componentes/Boton/Boton.tsx";
 import CampoArea from "../../componentes/CampoArea/CampoArea.tsx";
 import CampoImagen from "../../componentes/CampoImagen/CampoImagen.tsx";
-import PesoImagenes from "../../componentes/PesoImagenes/PesoImagenes.tsx";
+import PesoArchivos from "../../componentes/PesoArchivos/PesoArchivos.tsx";
 import VistaPortada from "../../componentes/VistaPortada/VistaPortada.tsx";
 import { aValorImagen, type ValorImagen } from "../../editor/imagenes.ts";
 import CampoTexto from "../../componentes/CampoTexto/CampoTexto.tsx";
@@ -58,7 +58,7 @@ export default function DatosCurso({
     aValorImagen(curso.portada ?? undefined),
   );
   const [portadaGuardada, setPortadaGuardada] = useState(curso.portada?.id ?? null);
-  const [pesoImagenes, setPesoImagenes] = useState(curso.pesoImagenes);
+  const [pesoImagenes, setPesoArchivos] = useState(curso.pesoImagenes);
   const idPortada = portada.imagen?.id ?? null;
   const cambioPortada = idPortada !== portadaGuardada;
 
@@ -77,7 +77,7 @@ export default function DatosCurso({
         cambiar("titulo", guardado.titulo);
         setGuardados({ titulo: guardado.titulo, descripcion: guardado.descripcion });
         setPortadaGuardada(guardado.portada?.id ?? null);
-        setPesoImagenes(guardado.pesoImagenes);
+        setPesoArchivos(guardado.pesoImagenes);
         setRecienGuardado(true);
       } catch (error) {
         if (esSesionPerdida(error)) alSesionPerdida();
@@ -183,7 +183,7 @@ export default function DatosCurso({
           deshabilitado={ocupado}
         />
         {pesoImagenes > 0 && (
-          <PesoImagenes
+          <PesoArchivos
             peso={pesoImagenes}
             maximo={LIMITES_IMAGENES.pesoCursoMax}
             texto="Imágenes del curso"
