@@ -13,8 +13,16 @@ import ProbarLeccion from "../../editor/ProbarLeccion/ProbarLeccion.tsx";
 import Secuencia from "../../editor/Secuencia/Secuencia.tsx";
 import { useArrastrar } from "../../hooks/useArrastrar.ts";
 import { useEditorLeccion } from "../../hooks/useEditorLeccion.ts";
+import PesoImagenes from "../../componentes/PesoImagenes/PesoImagenes.tsx";
+import { ContextoSubidas } from "../../contextos/ContextoSubidas.ts";
 import { useSalirSinGuardar } from "../../hooks/useSalirSinGuardar.ts";
-import { LIMITES_LECCION, MENSAJES_EDITOR, type LeccionEnEditor } from "../../tipos/contrato.ts";
+import {
+  type LeccionEnEditor,
+  LIMITES_IMAGENES,
+  LIMITES_LECCION,
+  MENSAJES_EDITOR,
+  MENSAJES_IMAGENES,
+} from "../../tipos/contrato.ts";
 import estilos from "./LienzoLeccion.module.css";
 
 type PropsEditorLeccion = {
@@ -120,6 +128,17 @@ export default function EditorLeccion({ idCurso, leccion }: PropsEditorLeccion) 
           />
         </div>
         <div className={estilos.acciones}>
+          {/* F13: cuánto pesan las imágenes, y esperar a que terminen de subir */}
+          {editor.conImagenes && (
+            <PesoImagenes
+              peso={editor.pesoImagenes}
+              maximo={LIMITES_IMAGENES.pesoLeccionMax}
+              texto="Imágenes de esta lección"
+            />
+          )}
+          {editor.subiendo && (
+            <p className={estilos.estadoGuardado}>{MENSAJES_IMAGENES.esperarSubidas}</p>
+          )}
           <p className={estilos.estadoGuardado} role="status">
             {hayCambios && "Cambios sin guardar"}
             {editor.guardada && "Lección guardada"}
@@ -127,7 +146,7 @@ export default function EditorLeccion({ idCurso, leccion }: PropsEditorLeccion) 
           <Boton
             variante="secundario"
             icono={Play}
-            deshabilitado={bloques.length === 0 || guardando}
+            deshabilitado={bloques.length === 0 || guardando || editor.subiendo}
             alPulsar={probar}
           >
             Probar lección
@@ -135,7 +154,7 @@ export default function EditorLeccion({ idCurso, leccion }: PropsEditorLeccion) 
           <Boton
             enviando={guardando}
             textoEnviando="Guardar lección"
-            deshabilitado={!hayCambios}
+            deshabilitado={!hayCambios || editor.subiendo}
             alPulsar={() => editor.guardar()}
           >
             Guardar lección
@@ -164,12 +183,14 @@ export default function EditorLeccion({ idCurso, leccion }: PropsEditorLeccion) 
           deshabilitada={guardando}
         />
         <div ref={inspector} className={estilos.inspector}>
-          <Inspector
-            bloque={seleccionado}
-            mostrarErrores={mostrarErrores}
-            alCambiar={(id, borrador) => editor.editar({ tipo: "cambiarBorrador", id, borrador })}
-            deshabilitado={guardando}
-          />
+          <ContextoSubidas value={{ subir: editor.subir }}>
+            <Inspector
+              bloque={seleccionado}
+              mostrarErrores={mostrarErrores}
+              alCambiar={(id, borrador) => editor.editar({ tipo: "cambiarBorrador", id, borrador })}
+              deshabilitado={guardando}
+            />
+          </ContextoSubidas>
         </div>
       </div>
       <Dialogo {...propsDialogo} />
