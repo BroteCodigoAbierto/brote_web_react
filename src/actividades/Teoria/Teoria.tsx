@@ -1,17 +1,19 @@
 import { Check } from "lucide-react";
 import BarraRespuesta from "../../componentes/BarraRespuesta/BarraRespuesta.tsx";
 import BloqueCodigo from "../../componentes/BloqueCodigo/BloqueCodigo.tsx";
+import ImagenAmpliable from "../../componentes/ImagenAmpliable/ImagenAmpliable.tsx";
 import Superficie from "../../componentes/Superficie/Superficie.tsx";
 import { useEnfocarAlMontar } from "../../hooks/useEnfocarAlMontar.ts";
-import { partirParrafos } from "../../utilidades/actividades.ts";
+import { partirTeoria } from "../../utilidades/actividades.ts";
 import comun from "../comun.module.css";
 import type { PropsActividad } from "../tipos.ts";
 import estilos from "./Teoria.module.css";
 
 // Teoría (spec F03): título, párrafos, código y puntos clave, solo los que
-// tenga y en ese orden. "Continuar" está disponible desde el principio.
+// tenga y en ese orden. "Continuar" está disponible desde el principio. Desde F13, cada
+// [imagen] del texto es una imagen, entre párrafos.
 export default function Teoria({ actividad, alTerminar }: PropsActividad<"teoria">) {
-  const { titulo, texto, codigo, puntosClave } = actividad;
+  const { titulo, texto, codigo, puntosClave, imagenes = [] } = actividad;
   const inicio = useEnfocarAlMontar<HTMLHeadingElement>();
 
   return (
@@ -21,11 +23,17 @@ export default function Teoria({ actividad, alTerminar }: PropsActividad<"teoria
         <h2 ref={inicio} tabIndex={-1} className={titulo ? comun.consigna : "oculto"}>
           {titulo ?? "Teoría"}
         </h2>
-        {partirParrafos(texto).map((parrafo, i) => (
-          <p key={i} className={comun.parrafo}>
-            {parrafo}
-          </p>
-        ))}
+        {partirTeoria(texto).map((bloque, i) => {
+          if ("parrafo" in bloque) {
+            return (
+              <p key={i} className={comun.parrafo}>
+                {bloque.parrafo}
+              </p>
+            );
+          }
+          const imagen = imagenes[bloque.imagen];
+          return imagen ? <ImagenAmpliable key={i} imagen={imagen} /> : null;
+        })}
         {codigo && <BloqueCodigo codigo={codigo} />}
         {puntosClave && (
           <ul className={estilos.puntos}>
