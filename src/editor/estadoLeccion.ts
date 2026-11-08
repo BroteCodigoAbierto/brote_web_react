@@ -1,8 +1,14 @@
 import { registroEditor } from "../actividades/registroEditor.ts";
 import type { EditorActividad } from "../actividades/tipos.ts";
-import type { Actividad, Imagen, LeccionEnEditor, TipoActividad } from "../tipos/contrato.ts";
+import type {
+  Actividad,
+  Audio,
+  Imagen,
+  LeccionEnEditor,
+  TipoActividad,
+} from "../tipos/contrato.ts";
 import { idLocal } from "../utilidades/editor.ts";
-import { limpiarSubidas, reemplazarImagenes } from "./imagenes.ts";
+import { idDeArchivo, limpiarSubidas, reemplazarArchivos } from "./archivos.ts";
 
 // La lección mientras se edita (spec F05). Sin red: el guardado está en
 // useEditorLeccion. Cada actividad es un bloque con su borrador, porque una
@@ -41,11 +47,11 @@ export type AccionLeccion =
   | { tipo: "seleccionar"; id: string | null }
   | { tipo: "mostrarErrores"; idPrimero: string | null }
   | { tipo: "guardada"; version: number }
-  // F13: terminó una subida, con su imagen o su error
-  | { tipo: "imagenSubida"; idSubida: string; imagen: Imagen }
-  | { tipo: "imagenNoSubida"; idSubida: string; error: string }
-  // F13: el servidor dijo que estas imágenes ya no están
-  | { tipo: "marcarImagenesPerdidas"; ids: string[] };
+  // F13 y F14: terminó una subida, con su imagen o su audio, o con su error
+  | { tipo: "archivoSubido"; idSubida: string; archivo: { imagen: Imagen } | { audio: Audio } }
+  | { tipo: "archivoNoSubido"; idSubida: string; error: string }
+  // F13 y F14: el servidor dijo que estas imágenes o estos audios ya no están
+  | { tipo: "marcarArchivosPerdidos"; ids: string[] };
 
 function editorDe(tipo: TipoActividad) {
   // TypeScript no relaciona el tipo del bloque con el de su editor
@@ -80,7 +86,7 @@ export function aActividad({ tipo, borrador }: Bloque): Actividad {
 export function estadoInicial(leccion: LeccionEnEditor, copia: CopiaLeccion | null): EstadoLeccion {
   return {
     titulo: copia?.titulo ?? leccion.titulo,
-    // F13: lo que se estaba subiendo cuando expiró la sesión no llegó
+    // F13 y F14: lo que se estaba subiendo cuando expiró la sesión no llegó
     bloques: copia ? limpiarSubidas(copia.bloques) : leccion.actividades.map(aBloque),
     idSeleccionado: null,
     version: copia?.version ?? leccion.version,
@@ -141,32 +147,40 @@ export function reducirLeccion(estado: EstadoLeccion, accion: AccionLeccion): Es
       };
     case "guardada":
       return { ...estado, version: accion.version, hayCambios: false, mostrarErrores: false };
-    case "imagenSubida":
+    case "archivoSubido": {
+      const { archivo } = accion;
+      // cada archivo va al valor de su clase: una imagen en un campo de imagen
       return {
         ...estado,
-        bloques: reemplazarImagenes(estado.bloques, (valor) =>
-          valor.subida === accion.idSubida
-            ? { ...valor, imagen: accion.imagen, subida: null, error: null, perdida: false }
-            : valor,
-        ),
+        bloques: reemplazarArchivos(estado.bloques, (valor) => {
+          if (valor.subida !== accion.idSubida) return valor;
+          const limpio = { subida: null, error: null, perdida: false };
+          if (valor.clase === "imagen" && "imagen" in archivo) {
+            return { ...valor, ...limpio, imagen: archivo.imagen };
+          }
+          if (valor.clase === "audio" && "audio" in archivo) {
+            return { ...valor, ...limpio, audio: archivo.audio };
+          }
+          return valor;
+        }),
       };
-    case "imagenNoSubida":
+    }
+    case "archivoNoSubido":
       return {
         ...estado,
-        bloques: reemplazarImagenes(estado.bloques, (valor) =>
+        bloques: reemplazarArchivos(estado.bloques, (valor) =>
           valor.subida === accion.idSubida
             ? { ...valor, subida: null, error: accion.error }
             : valor,
         ),
       };
-    case "marcarImagenesPerdidas":
+    case "marcarArchivosPerdidos":
       return {
         ...estado,
-        bloques: reemplazarImagenes(estado.bloques, (valor) =>
-          valor.imagen && accion.ids.includes(valor.imagen.id)
-            ? { ...valor, perdida: true }
-            : valor,
-        ),
+        bloques: reemplazarArchivos(estado.bloques, (valor) => {
+          const id = idDeArchivo(valor);
+          return id && accion.ids.includes(id) ? { ...valor, perdida: true } : valor;
+        }),
       };
   }
 }

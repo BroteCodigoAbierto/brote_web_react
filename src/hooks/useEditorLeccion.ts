@@ -8,8 +8,9 @@ import {
   type AccionLeccion,
   type CopiaLeccion,
 } from "../editor/estadoLeccion.ts";
-import { hayImagenes, haySubidas, limpiarSubidas, pesoImagenes } from "../editor/imagenes.ts";
+import { hayArchivos, haySubidas, limpiarSubidas, pesoArchivos } from "../editor/archivos.ts";
 import { ErrorHttp } from "../servicios/api.ts";
+import { leerErrorDeSubidaAudio, subirAudio as subirAudioAlCurso } from "../servicios/audios.ts";
 import {
   esConflicto,
   esSesionPerdida,
@@ -18,7 +19,9 @@ import {
 } from "../servicios/editor.ts";
 import { leerErrorDeSubida, subirImagen } from "../servicios/imagenes.ts";
 import {
-  LIMITES_IMAGENES,
+  LIMITES_ARCHIVOS,
+  MENSAJES_ARCHIVOS,
+  MENSAJES_AUDIOS,
   MENSAJES_EDITOR,
   MENSAJES_IMAGENES,
   type LeccionEnEditor,
@@ -26,6 +29,7 @@ import {
   type TipoActividad,
 } from "../tipos/contrato.ts";
 import { guardarCopia, tomarCopia } from "../utilidades/copiaEditor.ts";
+import { prepararAudio } from "../utilidades/audios.ts";
 import { idLocal, textoIncompletas } from "../utilidades/editor.ts";
 import { prepararImagen } from "../utilidades/imagenes.ts";
 import { useSesion } from "./useSesion.ts";
@@ -38,14 +42,43 @@ function indiceRechazado(error: unknown): number | null {
   return clave ? Number(clave.split(".")[1]) : null;
 }
 
-// F13: "imagenes.<id>" de un 400: las imágenes que el servidor ya no tiene.
-function imagenesPerdidas(error: unknown): string[] {
+// F13 y F14: "imagenes.<id>" y "audios.<id>" de un 400: los archivos que el servidor ya no
+// tiene.
+function archivosPerdidos(error: unknown): string[] {
   if (!(error instanceof ErrorHttp) || error.estado !== 400) return [];
   const { campos } = (error.cuerpo ?? {}) as Partial<RespuestaError>;
-  return Object.keys(campos ?? {})
-    .filter((campo) => campo.startsWith("imagenes."))
-    .map((campo) => campo.slice("imagenes.".length));
+  return Object.keys(campos ?? {}).flatMap((campo) => {
+    const [clase, ...id] = campo.split(".");
+    return clase === "imagenes" || clase === "audios" ? [id.join(".")] : [];
+  });
 }
+
+// Cómo se prepara y se sube cada clase de archivo, y qué dice si falla.
+type Subidor = {
+  preparar: (archivo: File) => Promise<Blob>;
+  subir: (
+    idCurso: string,
+    preparado: Blob,
+  ) => Promise<Extract<AccionLeccion, { tipo: "archivoSubido" }>["archivo"]>;
+  fallida: string;
+  leerError: (error: unknown) => string;
+};
+
+const SUBIDOR_IMAGEN: Subidor = {
+  preparar: prepararImagen,
+  subir: async (idCurso, preparado) => ({ imagen: (await subirImagen(idCurso, preparado)).imagen }),
+  fallida: MENSAJES_IMAGENES.subidaFallida,
+  leerError: leerErrorDeSubida,
+};
+
+const SUBIDOR_AUDIO: Subidor = {
+  preparar: prepararAudio,
+  subir: async (idCurso, preparado) => ({
+    audio: (await subirAudioAlCurso(idCurso, preparado)).audio,
+  }),
+  fallida: MENSAJES_AUDIOS.subidaFallida,
+  leerError: leerErrorDeSubidaAudio,
+};
 
 // La lección que se edita y cómo se guarda (spec F05). Vive en la página, y por eso
 // "Probar lección" la conserva: no hace falta un contexto.
@@ -80,22 +113,22 @@ export function useEditorLeccion(idCurso: string, leccion: LeccionEnEditor) {
     setFocoAlFormulario((n) => n + 1);
   }
 
-  // F13: empieza a subir una imagen y devuelve el id de la subida, que el campo guarda en su
-  // valor; al terminar, el reductor la pone donde esté ese id (research de F13, punto 13).
-  function subir(archivo: File): string {
+  // F13 y F14: empieza a subir una imagen o un audio y devuelve el id de la subida, que el
+  // campo guarda en su valor; al terminar, el reductor lo pone donde esté ese id (research de
+  // F13, punto 13). Si la sesión expiró, guarda la copia sin lo que se estaba subiendo.
+  function subirArchivo(archivo: File, { preparar, subir, fallida, leerError }: Subidor): string {
     const idSubida = idLocal();
     void (async () => {
-      let preparada: Blob;
+      let preparado: Blob;
       try {
-        preparada = await prepararImagen(archivo);
+        preparado = await preparar(archivo);
       } catch (error) {
-        const mensaje = error instanceof Error ? error.message : MENSAJES_IMAGENES.subidaFallida;
-        despachar({ tipo: "imagenNoSubida", idSubida, error: mensaje });
+        const mensaje = error instanceof Error ? error.message : fallida;
+        despachar({ tipo: "archivoNoSubido", idSubida, error: mensaje });
         return;
       }
       try {
-        const { imagen } = await subirImagen(idCurso, preparada);
-        despachar({ tipo: "imagenSubida", idSubida, imagen });
+        despachar({ tipo: "archivoSubido", idSubida, archivo: await subir(idCurso, preparado) });
       } catch (error) {
         if (esSesionPerdida(error)) {
           const { titulo, bloques, version } = ultimo.current;
@@ -103,19 +136,19 @@ export function useEditorLeccion(idCurso: string, leccion: LeccionEnEditor) {
           guardarCopia({ idUsuario, ruta: pathname, datos });
           return;
         }
-        despachar({ tipo: "imagenNoSubida", idSubida, error: leerErrorDeSubida(error) });
+        despachar({ tipo: "archivoNoSubido", idSubida, error: leerError(error) });
       }
     })();
     return idSubida;
   }
 
   // La misma comprobación para guardar y para probar (spec F05). Con solo el título
-  // vacío no hay aviso: el error va en su campo. Desde F13, ni con imágenes subiéndose (los
-  // botones ya están deshabilitados) ni con más de 25 MB de imágenes.
+  // vacío no hay aviso: el error va en su campo. Desde F13, ni con archivos subiéndose (los
+  // botones ya están deshabilitados) ni con más de 25 MB de imágenes y audios (F14).
   function comprobar(inicioAviso: string): boolean {
     if (haySubidas(estado.bloques)) return false;
-    if (pesoImagenes(estado.bloques) > LIMITES_IMAGENES.pesoLeccionMax) {
-      setAviso(MENSAJES_IMAGENES.leccionPesada);
+    if (pesoArchivos(estado.bloques) > LIMITES_ARCHIVOS.pesoLeccionMax) {
+      setAviso(MENSAJES_ARCHIVOS.leccionPesada);
       return false;
     }
     const incompletos = bloquesIncompletos(estado.bloques);
@@ -152,14 +185,14 @@ export function useEditorLeccion(idCurso: string, leccion: LeccionEnEditor) {
         setVersionMasNueva(true);
       } else if (error instanceof ErrorHttp && error.estado === 400) {
         const cuerpo = (error.cuerpo ?? {}) as Partial<RespuestaError>;
-        // F13: sin campos, es el peso de la lección; con imágenes que ya no están, se marcan
+        // F13: sin campos, es el peso de la lección; con archivos que ya no están, se marcan
         setAviso(
           cuerpo.campos
             ? MENSAJES_EDITOR.datosInvalidos
             : (cuerpo.error ?? MENSAJES_EDITOR.datosInvalidos),
         );
-        const perdidas = imagenesPerdidas(error);
-        if (perdidas.length > 0) despachar({ tipo: "marcarImagenesPerdidas", ids: perdidas });
+        const perdidos = archivosPerdidos(error);
+        if (perdidos.length > 0) despachar({ tipo: "marcarArchivosPerdidos", ids: perdidos });
         const indice = indiceRechazado(error);
         const bloque = indice === null ? undefined : bloques[indice];
         if (bloque) despachar({ tipo: "seleccionar", id: bloque.id });
@@ -176,11 +209,12 @@ export function useEditorLeccion(idCurso: string, leccion: LeccionEnEditor) {
 
   return {
     estado,
-    // F13
-    subir,
+    // F13 y F14
+    subir: (archivo: File) => subirArchivo(archivo, SUBIDOR_IMAGEN),
+    subirAudio: (archivo: File) => subirArchivo(archivo, SUBIDOR_AUDIO),
     subiendo: haySubidas(estado.bloques),
-    pesoImagenes: pesoImagenes(estado.bloques),
-    conImagenes: hayImagenes(estado.bloques),
+    pesoArchivos: pesoArchivos(estado.bloques),
+    conArchivos: hayArchivos(estado.bloques),
     guardando,
     guardada: guardada && !estado.hayCambios,
     aviso,

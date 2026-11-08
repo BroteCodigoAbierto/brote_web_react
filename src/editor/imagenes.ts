@@ -1,9 +1,8 @@
 import { MENSAJES_IMAGENES, type Imagen, type ImagenActividad } from "../tipos/contrato.ts";
 
 // Las imágenes en los borradores del editor (spec F13; brote_specs, research de F13, punto
-// 13). Una subida tarda: el campo marca `subida` con un id y, al terminar, el reductor busca
-// ese id en todos los borradores. Así no importa si el autor siguió escribiendo, cambió de
-// bloque o lo movió. Estas funciones recorren cualquier borrador sin saber de ningún tipo.
+// 13). Desde F14, lo que comparten con los audios (las subidas, el peso de la lección y los
+// recorridos de cualquier borrador) está en editor/archivos.ts.
 
 export type ValorImagen = {
   clase: "imagen";
@@ -74,73 +73,4 @@ export function marcarImagenesRepetidas<T extends { id: string }>(
     if (vistas.has(imagen.id)) errores[`${clave}.${fila.id}`] ??= MENSAJES_IMAGENES.imagenRepetida;
     vistas.add(imagen.id);
   }
-}
-
-function esValorImagen(valor: unknown): valor is ValorImagen {
-  return (
-    typeof valor === "object" && valor !== null && (valor as { clase?: unknown }).clase === "imagen"
-  );
-}
-
-export function recorrerImagenes(valor: unknown, visitar: (imagen: ValorImagen) => void) {
-  if (esValorImagen(valor)) {
-    visitar(valor);
-  } else if (Array.isArray(valor)) {
-    for (const elemento of valor) recorrerImagenes(elemento, visitar);
-  } else if (typeof valor === "object" && valor !== null) {
-    for (const elemento of Object.values(valor)) recorrerImagenes(elemento, visitar);
-  }
-}
-
-// El mismo valor con cada imagen cambiada por `cambiar`. Lo que no cambia conserva su
-// identidad, para no redibujar de más.
-export function reemplazarImagenes<T>(valor: T, cambiar: (imagen: ValorImagen) => ValorImagen): T {
-  if (esValorImagen(valor)) return cambiar(valor) as T;
-  if (Array.isArray(valor)) {
-    const nuevos = valor.map((elemento) => reemplazarImagenes(elemento, cambiar));
-    return (nuevos.some((nuevo, i) => nuevo !== valor[i]) ? nuevos : valor) as T;
-  }
-  if (typeof valor === "object" && valor !== null) {
-    const entradas = Object.entries(valor);
-    const nuevas = entradas.map(([clave, elemento]) => [
-      clave,
-      reemplazarImagenes(elemento, cambiar),
-    ]);
-    const cambio = nuevas.some(([, nuevo], i) => nuevo !== entradas[i]![1]);
-    return (cambio ? Object.fromEntries(nuevas) : valor) as T;
-  }
-  return valor;
-}
-
-// Lo recuperado al volver a entrar: la imagen que se estaba subiendo no llegó.
-export function limpiarSubidas<T>(valor: T): T {
-  return reemplazarImagenes(valor, (imagen) =>
-    imagen.subida === null ? imagen : { ...imagen, subida: null },
-  );
-}
-
-export function haySubidas(valor: unknown): boolean {
-  let hay = false;
-  recorrerImagenes(valor, ({ subida }) => {
-    if (subida !== null) hay = true;
-  });
-  return hay;
-}
-
-// El peso de las imágenes de la lección en pantalla, sin repetir (spec F13, "Cuánto pesan
-// las imágenes").
-export function pesoImagenes(valor: unknown): number {
-  const porId = new Map<string, number>();
-  recorrerImagenes(valor, ({ imagen }) => {
-    if (imagen) porId.set(imagen.id, imagen.peso);
-  });
-  return [...porId.values()].reduce((total, peso) => total + peso, 0);
-}
-
-export function hayImagenes(valor: unknown): boolean {
-  let hay = false;
-  recorrerImagenes(valor, ({ imagen }) => {
-    if (imagen) hay = true;
-  });
-  return hay;
 }
