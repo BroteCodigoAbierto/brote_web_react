@@ -92,6 +92,20 @@
 }
 
 /* F12: sin panel, porque la barra ya tiene su color */
+/* F13: una línea con miniaturas */
+.linea {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--espacio-2);
+}
+
+.parteImagen {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espacio-3);
+}
+
 .codigo {
   color: var(--color-texto);
   font: var(--texto-codigo);

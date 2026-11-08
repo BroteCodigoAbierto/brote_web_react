@@ -2,7 +2,9 @@ import { CircleCheck, CircleX } from "lucide-react";
 import { useEffect, useRef } from "react";
 import { useAmbito } from "../../actividades/ambito.ts";
 import { useTeclasActividad } from "../../hooks/useTeclasActividad.ts";
+import type { ParteRespuesta } from "../../utilidades/actividades.ts";
 import Boton from "../Boton/Boton.tsx";
+import MiniaturaImagen from "../MiniaturaImagen/MiniaturaImagen.tsx";
 import Superficie from "../Superficie/Superficie.tsx";
 import estilos from "./BarraRespuesta.module.css";
 
@@ -14,6 +16,8 @@ type PropsBarraRespuesta = {
   // F12: un comando o el nombre de un commit, en letra de código, entre el título y el detalle
   codigo?: string;
   detalle?: string;
+  // F13: la respuesta con imágenes, una línea por renglón; cada imagen, una miniatura
+  lineas?: ParteRespuesta[][];
   textoBoton: string;
   deshabilitado?: boolean;
   // al ponerse en true, el foco pasa al botón (F11: la respuesta quedó completa)
@@ -36,6 +40,7 @@ export default function BarraRespuesta({
   titulo,
   codigo,
   detalle,
+  lineas,
   textoBoton,
   deshabilitado = false,
   enfocar = false,
@@ -72,10 +77,29 @@ export default function BarraRespuesta({
             </p>
           )}
           {/* el código y el detalle se desplazan juntos, y "Continuar" sigue a la vista */}
-          {(codigo || detalle) && (
+          {(codigo || detalle || lineas) && (
             <div className={estilos.desplazable}>
               {codigo && <p className={estilos.codigo}>{codigo}</p>}
               {detalle && <p className={estilos.detalle}>{detalle}</p>}
+              {lineas?.map((linea, i) => (
+                <p key={i} className={`${estilos.detalle} ${estilos.linea}`}>
+                  {linea.map((parte, j) =>
+                    "texto" in parte ? (
+                      <span key={j}>{parte.texto}</span>
+                    ) : (
+                      <span key={j} className={estilos.parteImagen}>
+                        <MiniaturaImagen imagen={parte.imagen} />
+                        {/* el anuncio lee el texto alternativo, o "Imagen" */}
+                        {parte.imagen.textoAlternativo ? (
+                          <span>{parte.imagen.textoAlternativo}</span>
+                        ) : (
+                          <span className="oculto">Imagen</span>
+                        )}
+                      </span>
+                    ),
+                  )}
+                </p>
+              ))}
             </div>
           )}
         </div>
