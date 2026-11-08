@@ -14,14 +14,15 @@ import Secuencia from "../../editor/Secuencia/Secuencia.tsx";
 import { useArrastrar } from "../../hooks/useArrastrar.ts";
 import { useEditorLeccion } from "../../hooks/useEditorLeccion.ts";
 import PesoArchivos from "../../componentes/PesoArchivos/PesoArchivos.tsx";
+import { ContextoIdioma } from "../../contextos/ContextoIdioma.ts";
 import { ContextoSubidas } from "../../contextos/ContextoSubidas.ts";
 import { useSalirSinGuardar } from "../../hooks/useSalirSinGuardar.ts";
 import {
   type LeccionEnEditor,
-  LIMITES_IMAGENES,
+  LIMITES_ARCHIVOS,
   LIMITES_LECCION,
+  MENSAJES_ARCHIVOS,
   MENSAJES_EDITOR,
-  MENSAJES_IMAGENES,
 } from "../../tipos/contrato.ts";
 import estilos from "./LienzoLeccion.module.css";
 
@@ -36,7 +37,8 @@ function enPrueba(estado: unknown): boolean {
 
 // La barra superior, la paleta, la secuencia y el inspector (spec F05, "Armar una
 // lección"), y la prueba de la lección, que se dibuja aquí mismo para conservar lo
-// que hay en pantalla (brote_specs, research de F05, punto 12).
+// que hay en pantalla (brote_specs, research de F05, punto 12). Desde F14 da el idioma del
+// curso al inspector (la ayuda del audio y la vista previa) y a la prueba.
 export default function EditorLeccion({ idCurso, leccion }: PropsEditorLeccion) {
   const navegar = useNavigate();
   const ubicacion = useLocation();
@@ -93,6 +95,7 @@ export default function EditorLeccion({ idCurso, leccion }: PropsEditorLeccion) 
     return (
       <ProbarLeccion
         titulo={titulo.trim()}
+        idioma={leccion.idioma}
         actividades={bloques.map(aActividad)}
         alSalir={() => navegar(-1)}
       />
@@ -128,16 +131,16 @@ export default function EditorLeccion({ idCurso, leccion }: PropsEditorLeccion) 
           />
         </div>
         <div className={estilos.acciones}>
-          {/* F13: cuánto pesan las imágenes, y esperar a que terminen de subir */}
-          {editor.conImagenes && (
+          {/* F13 y F14: cuánto pesan las imágenes y los audios, y esperar a que suban */}
+          {editor.conArchivos && (
             <PesoArchivos
-              peso={editor.pesoImagenes}
-              maximo={LIMITES_IMAGENES.pesoLeccionMax}
-              texto="Imágenes de esta lección"
+              peso={editor.pesoArchivos}
+              maximo={LIMITES_ARCHIVOS.pesoLeccionMax}
+              texto="Archivos de esta lección"
             />
           )}
           {editor.subiendo && (
-            <p className={estilos.estadoGuardado}>{MENSAJES_IMAGENES.esperarSubidas}</p>
+            <p className={estilos.estadoGuardado}>{MENSAJES_ARCHIVOS.esperarSubidas}</p>
           )}
           <p className={estilos.estadoGuardado} role="status">
             {hayCambios && "Cambios sin guardar"}
@@ -183,14 +186,18 @@ export default function EditorLeccion({ idCurso, leccion }: PropsEditorLeccion) 
           deshabilitada={guardando}
         />
         <div ref={inspector} className={estilos.inspector}>
-          <ContextoSubidas value={{ subir: editor.subir }}>
-            <Inspector
-              bloque={seleccionado}
-              mostrarErrores={mostrarErrores}
-              alCambiar={(id, borrador) => editor.editar({ tipo: "cambiarBorrador", id, borrador })}
-              deshabilitado={guardando}
-            />
-          </ContextoSubidas>
+          <ContextoIdioma value={leccion.idioma}>
+            <ContextoSubidas value={{ subir: editor.subir, subirAudio: editor.subirAudio }}>
+              <Inspector
+                bloque={seleccionado}
+                mostrarErrores={mostrarErrores}
+                alCambiar={(id, borrador) =>
+                  editor.editar({ tipo: "cambiarBorrador", id, borrador })
+                }
+                deshabilitado={guardando}
+              />
+            </ContextoSubidas>
+          </ContextoIdioma>
         </div>
       </div>
       <Dialogo {...propsDialogo} />

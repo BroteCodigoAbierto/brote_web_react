@@ -4,10 +4,12 @@ import Aviso from "../../componentes/Aviso/Aviso.tsx";
 import ResultadoLeccion from "../../componentes/ResultadoLeccion/ResultadoLeccion.tsx";
 import { useReproductor } from "../../hooks/useReproductor.ts";
 import estilos from "../../paginas/Leccion/Leccion.module.css";
-import type { Actividad } from "../../tipos/contrato.ts";
+import type { Actividad, IdiomaCurso } from "../../tipos/contrato.ts";
 
 type PropsProbarLeccion = {
   titulo: string;
+  // F14: el del curso, para la voz de escuchar y repetir
+  idioma: IdiomaCurso;
   actividades: Actividad[];
   alSalir: () => void;
 };
@@ -15,7 +17,12 @@ type PropsProbarLeccion = {
 // Recorrer la lección como un alumno, con lo que hay en el lienzo (spec F05). Corre
 // en memoria: no pide nada al servidor ni registra progreso, y por eso F03 sigue sin
 // abrir lecciones sin publicar (brote_specs, research de F05, punto 12).
-export default function ProbarLeccion({ titulo, actividades, alSalir }: PropsProbarLeccion) {
+export default function ProbarLeccion({
+  titulo,
+  idioma,
+  actividades,
+  alSalir,
+}: PropsProbarLeccion) {
   const reproductor = useReproductor(actividades);
   const { terminada, aciertos, preguntas, total } = reproductor;
 
@@ -39,6 +46,7 @@ export default function ProbarLeccion({ titulo, actividades, alSalir }: PropsPro
   return (
     <ReproductorLeccion
       actividades={actividades}
+      idioma={idioma}
       reproductor={reproductor}
       alSalir={alSalir}
       aviso={<Aviso tono="info" texto="Modo de prueba: esto no cuenta como progreso." />}

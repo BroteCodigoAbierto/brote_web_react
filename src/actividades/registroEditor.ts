@@ -3,6 +3,7 @@ import { editorBancoPalabras } from "./BancoPalabras/editorBancoPalabras.ts";
 import { editorClasificar } from "./Clasificar/editorClasificar.ts";
 import { editorCompletarEspacios } from "./CompletarEspacios/editorCompletarEspacios.ts";
 import { editorEmparejar } from "./Emparejar/editorEmparejar.ts";
+import { editorEscucharRepetir } from "./EscucharRepetir/editorEscucharRepetir.ts";
 import { editorGrafoCommits } from "./GrafoCommits/editorGrafoCommits.ts";
 import { editorOpcionMultiple } from "./OpcionMultiple/editorOpcionMultiple.ts";
 import { editorOrdenar } from "./Ordenar/editorOrdenar.ts";
@@ -36,4 +37,5 @@ export const registroEditor: { [T in TipoActividad]: EditorActividad<T, unknown>
   retoCodigo: registrar(editorRetoCodigo),
   terminalSimulada: registrar(editorTerminalSimulada),
   grafoCommits: registrar(editorGrafoCommits),
+  escucharRepetir: registrar(editorEscucharRepetir),
 };
