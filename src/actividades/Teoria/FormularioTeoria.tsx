@@ -1,13 +1,26 @@
+import { ImagePlus } from "lucide-react";
+import { useRef } from "react";
+import Aviso from "../../componentes/Aviso/Aviso.tsx";
+import Boton from "../../componentes/Boton/Boton.tsx";
 import CampoArea from "../../componentes/CampoArea/CampoArea.tsx";
+import CampoImagen from "../../componentes/CampoImagen/CampoImagen.tsx";
 import CampoTexto from "../../componentes/CampoTexto/CampoTexto.tsx";
 import ListaEditable from "../../componentes/ListaEditable/ListaEditable.tsx";
-import { LIMITES_ACTIVIDADES } from "../../tipos/contrato.ts";
+import { useSubidas } from "../../contextos/ContextoSubidas.ts";
+import {
+  LIMITES_ACTIVIDADES,
+  LIMITES_IMAGENES,
+  MARCA_IMAGEN,
+  MENSAJES_IMAGENES,
+} from "../../tipos/contrato.ts";
 import { idLocal } from "../../utilidades/editor.ts";
 import estilos from "../formulario.module.css";
 import type { PropsFormularioActividad } from "../tipos.ts";
 import type { BorradorTeoria } from "./editorTeoria.ts";
+import { ajustarImagenes, contarMarcasImagen } from "./grupos.ts";
 
-// Formulario de la teoría (spec F05, "Formulario de cada tipo").
+// Formulario de la teoría (spec F05, "Formulario de cada tipo"). Desde F13, "Agregar imagen"
+// escribe [imagen] donde está el cursor y aparece un grupo "Imagen {n}" por marca.
 export default function FormularioTeoria({
   borrador,
   alCambiar,
@@ -15,10 +28,34 @@ export default function FormularioTeoria({
   idBase,
   deshabilitado,
 }: PropsFormularioActividad<BorradorTeoria>) {
-  const { puntosClave } = borrador;
+  const { puntosClave, imagenes } = borrador;
+  const { subir } = useSubidas();
+  const area = useRef<HTMLTextAreaElement>(null);
+  const marcas = contarMarcasImagen(borrador.texto);
+  const sobran = imagenes.length > marcas;
 
   function cambiar(cambios: Partial<BorradorTeoria>) {
     alCambiar({ ...borrador, ...cambios });
+  }
+
+  function cambiarTexto(texto: string) {
+    cambiar({ texto, imagenes: ajustarImagenes(texto, imagenes) });
+  }
+
+  // Escribe la marca donde está el cursor y lo deja justo después, como "Agregar espacio".
+  function agregarImagen() {
+    const campo = area.current;
+    const texto = borrador.texto;
+    const inicio = campo?.selectionStart ?? texto.length;
+    const fin = campo?.selectionEnd ?? texto.length;
+    const nuevo = texto.slice(0, inicio) + MARCA_IMAGEN + texto.slice(fin);
+    if (Array.from(nuevo).length > LIMITES_ACTIVIDADES.textoMax) return;
+    cambiarTexto(nuevo);
+    const cursor = inicio + MARCA_IMAGEN.length;
+    requestAnimationFrame(() => {
+      campo?.focus();
+      campo?.setSelectionRange(cursor, cursor);
+    });
   }
 
   function cambiarPunto(id: string, texto: string) {
@@ -38,16 +75,60 @@ export default function FormularioTeoria({
         deshabilitado={deshabilitado}
       />
       <CampoArea
+        ref={area}
         id={`${idBase}-texto`}
         etiqueta="Texto"
-        ayuda="Separa los párrafos con un renglón en blanco."
+        ayuda="Separa los párrafos con un renglón en blanco. Cada [imagen] es el lugar de una imagen."
         valor={borrador.texto}
-        alCambiar={(texto) => cambiar({ texto })}
+        alCambiar={cambiarTexto}
         error={errores.texto}
         maxLongitud={LIMITES_ACTIVIDADES.textoMax}
         filas={6}
         deshabilitado={deshabilitado}
       />
+      <div>
+        <Boton
+          variante="secundario"
+          tamano="chico"
+          icono={ImagePlus}
+          deshabilitado={deshabilitado || marcas >= LIMITES_IMAGENES.imagenesTeoriaMax}
+          alPulsar={agregarImagen}
+        >
+          Agregar imagen
+        </Boton>
+      </div>
+      {sobran && <Aviso tono="calido" texto={MENSAJES_IMAGENES.imagenesDeMas} />}
+      {imagenes.map((grupo, indice) => (
+        <div key={grupo.id} className={estilos.grupo}>
+          <CampoImagen
+            id={`${idBase}-imagen-${grupo.id}`}
+            etiqueta={`Imagen ${indice + 1}`}
+            valor={grupo.valor}
+            alCambiar={(valor) =>
+              cambiar({
+                imagenes: imagenes.map((otro) =>
+                  otro.id === grupo.id ? { ...otro, valor } : otro,
+                ),
+              })
+            }
+            alElegirArchivo={subir}
+            error={errores[`imagen-${grupo.id}`]}
+            deshabilitado={deshabilitado}
+          />
+          {sobran && (
+            <div>
+              <Boton
+                variante="fantasma"
+                tamano="chico"
+                deshabilitado={deshabilitado}
+                alPulsar={() => cambiar({ imagenes: imagenes.filter(({ id }) => id !== grupo.id) })}
+              >
+                Quitar imagen
+              </Boton>
+            </div>
+          )}
+        </div>
+      ))}
       <CampoArea
         id={`${idBase}-codigo`}
         etiqueta="Código"
