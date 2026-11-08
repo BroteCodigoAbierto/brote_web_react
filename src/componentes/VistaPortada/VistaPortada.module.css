@@ -1,0 +1,12 @@
+/* docs/diseno.md, "Editor (solo web)", VistaPortada */
+.vistas {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-end;
+  gap: var(--espacio-4);
+}
+
+.tarjeta {
+  width: 16rem;
+  max-width: 100%;
+}

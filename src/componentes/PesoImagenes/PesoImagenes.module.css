@@ -1,0 +1,18 @@
+/* docs/diseno.md, "Editor (solo web)", PesoImagenes */
+.peso {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espacio-2);
+  color: var(--color-texto-suave);
+  font: var(--texto-nota);
+}
+
+.pasado {
+  color: var(--color-error);
+}
+
+.icono {
+  flex-shrink: 0;
+  width: 1rem;
+  height: 1rem;
+}
