@@ -10,3 +10,11 @@
   grid-template-columns: repeat(auto-fit, minmax(7.5rem, 1fr));
   gap: var(--espacio-4);
 }
+
+/* F13: opciones de imagen, en una rejilla de mosaicos de al menos --mosaico-opcion; en un
+   teléfono de 360 px caben dos por fila */
+.mosaicosImagen {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(min(var(--mosaico-opcion), 45%), 1fr));
+  gap: var(--espacio-4);
+}

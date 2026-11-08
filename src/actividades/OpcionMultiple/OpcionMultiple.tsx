@@ -1,6 +1,7 @@
 import { useId, useState } from "react";
 import BarraRespuesta from "../../componentes/BarraRespuesta/BarraRespuesta.tsx";
 import BloqueCodigo from "../../componentes/BloqueCodigo/BloqueCodigo.tsx";
+import ImagenAmpliable from "../../componentes/ImagenAmpliable/ImagenAmpliable.tsx";
 import OpcionRespuesta, {
   type EstadoOpcion,
 } from "../../componentes/OpcionRespuesta/OpcionRespuesta.tsx";
@@ -17,13 +18,14 @@ function escribiendo(objetivo: EventTarget | null): boolean {
 }
 
 // Opción múltiple (spec F03): una sola correcta, opciones mezcladas cada vez
-// que aparece la pregunta (en el prototipo la correcta siempre era la primera).
+// que aparece la pregunta (en el prototipo la correcta siempre era la primera). Desde F13,
+// la pregunta puede llevar una imagen y las opciones pueden ser imágenes (mosaicos).
 export default function OpcionMultiple({
   actividad,
   alInteractuar,
   alTerminar,
 }: PropsActividad<"opcionMultiple">) {
-  const { pregunta, codigo, opciones, correcta } = actividad;
+  const { pregunta, imagen, codigo, opciones, correcta } = actividad;
   // se mezclan una sola vez, al montar; cada una recuerda su lugar original
   const [mezcladas] = useState(() =>
     mezclar(opciones.map((opcion, indice) => ({ opcion, indice }))),
@@ -33,6 +35,7 @@ export default function OpcionMultiple({
   const inicio = useEnfocarAlMontar<HTMLHeadingElement>();
   const idPregunta = useId();
   const conSimbolos = opciones.some((opcion) => "simbolo" in opcion);
+  const conImagenes = opciones.some((opcion) => "imagen" in opcion);
   const acerto = elegida === correcta;
 
   function elegir(indice: number) {
@@ -64,17 +67,24 @@ export default function OpcionMultiple({
       <h2 ref={inicio} tabIndex={-1} id={idPregunta} className={comun.consigna}>
         {pregunta}
       </h2>
+      {imagen && <ImagenAmpliable imagen={imagen} />}
       {codigo && <BloqueCodigo codigo={codigo} />}
       <div
         role="radiogroup"
         aria-labelledby={idPregunta}
-        className={conSimbolos ? estilos.mosaicos : estilos.lista}
+        className={
+          conImagenes ? estilos.mosaicosImagen : conSimbolos ? estilos.mosaicos : estilos.lista
+        }
       >
         {mezcladas.map(({ opcion, indice }, lugar) => (
           <OpcionRespuesta
             key={indice}
             estado={estadoDe(indice)}
-            {...("simbolo" in opcion ? { simbolo: opcion.simbolo } : { texto: opcion.texto })}
+            {...("imagen" in opcion
+              ? { imagen: opcion.imagen }
+              : "simbolo" in opcion
+                ? { simbolo: opcion.simbolo }
+                : { texto: opcion.texto })}
             numero={lugar + 1}
             deshabilitada={comprobada}
             alElegir={() => elegir(indice)}
@@ -85,7 +95,11 @@ export default function OpcionMultiple({
         <BarraRespuesta
           estado={acerto ? "correcto" : "incorrecto"}
           titulo={acerto ? "¡Correcto!" : "Respuesta correcta:"}
-          detalle={acerto || !respuestaCorrecta ? undefined : textoOpcion(respuestaCorrecta)}
+          {...(acerto || !respuestaCorrecta
+            ? {}
+            : "imagen" in respuestaCorrecta
+              ? { lineas: [[{ imagen: respuestaCorrecta.imagen }]] }
+              : { detalle: textoOpcion(respuestaCorrecta) })}
           textoBoton="Continuar"
           alPulsar={() => alTerminar(acerto ? "acierto" : "fallo")}
         />
