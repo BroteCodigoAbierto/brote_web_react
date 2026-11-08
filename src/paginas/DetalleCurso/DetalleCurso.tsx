@@ -58,7 +58,12 @@ export default function DetalleCurso() {
       <Volver />
 
       <Superficie className={estilos.encabezado} elevada>
-        <PortadaCurso id={curso.id} titulo={curso.titulo} tamano="detalle" />
+        <PortadaCurso
+          id={curso.id}
+          titulo={curso.titulo}
+          tamano="detalle"
+          idPortada={curso.idPortada}
+        />
         <div className={estilos.datos}>
           <h1 className={estilos.titulo}>{curso.titulo}</h1>
           <p className={estilos.autor}>Por {curso.autor.nombre}</p>

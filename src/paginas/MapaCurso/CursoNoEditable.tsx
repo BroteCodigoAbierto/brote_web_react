@@ -90,7 +90,12 @@ export default function CursoNoEditable({
   return (
     <Superficie className={estilos.panel}>
       <div className={estilos.encabezado}>
-        <PortadaCurso id={curso.id} titulo={curso.titulo} tamano="tarjeta" />
+        <PortadaCurso
+          id={curso.id}
+          titulo={curso.titulo}
+          tamano="tarjeta"
+          idPortada={curso.portada?.id}
+        />
         <div className={estilos.identidad}>
           <h1 className={estilos.tituloCurso}>{curso.titulo}</h1>
           <div>

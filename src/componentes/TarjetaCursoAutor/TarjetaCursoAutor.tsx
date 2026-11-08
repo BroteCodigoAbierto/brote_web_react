@@ -19,7 +19,12 @@ type PropsTarjetaCursoAutor = {
 export default function TarjetaCursoAutor({ curso }: PropsTarjetaCursoAutor) {
   return (
     <Superficie como={Link} to={`/editor/${curso.id}`} className={base.tarjeta}>
-      <PortadaCurso id={curso.id} titulo={curso.titulo} tamano="tarjeta" />
+      <PortadaCurso
+        id={curso.id}
+        titulo={curso.titulo}
+        tamano="tarjeta"
+        idPortada={curso.idPortada}
+      />
       <div className={base.texto}>
         <h3 className={base.titulo}>{curso.titulo}</h3>
         <div className={estilos.insignias}>
