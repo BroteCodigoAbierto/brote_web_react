@@ -1,0 +1,14 @@
+/* docs/diseno.md, "Editor (solo web)", CampoAudio: lo demás, como CampoImagen */
+
+.conAudio {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: var(--espacio-3) var(--espacio-4);
+}
+
+.ayuda {
+  padding: 0 var(--espacio-1);
+  color: var(--color-texto-suave);
+  font: var(--texto-nota);
+}
