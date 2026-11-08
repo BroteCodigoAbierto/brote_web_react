@@ -116,6 +116,43 @@
   letter-spacing: var(--espaciado-display);
 }
 
+/* F13: opción de imagen, un mosaico cuadrado con el número y el icono como insignias */
+.mosaicoImagen {
+  flex-direction: column;
+  aspect-ratio: 1;
+  padding: var(--espacio-2);
+}
+
+.mosaicoImagen > span {
+  flex: 1;
+  min-height: 0;
+}
+
+.insignia {
+  position: absolute;
+  top: var(--espacio-3);
+  left: var(--espacio-3);
+  z-index: 1;
+  width: 22px;
+  height: 22px;
+  background: var(--color-vidrio-opaco);
+}
+
+.mosaicoImagen .icono {
+  position: absolute;
+  top: var(--espacio-3);
+  right: var(--espacio-3);
+  z-index: 1;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  background: var(--color-vidrio-opaco);
+}
+
+.conPausa {
+  position: relative;
+}
+
 @keyframes sacudir {
   20%,
   60% {
