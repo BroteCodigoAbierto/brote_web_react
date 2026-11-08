@@ -1,0 +1,9 @@
+/* docs/diseno.md, sección 4, MosaicoImagen */
+.mosaico {
+  display: block;
+  width: 100%;
+  height: 100%;
+  padding: var(--espacio-2);
+  border-radius: var(--radio-medio);
+  background: var(--color-vidrio-suave);
+}

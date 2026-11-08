@@ -1,0 +1,11 @@
+/* docs/diseno.md, sección 4, MiniaturaImagen */
+.miniatura {
+  display: inline-block;
+  flex-shrink: 0;
+  width: var(--miniatura);
+  height: var(--miniatura);
+  overflow: hidden;
+  border-radius: var(--radio-chico);
+  background: var(--color-vidrio-opaco);
+  vertical-align: middle;
+}
