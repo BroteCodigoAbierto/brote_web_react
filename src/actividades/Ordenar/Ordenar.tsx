@@ -17,6 +17,8 @@ import {
   soltarEnLugares,
   type Lugares,
 } from "../../utilidades/relacionar.ts";
+import { nombreDeContenido } from "../../utilidades/actividades.ts";
+import { esImagen } from "../../utilidades/imagenes.ts";
 import comun from "../comun.module.css";
 import type { PropsActividad } from "../tipos.ts";
 import estilos from "./Ordenar.module.css";
@@ -42,9 +44,16 @@ export default function Ordenar({
     alSoltar: (item, destino) => cambiar(soltarEnLugares(lugares, item, destino), item),
   });
 
+  // F13: los elementos son todos textos o todos imágenes; "Imagen {n}" por su lugar al empezar
+  const conImagenes = elementos.some(esImagen);
+
+  function textoDe(elemento: number): string {
+    return nombreDeContenido(elementos[elemento] ?? "", orden.indexOf(elemento) + 1);
+  }
+
   function cambiar(nuevos: Lugares, elemento: number) {
     const lugar = nuevos.indexOf(elemento);
-    const texto = elementos[elemento] ?? "";
+    const texto = textoDe(elemento);
     setLugares(nuevos);
     setAnuncio(lugar === -1 ? `${texto} sin colocar` : `${texto} en el lugar ${lugar + 1}`);
     alInteractuar();
@@ -62,7 +71,8 @@ export default function Ordenar({
   }
 
   function dibujar(elemento: number, lugar: number | null) {
-    const texto = elementos[elemento] ?? "";
+    const contenido = elementos[elemento] ?? "";
+    const texto = textoDe(elemento);
     const correcto = elemento === lugar;
     const partes = [
       texto,
@@ -72,7 +82,9 @@ export default function Ordenar({
     return (
       <ElementoRespuesta
         key={elemento}
-        texto={texto}
+        {...(esImagen(contenido)
+          ? { imagen: contenido, forma: "mosaico" as const }
+          : { texto: contenido })}
         estado={comprobada ? (correcto ? "correcta" : "incorrecta") : "normal"}
         atenuada={arrastre.item === elemento}
         deshabilitada={comprobada}
@@ -95,6 +107,7 @@ export default function Ordenar({
           <LugarElemento
             key={lugar}
             numero={lugar + 1}
+            mosaico={conImagenes}
             estado={comprobada ? (elemento === lugar ? "correcto" : "incorrecto") : "normal"}
             resaltado={arrastre.destino === lugar}
             etiqueta={`Lugar ${lugar + 1}, vacío`}
@@ -109,7 +122,13 @@ export default function Ordenar({
         resaltada={arrastre.destino === SIN_COLOCAR}
         {...(comprobada ? {} : arrastre.propsDestino(SIN_COLOCAR))}
       >
-        {orden.filter((elemento) => !lugares.includes(elemento)).map((e) => dibujar(e, null))}
+        {conImagenes ? (
+          <div className={estilos.mosaicos}>
+            {orden.filter((elemento) => !lugares.includes(elemento)).map((e) => dibujar(e, null))}
+          </div>
+        ) : (
+          orden.filter((elemento) => !lugares.includes(elemento)).map((e) => dibujar(e, null))
+        )}
       </ZonaElementos>
       <p className="oculto" aria-live="polite">
         {anuncio}
@@ -118,7 +137,7 @@ export default function Ordenar({
         <BarraRespuesta
           estado={acerto ? "correcto" : "incorrecto"}
           titulo={acerto ? "¡Correcto!" : "Respuesta correcta:"}
-          detalle={acerto ? undefined : detalleOrdenar(actividad)}
+          {...(acerto ? {} : detalleOrdenar(actividad))}
           textoBoton="Continuar"
           alPulsar={() => alTerminar(acerto ? "acierto" : "fallo")}
         />

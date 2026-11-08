@@ -7,7 +7,7 @@ import { useArrastrarElemento } from "../../hooks/useArrastrarElemento.ts";
 import { useEnfocarAlMontar } from "../../hooks/useEnfocarAlMontar.ts";
 import { useFocoElementos } from "../../hooks/useFocoElementos.ts";
 import { CONSIGNA_POR_DEFECTO } from "../../tipos/contrato.ts";
-import { mezclar } from "../../utilidades/actividades.ts";
+import { mezclar, nombreDeContenido } from "../../utilidades/actividades.ts";
 import {
   detalleClasificar,
   pulsarCategoria,
@@ -47,8 +47,19 @@ export default function Clasificar({
       cambiar({ categoriaDe: soltarEnClasificar(categoriaDe, item, destino), seleccion: null }),
   });
 
+  // F13: los elementos son todos textos o todos imágenes; "Imagen {n}" por su lugar al empezar
+  const conImagenes = elementos.some((elemento) => "imagen" in elemento);
+
   function textoDe(indice: number): string {
-    return elementos[indice]?.texto ?? "";
+    const elemento = elementos[indice];
+    if (!elemento) return "";
+    if ("texto" in elemento) return elemento.texto;
+    return nombreDeContenido(elemento.imagen, orden.indexOf(indice) + 1);
+  }
+
+  function zona(indices: number[]) {
+    const dibujados = indices.map(dibujar);
+    return conImagenes ? <div className={estilos.mosaicos}>{dibujados}</div> : dibujados;
   }
 
   function movidoEn(nuevo: EstadoClasificar): number {
@@ -105,11 +116,13 @@ export default function Clasificar({
   }
 
   function dibujar(indice: number) {
+    const elemento = elementos[indice];
     return (
       <ElementoRespuesta
         key={indice}
-        texto={textoDe(indice)}
-        forma="compacta"
+        {...(elemento && "imagen" in elemento
+          ? { imagen: elemento.imagen, forma: "mosaico" as const }
+          : { texto: textoDe(indice), forma: "compacta" as const })}
         estado={estadoDe(indice)}
         atenuada={arrastre.item === indice}
         deshabilitada={comprobada}
@@ -132,7 +145,7 @@ export default function Clasificar({
         resaltada={arrastre.destino === SIN_COLOCAR}
         {...(comprobada ? {} : arrastre.propsDestino(SIN_COLOCAR))}
       >
-        {orden.filter((indice) => categoriaDe[indice] === null).map(dibujar)}
+        {zona(orden.filter((indice) => categoriaDe[indice] === null))}
       </ZonaElementos>
       <div className={estilos.categorias}>
         {categorias.map((nombre, categoria) => (
@@ -144,7 +157,7 @@ export default function Clasificar({
             alPulsar={comprobada ? undefined : () => pulsar(pulsarCategoria(estado, categoria))}
             {...(comprobada ? {} : arrastre.propsDestino(categoria))}
           >
-            {orden.filter((indice) => categoriaDe[indice] === categoria).map(dibujar)}
+            {zona(orden.filter((indice) => categoriaDe[indice] === categoria))}
           </ZonaElementos>
         ))}
       </div>
@@ -155,7 +168,7 @@ export default function Clasificar({
         <BarraRespuesta
           estado={acerto ? "correcto" : "incorrecto"}
           titulo={acerto ? "¡Correcto!" : "Respuesta correcta:"}
-          detalle={acerto ? undefined : detalleClasificar(actividad, categoriaDe)}
+          {...(acerto ? {} : detalleClasificar(actividad, categoriaDe))}
           textoBoton="Continuar"
           alPulsar={() => alTerminar(acerto ? "acierto" : "fallo")}
         />

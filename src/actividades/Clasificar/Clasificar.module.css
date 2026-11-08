@@ -4,3 +4,10 @@
   grid-template-columns: repeat(auto-fit, minmax(14rem, 1fr));
   gap: var(--espacio-4);
 }
+
+/* F13: elementos de imagen, mosaicos en filas que se acomodan solas */
+.mosaicos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espacio-2);
+}
