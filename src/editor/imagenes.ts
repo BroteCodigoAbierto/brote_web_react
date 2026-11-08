@@ -60,6 +60,22 @@ export function idsRepetidos(valores: ValorImagen[]): Set<string> {
   return repetidos;
 }
 
+// Como marcarRepetidos con los textos: la segunda imagen igual de un grupo lleva el error.
+export function marcarImagenesRepetidas<T extends { id: string }>(
+  filas: T[],
+  leer: (fila: T) => ValorImagen,
+  clave: string,
+  errores: Record<string, string>,
+) {
+  const vistas = new Set<string>();
+  for (const fila of filas) {
+    const { imagen } = leer(fila);
+    if (!imagen) continue;
+    if (vistas.has(imagen.id)) errores[`${clave}.${fila.id}`] ??= MENSAJES_IMAGENES.imagenRepetida;
+    vistas.add(imagen.id);
+  }
+}
+
 function esValorImagen(valor: unknown): valor is ValorImagen {
   return (
     typeof valor === "object" && valor !== null && (valor as { clase?: unknown }).clase === "imagen"
