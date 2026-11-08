@@ -63,6 +63,8 @@
   --color-codigo-tenue: #a9a6c9;
   --color-codigo-cursor: #a3e635;
   --color-codigo-etiqueta-fondo: rgba(255, 255, 255, 0.1);
+  /* F13: el fondo del visor de una imagen, igual en los dos modos */
+  --color-fondo-visor: rgba(10, 9, 26, 0.94);
 
   --sombra-suave: 0 8px 28px rgba(49, 46, 129, 0.08);
   --sombra-elevada: 0 16px 44px rgba(49, 46, 129, 0.14), 0 2px 6px rgba(49, 46, 129, 0.05);
@@ -123,6 +125,11 @@
   --ancho-leccion: 42.5rem;
   --ancho-paleta: 15rem;
   --ancho-inspector: 27.5rem;
+  /* F13: imágenes (docs/diseno.md, sección 2.3) */
+  --mosaico-opcion: 9rem;
+  --mosaico-elemento: 5.5rem;
+  --miniatura: 3rem;
+  --alto-imagen-max: 50vh;
 }
 
 /* modo oscuro: según el sistema, salvo que el usuario haya elegido claro, o
