@@ -1,0 +1,59 @@
+/* docs/diseno.md, sección 4, VisorImagen */
+.visor {
+  width: 100dvw;
+  max-width: none;
+  height: 100dvh;
+  max-height: none;
+  margin: 0;
+  padding: var(--espacio-5);
+  border: none;
+  background: var(--color-fondo-visor);
+}
+
+.visor::backdrop {
+  background: transparent;
+}
+
+.marco {
+  position: relative;
+  width: 100%;
+  height: 100%;
+}
+
+/* la imagen ocupa el marco con object-fit: contain; lo que sobra es fondo oscuro */
+.imagen {
+  background: transparent;
+}
+
+.cerrar {
+  position: absolute;
+  top: var(--espacio-5);
+  right: var(--espacio-5);
+  display: grid;
+  place-items: center;
+  width: var(--area-tactil);
+  height: var(--area-tactil);
+  border: 1px solid var(--color-vidrio-borde);
+  border-radius: 50%;
+  background: var(--color-vidrio-opaco);
+  box-shadow: var(--sombra-suave);
+  color: var(--color-texto);
+  cursor: pointer;
+}
+
+.icono {
+  width: 20px;
+  height: 20px;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .visor[open] {
+    animation: aparecer var(--duracion-media) var(--curva);
+  }
+}
+
+@keyframes aparecer {
+  from {
+    opacity: 0;
+  }
+}
