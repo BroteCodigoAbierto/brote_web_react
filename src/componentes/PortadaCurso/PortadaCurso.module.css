@@ -16,6 +16,13 @@
   user-select: none;
 }
 
+/* F13: la imagen llena la portada; mientras carga, se ve el color sin la inicial */
+.portada .imagen {
+  position: absolute;
+  inset: 0;
+  background: transparent;
+}
+
 .inicial {
   font-weight: 800;
   line-height: 1;

@@ -24,6 +24,8 @@ type PropsImagenCurso = {
   // llena la caja que le da quien la usa (mosaicos, portada); si no, guarda su proporción
   llenar?: boolean;
   className?: string;
+  // la portada vuelve a la generada si no carga
+  alFallar?: () => void;
 };
 
 // Toda imagen de un curso (docs/diseno.md, sección 4; spec F13). Reserva su lugar con la
@@ -37,6 +39,7 @@ export default function ImagenCurso({
   etiqueta,
   llenar = false,
   className = "",
+  alFallar: avisarFallo,
 }: PropsImagenCurso) {
   const { intento } = useImagenes();
   const [estado, setEstado] = useState<{ fase: Fase; intento: number }>({
@@ -62,6 +65,7 @@ export default function ImagenCurso({
 
   function alFallar() {
     setEstado((actual) => ({ ...actual, fase: "fallo" }));
+    avisarFallo?.();
   }
 
   return (
