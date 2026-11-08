@@ -4,6 +4,7 @@ import {
   type ActividadCompletarEspacios,
   type ContenidoElemento,
   type EspacioRespuesta,
+  type ImagenActividad,
   type OpcionRespuesta,
 } from "../tipos/contrato.ts";
 
@@ -101,4 +102,25 @@ export function partirTeoria(texto: string): BloqueTeoria[] {
 export function nombreDeContenido(contenido: ContenidoElemento, lugar: number): string {
   if (typeof contenido === "string") return contenido;
   return contenido.textoAlternativo ?? `Imagen ${lugar}`;
+}
+
+// F13: una línea de "Respuesta correcta" se arma con partes de texto y de imagen; cada
+// imagen se ve como miniatura (research de F13, punto 14).
+export type ParteRespuesta = { texto: string } | { imagen: ImagenActividad };
+
+export type DetalleRespuesta = { detalle?: string; lineas?: ParteRespuesta[][] };
+
+export function parteDe(contenido: ContenidoElemento): ParteRespuesta {
+  return typeof contenido === "string" ? { texto: contenido } : { imagen: contenido };
+}
+
+// Sin imágenes, el `detalle` de texto de siempre, carácter por carácter, así F03 y F11 no
+// cambian; con alguna, las `lineas`.
+export function aDetalleRespuesta(lineas: ParteRespuesta[][]): DetalleRespuesta {
+  const soloTexto = lineas.every((linea) => linea.every((parte) => "texto" in parte));
+  if (!soloTexto) return { lineas };
+  const texto = lineas
+    .map((linea) => linea.map((parte) => ("texto" in parte ? parte.texto : "")).join(""))
+    .join("\n");
+  return texto === "" ? {} : { detalle: texto };
 }
