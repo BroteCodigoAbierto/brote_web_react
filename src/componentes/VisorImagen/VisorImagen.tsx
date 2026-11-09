@@ -14,6 +14,19 @@ type PropsVisorImagen = {
   alCerrar: () => void;
 };
 
+// El <img> o el <canvas> ocupa todo el marco y dibuja la imagen con object-fit: contain, así
+// que lo que sobra a los lados o arriba y abajo también es el elemento. Solo cuenta como
+// imagen la parte donde se dibuja; lo demás es fondo.
+function sobreLaImagen(medio: Element, x: number, y: number, imagen: ImagenActividad) {
+  const caja = medio.getBoundingClientRect();
+  const escala = Math.min(caja.width / imagen.ancho, caja.height / imagen.alto);
+  const ancho = imagen.ancho * escala;
+  const alto = imagen.alto * escala;
+  const izquierda = caja.left + (caja.width - ancho) / 2;
+  const arriba = caja.top + (caja.height - alto) / 2;
+  return x >= izquierda && x <= izquierda + ancho && y >= arriba && y <= arriba + alto;
+}
+
 // La imagen a pantalla completa (docs/diseno.md, sección 4; spec F13, "Ampliar una imagen").
 // Un <dialog> modal, como Dialogo: el foco se queda dentro y Esc lo cierra. Pulsar el fondo
 // oscuro, y no la imagen, también. Quien lo abre devuelve el foco a la imagen.
@@ -51,7 +64,11 @@ export default function VisorImagen({
       }}
       onClick={(evento) => {
         // el fondo oscuro, no la imagen ni los botones
-        if ((evento.target as Element).closest("img, canvas, button") === null) alCerrar();
+        const objetivo = evento.target as Element;
+        if (objetivo.closest("button")) return;
+        const medio = objetivo.closest("img, canvas");
+        if (medio && sobreLaImagen(medio, evento.clientX, evento.clientY, imagen)) return;
+        alCerrar();
       }}
     >
       {abierto && (
