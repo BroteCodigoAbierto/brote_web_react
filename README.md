@@ -7,6 +7,17 @@ Qué hace y por qué está en
 [brote_specs](https://github.com/BroteCodigoAbierto/brote_specs). Consume la API
 de [brote_backend_express](https://github.com/BroteCodigoAbierto/brote_backend_express).
 
+## Entrega de Aplicaciones Web
+
+- [Bitácora de IA](docs/bitacora-ia.md)
+- [Diario de decisiones](docs/diario-decisiones.md)
+- Los otros repos del proyecto:
+  [brote_specs](https://github.com/BroteCodigoAbierto/brote_specs) (specs y
+  decisiones),
+  [brote_backend_express](https://github.com/BroteCodigoAbierto/brote_backend_express)
+  (API) y [brote_mobile_expo](https://github.com/BroteCodigoAbierto/brote_mobile_expo)
+  (móvil).
+
 ## Stack
 
 Vite · React 19 · TypeScript · React Router · CSS Modules
