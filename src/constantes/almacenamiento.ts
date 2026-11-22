@@ -7,6 +7,7 @@
 //
 // copiaEditor no es una marca: la usa utilidades/copiaEditor.ts (F05).
 export const CLAVES = {
+  tema: "pref.tema",
   sesionActiva: "sesion.activa",
   cierrePendiente: "sesion.cierrePendiente",
   copiaEditor: "editor.copia",

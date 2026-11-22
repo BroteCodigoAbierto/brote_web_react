@@ -1,0 +1,19 @@
+.cuenta {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-7);
+}
+.titulo {
+  font: var(--texto-titulo1);
+  letter-spacing: var(--espaciado-titulo1);
+}
+.datos {
+  padding: var(--espacio-6);
+  overflow-wrap: anywhere;
+  color: var(--color-texto-suave);
+}
+.nombre {
+  font: var(--texto-titulo3);
+  color: var(--color-texto);
+  margin-bottom: var(--espacio-3);
+}

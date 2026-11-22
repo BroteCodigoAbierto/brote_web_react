@@ -3,6 +3,7 @@ import Layout from "./componentes/Layout/Layout.tsx";
 import RutaProtegida from "./componentes/RutaProtegida/RutaProtegida.tsx";
 import SoloSinSesion from "./componentes/SoloSinSesion/SoloSinSesion.tsx";
 import ZonaConSesion from "./componentes/ZonaConSesion/ZonaConSesion.tsx";
+import Cuenta from "./paginas/Cuenta/Cuenta.tsx";
 import Catalogo from "./paginas/Catalogo/Catalogo.tsx";
 import DetalleCurso from "./paginas/DetalleCurso/DetalleCurso.tsx";
 import Entrar from "./paginas/Entrar/Entrar.tsx";
@@ -39,6 +40,7 @@ export const enrutador = createBrowserRouter([
             children: [
               { path: "/", element: <Catalogo /> },
               { path: "/cursos/:idCurso", element: <DetalleCurso /> },
+              { path: "/cuenta", element: <Cuenta /> },
               { path: "/panel", element: <Panel /> },
               { path: "/editor/nuevo", element: <NuevoCurso /> },
               { path: "/editor/:idCurso", element: <MapaCurso /> },

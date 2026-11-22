@@ -1,5 +1,6 @@
-import { ChevronDown, LogOut } from "lucide-react";
+import { ChevronDown, LogOut, UserRound } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
+import { Link } from "react-router";
 import { useSesion } from "../../hooks/useSesion.ts";
 import { inicialPortada } from "../../utilidades/cursos.ts";
 import Superficie from "../Superficie/Superficie.tsx";
@@ -59,6 +60,10 @@ export default function MenuCuenta() {
             <p className={estilos.nombrePanel}>{usuario.nombre}</p>
             <p className={estilos.correo}>{usuario.correo}</p>
           </div>
+          <Link to="/cuenta" className={estilos.cuenta} onClick={() => setAbierto(false)}>
+            <UserRound className={estilos.iconoOpcion} aria-hidden="true" />
+            Cuenta
+          </Link>
           <button type="button" className={estilos.opcion} onClick={cerrarSesion}>
             <LogOut className={estilos.iconoOpcion} aria-hidden="true" />
             Cerrar sesión
