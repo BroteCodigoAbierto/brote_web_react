@@ -1,4 +1,4 @@
-import { useEffect, useId, useRef } from "react";
+import { useEffect, useId, useRef, type ReactNode } from "react";
 import Boton from "../Boton/Boton.tsx";
 import estilos from "./Dialogo.module.css";
 
@@ -12,6 +12,10 @@ type PropsDialogo = {
   alCancelar: () => void;
   // mientras se hace lo que se confirmó; no se puede cancelar (F05)
   enviando?: boolean;
+  // decisión 0018: "primario" cuando confirmar no pierde nada (aprobar un curso)
+  varianteConfirmar?: "peligro" | "primario";
+  // decisión 0018: campos entre el texto y los botones (el motivo de "No aprobar")
+  children?: ReactNode;
 };
 
 // Confirmación modal (docs/diseno.md, sección 4) sobre el <dialog> nativo:
@@ -26,6 +30,8 @@ export default function Dialogo({
   alConfirmar,
   alCancelar,
   enviando = false,
+  varianteConfirmar = "peligro",
+  children,
 }: PropsDialogo) {
   const dialogo = useRef<HTMLDialogElement>(null);
   const id = useId();
@@ -58,12 +64,13 @@ export default function Dialogo({
       <p id={`${id}-texto`} className={estilos.texto}>
         {texto}
       </p>
+      {children}
       <div className={estilos.botones}>
         <Boton variante="secundario" deshabilitado={enviando} alPulsar={alCancelar}>
           {textoCancelar}
         </Boton>
         <Boton
-          variante="peligro"
+          variante={varianteConfirmar}
           enviando={enviando}
           textoEnviando={textoConfirmar}
           alPulsar={alConfirmar}

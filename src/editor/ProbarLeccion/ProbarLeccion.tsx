@@ -12,6 +12,8 @@ type PropsProbarLeccion = {
   idioma: IdiomaCurso;
   actividades: Actividad[];
   alSalir: () => void;
+  // decisión 0018: la revisión de un curso también prueba sus lecciones
+  textoVolver?: string;
 };
 
 // Recorrer la lección como un alumno, con lo que hay en el lienzo (spec F05). Corre
@@ -22,6 +24,7 @@ export default function ProbarLeccion({
   idioma,
   actividades,
   alSalir,
+  textoVolver = "Volver al editor",
 }: PropsProbarLeccion) {
   const reproductor = useReproductor(actividades);
   const { terminada, aciertos, preguntas, total } = reproductor;
@@ -36,7 +39,7 @@ export default function ProbarLeccion({
             aciertos={aciertos}
             preguntas={preguntas}
             alVolver={alSalir}
-            textoVolver="Volver al editor"
+            textoVolver={textoVolver}
           />
         </main>
       </div>

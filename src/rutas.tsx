@@ -12,14 +12,17 @@ import MapaCurso from "./paginas/MapaCurso/MapaCurso.tsx";
 import NoEncontrada from "./paginas/NoEncontrada/NoEncontrada.tsx";
 import NuevoCurso from "./paginas/NuevoCurso/NuevoCurso.tsx";
 import Panel from "./paginas/Panel/Panel.tsx";
+import ProbarLeccionRevision from "./paginas/ProbarLeccionRevision/ProbarLeccionRevision.tsx";
 import Registro from "./paginas/Registro/Registro.tsx";
+import RevisarCurso from "./paginas/RevisarCurso/RevisarCurso.tsx";
 
 // Mapa de rutas de la web. Debe coincidir con brote_specs/specs/01-navegacion.md.
 // Sin sesión solo existen /entrar y /registro; todo lo demás (incluidas las
 // direcciones que no existen) pasa por RutaProtegida. El catálogo es el inicio
 // (F02); su estado vive en ZonaConSesion, de la que cuelgan el Layout (catálogo,
 // detalle, "Mi panel" y el mapa del curso) y lo que va a pantalla completa, fuera
-// del Layout: la lección (F03) y su lienzo (F05).
+// del Layout: la lección (F03) y su lienzo (F05). La revisión de un curso (decisión 0018)
+// va en el Layout, y probar una de sus lecciones, a pantalla completa.
 export const enrutador = createBrowserRouter([
   {
     element: <SoloSinSesion />,
@@ -42,11 +45,13 @@ export const enrutador = createBrowserRouter([
               { path: "/panel", element: <Panel /> },
               { path: "/editor/nuevo", element: <NuevoCurso /> },
               { path: "/editor/:idCurso", element: <MapaCurso /> },
+              { path: "/moderacion/:idCurso", element: <RevisarCurso /> },
               { path: "*", element: <NoEncontrada /> },
             ],
           },
           { path: "/cursos/:idCurso/lecciones/:idLeccion", element: <Leccion /> },
           { path: "/editor/:idCurso/lecciones/:idLeccion", element: <LienzoLeccion /> },
+          { path: "/moderacion/:idCurso/lecciones/:idLeccion", element: <ProbarLeccionRevision /> },
         ],
       },
     ],
