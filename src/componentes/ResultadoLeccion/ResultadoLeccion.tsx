@@ -3,6 +3,8 @@ import { useEffect, useRef } from "react";
 import Aviso from "../Aviso/Aviso.tsx";
 import Boton from "../Boton/Boton.tsx";
 import Insignia from "../Insignia/Insignia.tsx";
+import InsigniaCurso from "../InsigniaCurso/InsigniaCurso.tsx";
+import type { InsigniaCurso as TipoInsigniaCurso } from "../../tipos/contrato.ts";
 import estilos from "./ResultadoLeccion.module.css";
 
 // Estado del progreso de la lección (spec F04). Los mismos valores que en el
@@ -18,6 +20,8 @@ type PropsResultadoLeccion = {
   guardado?: EstadoGuardado;
   alReintentar?: () => void;
   textoVolver?: string;
+  // F08: la insignia que ganó con esta lección; solo llega si el progreso se guardó
+  insignia?: TipoInsigniaCurso | null;
 };
 
 const AVISOS_GUARDADO = {
@@ -37,6 +41,7 @@ export default function ResultadoLeccion({
   guardado,
   alReintentar,
   textoVolver = "Volver al curso",
+  insignia,
 }: PropsResultadoLeccion) {
   const encabezado = useRef<HTMLHeadingElement>(null);
 
@@ -65,6 +70,12 @@ export default function ResultadoLeccion({
       )}
       {guardado && (
         <div className={estilos.guardado} aria-live="polite">
+          {insignia && (
+            <div className={estilos.insignia}>
+              <InsigniaCurso insignia={insignia} tamano="grande" />
+              <p className={estilos.textoInsignia}>¡Ganaste la insignia de {insignia.titulo}!</p>
+            </div>
+          )}
           <EstadoDelGuardado guardado={guardado} alReintentar={alReintentar} />
         </div>
       )}
