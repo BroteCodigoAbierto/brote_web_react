@@ -3,6 +3,7 @@ import Aviso from "../../componentes/Aviso/Aviso.tsx";
 import Boton from "../../componentes/Boton/Boton.tsx";
 import CampoArea from "../../componentes/CampoArea/CampoArea.tsx";
 import CampoImagen from "../../componentes/CampoImagen/CampoImagen.tsx";
+import CampoCasilla from "../../componentes/CampoCasilla/CampoCasilla.tsx";
 import CampoSelector from "../../componentes/CampoSelector/CampoSelector.tsx";
 import PesoArchivos from "../../componentes/PesoArchivos/PesoArchivos.tsx";
 import VistaPortada from "../../componentes/VistaPortada/VistaPortada.tsx";
@@ -34,7 +35,7 @@ type ValoresCurso = Record<CampoCurso, string>;
 
 // F14: el idioma va con el título y la descripción en la copia que se recupera al volver a
 // entrar (una copia de antes no lo trae)
-type CapturadoCurso = ValoresCurso & { idioma?: IdiomaCurso };
+type CapturadoCurso = ValoresCurso & { idioma?: IdiomaCurso; daInsignia?: boolean };
 
 const OPCIONES_IDIOMA = IDIOMAS_CURSO.map((idioma) => ({
   valor: idioma,
@@ -81,6 +82,10 @@ export default function DatosCurso({
   const [idioma, setIdioma] = useState<IdiomaCurso>(inicial?.idioma ?? curso.idioma);
   const [idiomaGuardado, setIdiomaGuardado] = useState(curso.idioma);
   const cambioIdioma = idioma !== idiomaGuardado;
+  // F08: la insignia, como el idioma: se manda solo si cambió
+  const [daInsignia, setDaInsignia] = useState(inicial?.daInsignia ?? curso.daInsignia);
+  const [daInsigniaGuardado, setDaInsigniaGuardado] = useState(curso.daInsignia);
+  const cambioInsignia = daInsignia !== daInsigniaGuardado;
 
   const { valores, errores, general, enviando, cambiar, manejarEnvio } = useFormulario<CampoCurso>({
     inicial: inicial ? { titulo: inicial.titulo, descripcion: inicial.descripcion } : guardados,
@@ -93,12 +98,14 @@ export default function DatosCurso({
           ...datos,
           ...(cambioPortada && { idPortada }),
           ...(cambioIdioma && { idioma }),
+          ...(cambioInsignia && { daInsignia }),
         });
         // el servidor recorta el título: lo guardado es lo que devuelve
         cambiar("titulo", guardado.titulo);
         setGuardados({ titulo: guardado.titulo, descripcion: guardado.descripcion });
         setPortadaGuardada(guardado.portada?.id ?? null);
         setIdiomaGuardado(guardado.idioma);
+        setDaInsigniaGuardado(guardado.daInsignia);
         setPesoArchivos(guardado.pesoArchivos);
         setRecienGuardado(true);
       } catch (error) {
@@ -116,6 +123,7 @@ export default function DatosCurso({
     valores.descripcion !== guardados.descripcion ||
     cambioPortada ||
     cambioIdioma ||
+    cambioInsignia ||
     portada.subida !== null;
 
   // F13: un 400 con campos.portada (no es del curso o es un GIF) va en su campo
@@ -165,8 +173,8 @@ export default function DatosCurso({
 
   const { titulo, descripcion } = valores;
   useEffect(() => {
-    alCambiarCapturado({ titulo, descripcion, idioma });
-  }, [titulo, descripcion, idioma, alCambiarCapturado]);
+    alCambiarCapturado({ titulo, descripcion, idioma, daInsignia });
+  }, [titulo, descripcion, idioma, daInsignia, alCambiarCapturado]);
 
   return (
     <Superficie className={estilos.panel}>
@@ -212,6 +220,14 @@ export default function DatosCurso({
           opciones={OPCIONES_IDIOMA}
           alCambiar={(valor) => valor && setIdioma(valor as IdiomaCurso)}
           ayuda="El idioma de la voz que lee las frases de escuchar y repetir."
+          deshabilitado={ocupado}
+        />
+        <CampoCasilla
+          id="insignia-curso"
+          etiqueta="Dar una insignia a quien complete el curso"
+          ayuda="Quien termine todas las lecciones gana una insignia con la portada del curso."
+          valor={daInsignia}
+          alCambiar={setDaInsignia}
           deshabilitado={ocupado}
         />
         {pesoArchivos > 0 && (
