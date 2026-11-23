@@ -168,7 +168,10 @@ function LeccionTerminada({
   preguntas,
   alSalir,
 }: PropsLeccionTerminada) {
-  const { estado, reintentar } = useGuardarProgreso(idCurso, idLeccion, { aciertos, preguntas });
+  const { estado, reintentar, insignia } = useGuardarProgreso(idCurso, idLeccion, {
+    aciertos,
+    preguntas,
+  });
 
   return (
     <div className={estilos.pantalla}>
@@ -185,6 +188,7 @@ function LeccionTerminada({
           alVolver={alSalir}
           guardado={estado}
           alReintentar={reintentar}
+          insignia={insignia}
         />
       </main>
     </div>

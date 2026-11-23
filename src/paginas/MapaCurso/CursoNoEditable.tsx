@@ -104,6 +104,12 @@ export default function CursoNoEditable({
           </div>
           {/* F14: como texto, porque no se edita */}
           <p className={estilos.idiomaCurso}>Idioma: {NOMBRE_IDIOMA[curso.idioma]}</p>
+          {/* F08: como texto, igual que el idioma */}
+          <p className={estilos.idiomaCurso}>
+            {curso.daInsignia
+              ? "Da una insignia a quien lo complete"
+              : "No da insignia a quien lo complete"}
+          </p>
         </div>
       </div>
       <div className={estilos.explicacion}>

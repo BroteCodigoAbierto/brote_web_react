@@ -59,7 +59,8 @@
 /* el estado del progreso (F04) */
 .guardado {
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  align-items: center;
   width: 100%;
 }
 
@@ -129,4 +130,21 @@
   .indicador {
     animation-duration: 2s;
   }
+}
+
+/* F08: la insignia ganada, centrada, antes del estado del guardado */
+.insignia {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: var(--espacio-4);
+  margin-bottom: var(--espacio-5);
+  text-align: center;
+}
+
+.textoInsignia {
+  margin: 0;
+  font: var(--texto-titulo3);
+  color: var(--color-texto);
+  overflow-wrap: anywhere;
 }

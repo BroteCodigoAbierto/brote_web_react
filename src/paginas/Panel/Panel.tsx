@@ -1,16 +1,21 @@
-import { BookMarked, Plus, SquarePen } from "lucide-react";
+import { BookMarked, Medal, Plus, SquarePen } from "lucide-react";
 import { Link, useNavigate } from "react-router";
 import Boton from "../../componentes/Boton/Boton.tsx";
 import ErrorCarga from "../../componentes/ErrorCarga/ErrorCarga.tsx";
 import EstadoVacio from "../../componentes/EstadoVacio/EstadoVacio.tsx";
 import IndicadorCarga from "../../componentes/IndicadorCarga/IndicadorCarga.tsx";
+import InsigniaCurso from "../../componentes/InsigniaCurso/InsigniaCurso.tsx";
 import TarjetaCurso from "../../componentes/TarjetaCurso/TarjetaCurso.tsx";
 import TarjetaCursoAutor from "../../componentes/TarjetaCursoAutor/TarjetaCursoAutor.tsx";
 import { usePeticion } from "../../hooks/usePeticion.ts";
 import { leerErrorDeCarga } from "../../servicios/cursos.ts";
 import { traerCursosDelAutor } from "../../servicios/editor.ts";
-import { traerCursosEmpezados } from "../../servicios/progreso.ts";
-import type { CursoDelAutor, CursoEmpezado } from "../../tipos/contrato.ts";
+import { traerCursosEmpezados, traerInsignias } from "../../servicios/progreso.ts";
+import type {
+  CursoDelAutor,
+  CursoEmpezado,
+  InsigniaCurso as Insignia,
+} from "../../tipos/contrato.ts";
 import estilos from "./Panel.module.css";
 
 // "Mi panel" (specs F04 y F05): la página personal (docs/diseno.md, sección 5,
@@ -21,6 +26,7 @@ export default function Panel() {
     <div className={estilos.panel}>
       <h1 className={estilos.titulo}>Mi panel</h1>
       <SigueAprendiendo />
+      <MisInsignias />
       <CursosQueCree />
     </div>
   );
@@ -138,6 +144,65 @@ function ContenidoCursosQueCree({
       {cursos.map((curso) => (
         <li key={curso.id}>
           <TarjetaCursoAutor curso={curso} />
+        </li>
+      ))}
+    </ul>
+  );
+}
+
+// F08: las insignias de quien entra, de la más reciente a la más antigua. Sus estados son
+// propios: si fallan, las otras secciones siguen.
+function MisInsignias() {
+  const { datos, cargando, error, recargar } = usePeticion(traerInsignias);
+
+  return (
+    <section className={estilos.seccion} aria-labelledby="titulo-mis-insignias">
+      <h2 id="titulo-mis-insignias" className={estilos.tituloSeccion}>
+        Mis insignias
+      </h2>
+      <ContenidoMisInsignias
+        insignias={datos?.insignias ?? null}
+        cargando={cargando}
+        error={error}
+        alReintentar={recargar}
+      />
+    </section>
+  );
+}
+
+type PropsContenidoMisInsignias = {
+  insignias: Insignia[] | null;
+  cargando: boolean;
+  error: unknown;
+  alReintentar: () => void;
+};
+
+function ContenidoMisInsignias({
+  insignias,
+  cargando,
+  error,
+  alReintentar,
+}: PropsContenidoMisInsignias) {
+  if (cargando) return <IndicadorCarga />;
+  if (error || !insignias) {
+    return (
+      <ErrorCarga mensaje="No se pudieron cargar tus insignias." alReintentar={alReintentar} />
+    );
+  }
+  if (insignias.length === 0) {
+    return (
+      <EstadoVacio
+        icono={Medal}
+        titulo="Todavía no tienes insignias"
+        texto="Completa un curso que dé insignia para ganar la primera."
+      />
+    );
+  }
+  return (
+    <ul className={estilos.insignias}>
+      {insignias.map((insignia) => (
+        <li key={insignia.idCurso}>
+          <InsigniaCurso insignia={insignia} tamano="lista" />
         </li>
       ))}
     </ul>
