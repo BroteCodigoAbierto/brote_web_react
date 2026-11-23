@@ -9,6 +9,7 @@ de [brote_backend_express](https://github.com/BroteCodigoAbierto/brote_backend_e
 
 ## Entrega de Aplicaciones Web
 
+- **Desplegada**: https://brote-web-react.vercel.app
 - [Bitácora de IA](docs/bitacora-ia.md)
 - [Diario de decisiones](docs/diario-decisiones.md)
 - Los otros repos del proyecto:
