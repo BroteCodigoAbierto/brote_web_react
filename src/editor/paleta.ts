@@ -29,7 +29,7 @@ type GrupoPaleta = {
   entradas: EntradaPaleta[];
 };
 
-// Los 13 tipos del catálogo (specs/00-proyecto.md). Un tipo se activa solo cuando
+// Los 13 tipos del catálogo (12 visibles: el grafo de commits está oculto) (specs/00-proyecto.md). Un tipo se activa solo cuando
 // entra a registroEditor, sin tocar nada aquí (brote_specs, research de F05, punto 10).
 export const GRUPOS_PALETA: GrupoPaleta[] = [
   {
@@ -56,7 +56,9 @@ export const GRUPOS_PALETA: GrupoPaleta[] = [
     entradas: [
       { tipo: "retoCodigo", etiqueta: "Reto de código", icono: Code },
       { tipo: "terminalSimulada", etiqueta: "Terminal simulada", icono: SquareTerminal },
-      { tipo: "grafoCommits", etiqueta: "Grafo de commits", icono: GitGraph },
+      // Grafo de commits: por ahora un autor no puede incluirlo en su curso. Para
+      // activarlo, descomenta esta línea y quita la entrada de ENTRADAS_OCULTAS.
+      // { tipo: "grafoCommits", etiqueta: "Grafo de commits", icono: GitGraph },
     ],
   },
   {
@@ -65,12 +67,17 @@ export const GRUPOS_PALETA: GrupoPaleta[] = [
   },
 ];
 
+// Fuera de la paleta, pero un curso que ya lo tiene se sigue mostrando y editando.
+const ENTRADAS_OCULTAS: EntradaPaleta[] = [
+  { tipo: "grafoCommits", etiqueta: "Grafo de commits", icono: GitGraph },
+];
+
 export function tipoDisponible(tipo: string): tipo is TipoActividad {
   return Object.hasOwn(registroEditor, tipo);
 }
 
 export function datosTipo(tipo: TipoActividad): EntradaPaleta {
-  const entrada = GRUPOS_PALETA.flatMap(({ entradas }) => entradas).find(
+  const entrada = [...GRUPOS_PALETA.flatMap(({ entradas }) => entradas), ...ENTRADAS_OCULTAS].find(
     (candidata) => candidata.tipo === tipo,
   );
   if (!entrada) throw new Error(`El tipo ${tipo} no está en la paleta`);
