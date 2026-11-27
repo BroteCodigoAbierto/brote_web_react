@@ -26,6 +26,7 @@ export type ItemArrastre =
 
 export type EstadoLeccion = {
   titulo: string;
+  modulo: string;
   bloques: Bloque[];
   idSeleccionado: string | null;
   // la que se abrió, o la última que se guardó aquí
@@ -36,10 +37,13 @@ export type EstadoLeccion = {
 };
 
 // Lo que se recupera si la sesión expira al guardar (research de F05, punto 15).
-export type CopiaLeccion = Pick<EstadoLeccion, "titulo" | "bloques" | "version">;
+export type CopiaLeccion = Pick<EstadoLeccion, "titulo" | "bloques" | "version"> & {
+  modulo?: string;
+};
 
 export type AccionLeccion =
   | { tipo: "cambiarTitulo"; titulo: string }
+  | { tipo: "cambiarModulo"; modulo: string }
   | { tipo: "agregar"; tipoActividad: TipoActividad; posicion?: number }
   | { tipo: "cambiarBorrador"; id: string; borrador: unknown }
   | { tipo: "mover"; desde: number; hasta: number }
@@ -86,6 +90,7 @@ export function aActividad({ tipo, borrador }: Bloque): Actividad {
 export function estadoInicial(leccion: LeccionEnEditor, copia: CopiaLeccion | null): EstadoLeccion {
   return {
     titulo: copia?.titulo ?? leccion.titulo,
+    modulo: copia?.modulo ?? leccion.modulo ?? "",
     // F13 y F14: lo que se estaba subiendo cuando expiró la sesión no llegó
     bloques: copia ? limpiarSubidas(copia.bloques) : leccion.actividades.map(aBloque),
     idSeleccionado: null,
@@ -105,6 +110,8 @@ export function reducirLeccion(estado: EstadoLeccion, accion: AccionLeccion): Es
   switch (accion.tipo) {
     case "cambiarTitulo":
       return { ...estado, titulo: accion.titulo, hayCambios: true };
+    case "cambiarModulo":
+      return { ...estado, modulo: accion.modulo, hayCambios: true };
     case "agregar": {
       const bloque: Bloque = {
         id: idLocal(),

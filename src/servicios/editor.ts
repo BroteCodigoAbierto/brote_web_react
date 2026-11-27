@@ -1,18 +1,21 @@
 import type {
   CuerpoDatosCurso,
+  CuerpoForkCurso,
   CuerpoGuardarLeccion,
   CuerpoNuevaLeccion,
+  CursoExportado,
+  ReporteActividad,
   RespuestaCursoEnEditor,
   RespuestaCursosDelAutor,
   RespuestaError,
   RespuestaLeccionEnEditor,
   RespuestaLeccionEnMapa,
+  RespuestaReportes,
 } from "../tipos/contrato.ts";
 import { ErrorHttp, MENSAJE_SIN_SERVIDOR, pedir } from "./api.ts";
 import { leerErrorDeEnvio, type ErrorDeEnvio } from "./sesion.ts";
 
-// El editor de cursos (spec F05). Los errores al abrir (404) usan esNoDisponible y
-// leerErrorDeCarga de servicios/cursos.ts, porque significan lo mismo.
+// El editor de cursos (spec F05 + decisión 0020).
 
 function rutaCurso(idCurso: string): string {
   return `/editor/cursos/${encodeURIComponent(idCurso)}`;
@@ -28,6 +31,24 @@ export function traerCursosDelAutor() {
 
 export function crearCurso(cuerpo: CuerpoDatosCurso) {
   return pedir<RespuestaCursoEnEditor>("/editor/cursos", {
+    method: "POST",
+    body: JSON.stringify(cuerpo),
+  });
+}
+
+export function importarCurso(cuerpo: CursoExportado) {
+  return pedir<RespuestaCursoEnEditor>("/editor/cursos/importar", {
+    method: "POST",
+    body: JSON.stringify(cuerpo),
+  });
+}
+
+export function exportarCurso(idCurso: string) {
+  return pedir<CursoExportado>(`${rutaCurso(idCurso)}/exportar`);
+}
+
+export function bifurcarCurso(idCurso: string, cuerpo: CuerpoForkCurso = {}) {
+  return pedir<RespuestaCursoEnEditor>(`${rutaCurso(idCurso)}/fork`, {
     method: "POST",
     body: JSON.stringify(cuerpo),
   });
@@ -81,12 +102,27 @@ export function enviarARevision(idCurso: string) {
   return pedir<RespuestaCursoEnEditor>(`${rutaCurso(idCurso)}/revision`, { method: "POST" });
 }
 
+export function publicarCursoDirecto(idCurso: string) {
+  return pedir<RespuestaCursoEnEditor>(`${rutaCurso(idCurso)}/publicacion`, { method: "POST" });
+}
+
 export function retirarDeRevision(idCurso: string) {
   return pedir<RespuestaCursoEnEditor>(`${rutaCurso(idCurso)}/revision`, { method: "DELETE" });
 }
 
 export function retirarDelCatalogo(idCurso: string) {
   return pedir<RespuestaCursoEnEditor>(`${rutaCurso(idCurso)}/publicacion`, { method: "DELETE" });
+}
+
+export function traerReportesDelAutor() {
+  return pedir<RespuestaReportes>("/editor/reportes");
+}
+
+export function cambiarEstadoReporte(idReporte: string, resuelto: boolean) {
+  return pedir<{ reporte: ReporteActividad }>(`/editor/reportes/${encodeURIComponent(idReporte)}`, {
+    method: "PATCH",
+    body: JSON.stringify({ resuelto }),
+  });
 }
 
 function tieneEstado(error: unknown, estado: number): boolean {

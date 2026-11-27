@@ -1,20 +1,16 @@
 import { createContext } from "react";
+import type { FiltrosCatalogo } from "../servicios/cursos.ts";
 import type { ResumenCurso } from "../tipos/contrato.ts";
 
-// Estado global del catálogo (decisión 0011). Lo llena CatalogoProvider, que
-// vive en el Layout, y se lee con useCatalogo(). Así la búsqueda y los cursos
-// cargados siguen ahí al volver del detalle (research de F02, punto 8).
-
+// Estado global del catálogo (decisiones 0011 y 0020). Vive en ZonaExplorable
+// para que filtros, búsqueda y cursos sigan ahí al volver del detalle.
 export type EstadoCatalogo = {
-  // la búsqueda, ya recortada, de lo que está en pantalla (la lista o el
-  // error); null hasta la primera respuesta. La que está en camino no cuenta
+  filtros: FiltrosCatalogo | null;
+  // texto recortado de la última respuesta, para mostrar mensajes de vacío
   consulta: string | null;
   cursos: ResumenCurso[];
-  // cursor para pedir los 10 siguientes; null si no hay más
   siguiente: string | null;
-  // la primera carga de la consulta: sin lista mientras carga o si falló
   fase: "cargando" | "listo" | "error";
-  // hay una búsqueda nueva en camino y la lista anterior sigue en pantalla
   buscando: boolean;
   cargandoMas: boolean;
   errorMas: unknown;
@@ -22,7 +18,7 @@ export type EstadoCatalogo = {
 };
 
 export type ValorCatalogo = EstadoCatalogo & {
-  buscar: (consulta: string) => void;
+  buscar: (filtros: FiltrosCatalogo) => void;
   cargarMas: () => void;
   reintentar: () => void;
 };

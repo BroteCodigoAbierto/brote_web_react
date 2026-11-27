@@ -1,4 +1,4 @@
-import { ArrowLeft, CircleSlash, MessageSquareWarning, Trash2 } from "lucide-react";
+import { ArrowLeft, CircleSlash, Download, MessageSquareWarning, Trash2 } from "lucide-react";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { Link, useLocation, useNavigate, useParams } from "react-router";
 import Aviso from "../../componentes/Aviso/Aviso.tsx";
@@ -14,6 +14,7 @@ import { esNoDisponible, leerErrorDeCarga } from "../../servicios/cursos.ts";
 import {
   borrarCurso,
   esSesionPerdida,
+  exportarCurso,
   leerErrorDeAccion,
   traerCursoEnEditor,
 } from "../../servicios/editor.ts";
@@ -26,8 +27,7 @@ import EnviarRevision from "./EnviarRevision.tsx";
 import ListaLecciones from "./ListaLecciones.tsx";
 import estilos from "./MapaCurso.module.css";
 
-// Mapa del curso (specs F05 y F06; docs/diseno.md, sección 5): en borrador, sus datos
-// y sus lecciones; en revisión o publicado, lo que se puede hacer con él.
+// Mapa del curso (F05 + F06 + F07 + decisión 0020).
 export default function MapaCurso() {
   const { idCurso = "" } = useParams();
   const { datos, cargando, error, recargar } = usePeticion(
@@ -42,7 +42,7 @@ export default function MapaCurso() {
         icono={CircleSlash}
         titulo={leerErrorDeCarga(error)}
         anunciar
-        accion={<Link to="/panel">Ir a Mi panel</Link>}
+        accion={<Link to="/estudio">Ir al Estudio</Link>}
       />
     );
   }
@@ -51,7 +51,6 @@ export default function MapaCurso() {
     return <ErrorCarga mensaje={leerErrorDeCarga(error)} alReintentar={recargar} />;
   }
 
-  // con key: otro curso en la dirección empieza de cero
   return <PantallaCurso key={datos.curso.id} cursoInicial={datos.curso} />;
 }
 
@@ -59,8 +58,6 @@ type PropsPantallaCurso = {
   cursoInicial: CursoEnEditor;
 };
 
-// Guarda el curso para cambiar de estado sin recargar: el indicador de usePeticion se
-// comería el aviso (brote_specs, research de F06, punto 8).
 function PantallaCurso({ cursoInicial }: PropsPantallaCurso) {
   const navegar = useNavigate();
   const [curso, setCurso] = useState(cursoInicial);
@@ -68,7 +65,6 @@ function PantallaCurso({ cursoInicial }: PropsPantallaCurso) {
   const contenedor = useRef<HTMLDivElement>(null);
   const estadoMostrado = useRef(curso.estado);
 
-  // el botón pulsado desaparece con el estado: el foco no debe quedarse sin lugar
   useEffect(() => {
     if (estadoMostrado.current === curso.estado) return;
     estadoMostrado.current = curso.estado;
@@ -87,9 +83,9 @@ function PantallaCurso({ cursoInicial }: PropsPantallaCurso) {
           variante="enlace"
           tamano="chico"
           icono={ArrowLeft}
-          alPulsar={() => navegar("/panel")}
+          alPulsar={() => navegar("/estudio")}
         >
-          Mi panel
+          Estudio
         </Boton>
       </div>
       {avisoEstado && <Aviso texto={avisoEstado.texto} tono={avisoEstado.tono} />}
@@ -97,6 +93,7 @@ function PantallaCurso({ cursoInicial }: PropsPantallaCurso) {
         <ContenidoMapa
           key={curso.estado}
           curso={curso}
+          alActualizarCurso={setCurso}
           alCambiarCurso={cambiarCurso}
           alLimpiarAviso={() => setAvisoEstado(null)}
         />
@@ -111,29 +108,31 @@ function PantallaCurso({ cursoInicial }: PropsPantallaCurso) {
   );
 }
 
-// Lo que se recupera si la sesión expira en esta pantalla (research de F05, punto 15).
 type CopiaMapa = {
   titulo: string;
   descripcion: string;
-  idioma?: IdiomaCurso; // F14; una copia de antes no lo trae
+  idioma?: IdiomaCurso;
   nuevaLeccion: string;
 };
 
 type PropsContenidoMapa = {
   curso: CursoEnEditor;
+  alActualizarCurso: (curso: CursoEnEditor) => void;
   alCambiarCurso: (curso: CursoEnEditor, aviso: AvisoEstado) => void;
   alLimpiarAviso: () => void;
 };
 
 const SIN_MARCADAS: ReadonlySet<string> = new Set();
 
-// El formulario y la lista comparten pantalla: lo capturado y `ocupado` viven aquí,
-// porque un 401 o un guardado en uno afecta al otro.
-function ContenidoMapa({ curso, alCambiarCurso, alLimpiarAviso }: PropsContenidoMapa) {
+function ContenidoMapa({
+  curso,
+  alActualizarCurso,
+  alCambiarCurso,
+  alLimpiarAviso,
+}: PropsContenidoMapa) {
   const navegar = useNavigate();
   const { pathname } = useLocation();
   const idUsuario = useSesion().usuario?.id ?? "";
-  // una sola vez: tomarCopia la borra
   const [copia] = useState(() => tomarCopia<CopiaMapa>(idUsuario, pathname));
   const capturado = useRef<CopiaMapa>(
     copia ?? {
@@ -149,6 +148,7 @@ function ContenidoMapa({ curso, alCambiarCurso, alLimpiarAviso }: PropsContenido
   const [ocupado, setOcupado] = useState(false);
   const [confirmando, setConfirmando] = useState(false);
   const [eliminando, setEliminando] = useState(false);
+  const [exportando, setExportando] = useState(false);
   const [aviso, setAviso] = useState<string | null>(null);
   const { propsDialogo, salirSinPreguntar } = useSalirSinGuardar(hayCambios);
 
@@ -159,7 +159,6 @@ function ContenidoMapa({ curso, alCambiarCurso, alLimpiarAviso }: PropsContenido
     [],
   );
 
-  // Las marcas y los avisos duran hasta la siguiente acción.
   function cambiarOcupado(valor: boolean) {
     setOcupado(valor);
     if (!valor) return;
@@ -172,13 +171,32 @@ function ContenidoMapa({ curso, alCambiarCurso, alLimpiarAviso }: PropsContenido
     guardarCopia({ idUsuario, ruta: pathname, datos: capturado.current });
   }
 
+  async function descargarJson() {
+    setExportando(true);
+    setAviso(null);
+    try {
+      const datos = await exportarCurso(curso.id);
+      const blob = new Blob([JSON.stringify(datos, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const enlace = document.createElement("a");
+      enlace.href = url;
+      enlace.download = `curso-${curso.id}.brote.json`;
+      enlace.click();
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      setAviso(leerErrorDeAccion(error, "No se pudo exportar el curso."));
+    } finally {
+      setExportando(false);
+    }
+  }
+
   async function eliminar() {
     setEliminando(true);
     cambiarOcupado(true);
     try {
       await borrarCurso(curso.id);
       salirSinPreguntar();
-      navegar("/panel");
+      navegar("/estudio");
     } catch (error) {
       setConfirmando(false);
       if (esSesionPerdida(error)) alSesionPerdida();
@@ -208,6 +226,7 @@ function ContenidoMapa({ curso, alCambiarCurso, alLimpiarAviso }: PropsContenido
         alCambiarOcupado={cambiarOcupado}
         alCambiarPendientes={setHayCambios}
         alCambiarCapturado={capturarDatos}
+        alActualizarCurso={alActualizarCurso}
         alSesionPerdida={alSesionPerdida}
       />
       <ListaLecciones
@@ -227,6 +246,7 @@ function ContenidoMapa({ curso, alCambiarCurso, alLimpiarAviso }: PropsContenido
       <div className={estilos.botonesCurso}>
         <EnviarRevision
           idCurso={curso.id}
+          puedePublicarDirecto={curso.puedePublicarDirecto}
           hayCambios={hayCambios}
           ocupado={ocupado}
           alCambiarOcupado={cambiarOcupado}
@@ -236,6 +256,16 @@ function ContenidoMapa({ curso, alCambiarCurso, alLimpiarAviso }: PropsContenido
           alCambiarCurso={alCambiarCurso}
           alSesionPerdida={alSesionPerdida}
         />
+        <Boton
+          variante="secundario"
+          icono={Download}
+          enviando={exportando}
+          textoEnviando="Exportando..."
+          deshabilitado={ocupado}
+          alPulsar={descargarJson}
+        >
+          Exportar JSON
+        </Boton>
         <Boton
           variante="peligro"
           icono={Trash2}

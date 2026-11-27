@@ -220,3 +220,60 @@
     --color-vidrio-suave: var(--color-vidrio-opaco);
   }
 }
+
+/* ---------------------------------------------------------------------------
+   Variante opcional "Editorial" (decisión 0020): alternativa estructurada de
+   alto contraste y superficies sólidas. Liquid Glass ("vidrio") sigue siendo
+   el aspecto predeterminado en :root.
+   --------------------------------------------------------------------------- */
+:root[data-variante="editorial"] {
+  --color-fondo: #f7f7f5;
+  --color-vidrio: #ffffff;
+  --color-vidrio-suave: #f3f4f6;
+  --color-vidrio-opaco: #ffffff;
+  --color-vidrio-borde: #d8d9e4;
+  --color-borde: #e2e3ec;
+  --color-borde-fuerte: #c4c6d8;
+  --fondo-ambiental: linear-gradient(180deg, #fafaf8 0%, #f3f4f6 100%);
+  --sombra-suave: 0 1px 3px rgba(15, 23, 42, 0.06), 0 1px 2px rgba(15, 23, 42, 0.04);
+  --sombra-elevada: 0 10px 24px rgba(15, 23, 42, 0.08), 0 2px 6px rgba(15, 23, 42, 0.04);
+  --sombra-boton: 0 2px 6px rgba(79, 70, 229, 0.22);
+  --brillo-vidrio: none;
+  --desenfoque: none;
+  --radio-chico: 8px;
+  --radio-medio: 12px;
+  --radio-grande: 16px;
+  --radio-enorme: 22px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root[data-variante="editorial"]:not([data-tema="claro"]) {
+    --color-fondo: #0f1117;
+    --color-vidrio: #171a24;
+    --color-vidrio-suave: #1f2330;
+    --color-vidrio-opaco: #171a24;
+    --color-vidrio-borde: #2b3042;
+    --color-borde: #262b3b;
+    --color-borde-fuerte: #3a4058;
+    --fondo-ambiental: linear-gradient(180deg, #11131b 0%, #0d0f15 100%);
+    --sombra-suave: 0 1px 4px rgba(0, 0, 0, 0.35);
+    --sombra-elevada: 0 12px 28px rgba(0, 0, 0, 0.45);
+    --brillo-vidrio: none;
+    --desenfoque: none;
+  }
+}
+
+:root[data-variante="editorial"][data-tema="oscuro"] {
+  --color-fondo: #0f1117;
+  --color-vidrio: #171a24;
+  --color-vidrio-suave: #1f2330;
+  --color-vidrio-opaco: #171a24;
+  --color-vidrio-borde: #2b3042;
+  --color-borde: #262b3b;
+  --color-borde-fuerte: #3a4058;
+  --fondo-ambiental: linear-gradient(180deg, #11131b 0%, #0d0f15 100%);
+  --sombra-suave: 0 1px 4px rgba(0, 0, 0, 0.35);
+  --sombra-elevada: 0 12px 28px rgba(0, 0, 0, 0.45);
+  --brillo-vidrio: none;
+  --desenfoque: none;
+}

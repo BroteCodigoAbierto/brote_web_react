@@ -1,6 +1,11 @@
-import { BookOpen } from "lucide-react";
+import { Award, BookOpen, Building2, CheckCircle2 } from "lucide-react";
 import { Link } from "react-router";
-import type { ResumenCurso } from "../../tipos/contrato.ts";
+import {
+  NOMBRE_CATEGORIA,
+  NOMBRE_IDIOMA,
+  NOMBRE_NIVEL,
+  type ResumenCurso,
+} from "../../tipos/contrato.ts";
 import { textoCantidadLecciones } from "../../utilidades/cursos.ts";
 import AvanceCurso from "../AvanceCurso/AvanceCurso.tsx";
 import Insignia from "../Insignia/Insignia.tsx";
@@ -26,6 +31,15 @@ export default function TarjetaCurso({ curso, avance }: PropsTarjetaCurso) {
         idPortada={curso.idPortada}
       />
       <div className={estilos.texto}>
+        <div className={estilos.etiquetasSuperiores}>
+          <Insignia tono="primario">{NOMBRE_CATEGORIA[curso.categoria]}</Insignia>
+          <Insignia>{NOMBRE_NIVEL[curso.nivel]}</Insignia>
+          {curso.organizacion && (
+            <Insignia tono="acento" icono={Building2}>
+              {curso.organizacion.nombre}
+            </Insignia>
+          )}
+        </div>
         <h2 className={estilos.titulo}>{curso.titulo}</h2>
         <p className={estilos.autor}>Por {curso.autor.nombre}</p>
         {avance ? (
@@ -39,6 +53,17 @@ export default function TarjetaCurso({ curso, avance }: PropsTarjetaCurso) {
               <Insignia icono={BookOpen}>
                 {textoCantidadLecciones(curso.cantidadLecciones)}
               </Insignia>
+              <Insignia>{NOMBRE_IDIOMA[curso.idioma]}</Insignia>
+              {curso.daInsignia && (
+                <Insignia tono="acento" icono={Award}>
+                  Insignia
+                </Insignia>
+              )}
+              {curso.completado && (
+                <Insignia tono="brote" icono={CheckCircle2}>
+                  Completado
+                </Insignia>
+              )}
             </div>
           </>
         )}

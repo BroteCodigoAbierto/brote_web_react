@@ -1,6 +1,7 @@
 import {
   ArrowLeft,
   BookOpen,
+  Building2,
   CalendarClock,
   Check,
   ChevronRight,
@@ -38,9 +39,8 @@ import estilos from "./RevisarCurso.module.css";
 
 const FECHA = new Intl.DateTimeFormat("es", { day: "numeric", month: "long", year: "numeric" });
 
-// La revisión de un curso (decisión 0018), solo para administradores: el curso como lo
-// vería un alumno, sus lecciones para probarlas sin registrar progreso, y la decisión:
-// "Aprobar" lo publica; "No aprobar" lo regresa a su autor con un motivo opcional.
+// La revisión de un curso (decisión 0018 y 0020): el curso como lo vería un alumno,
+// sus lecciones para probarlas sin registrar progreso, y la decisión.
 export default function RevisarCurso() {
   const { idCurso = "" } = useParams();
   const { datos, cargando, error, recargar } = usePeticion(
@@ -55,7 +55,7 @@ export default function RevisarCurso() {
         icono={CircleSlash}
         titulo={leerErrorDeModeracion(error, "Este curso ya no está en revisión.")}
         anunciar
-        accion={<Link to="/panel">Volver a Mi panel</Link>}
+        accion={<Link to="/estudio?pestana=revision">Volver a la cola de revisión</Link>}
       />
     );
   }
@@ -77,9 +77,9 @@ function Revision({ curso }: { curso: CursoEnModeracion }) {
           variante="enlace"
           tamano="chico"
           icono={ArrowLeft}
-          alPulsar={() => navegar("/panel")}
+          alPulsar={() => navegar("/estudio?pestana=revision")}
         >
-          Mi panel
+          Cola de revisión
         </Boton>
       </div>
 
@@ -103,6 +103,11 @@ function Revision({ curso }: { curso: CursoEnModeracion }) {
             <Insignia tono="primario" icono={BookOpen}>
               {textoCantidadLecciones(curso.cantidadLecciones)}
             </Insignia>
+            {curso.organizacion && (
+              <Insignia tono="acento" icono={Building2}>
+                {curso.organizacion.nombre}
+              </Insignia>
+            )}
             {curso.daInsignia && <Insignia icono={Medal}>Da insignia</Insignia>}
             <Insignia icono={CalendarClock}>
               Enviado el {FECHA.format(new Date(curso.enviadoEn))}
@@ -171,13 +176,13 @@ function Decision({ curso }: { curso: CursoEnModeracion }) {
         accion === "aprobar"
           ? `«${curso.titulo}» ya está publicado en el catálogo.`
           : `«${curso.titulo}» no se aprobó: volvió a su autor como borrador.`;
-      navegar("/panel", { state: estadoConAviso({ texto, tono: "exito" }) });
+      navegar("/estudio?pestana=revision", { state: estadoConAviso({ texto, tono: "exito" }) });
     } catch (err) {
       const respaldo =
         accion === "aprobar" ? "No se pudo aprobar el curso." : "No se pudo enviar la decisión.";
       const texto = leerErrorDeModeracion(err, respaldo);
       if (yaNoEnRevision(err)) {
-        navegar("/panel", { state: estadoConAviso({ texto, tono: "error" }) });
+        navegar("/estudio?pestana=revision", { state: estadoConAviso({ texto, tono: "error" }) });
         return;
       }
       setError(texto);

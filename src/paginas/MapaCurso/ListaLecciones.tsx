@@ -62,15 +62,16 @@ export default function ListaLecciones({
   alSesionPerdida,
 }: PropsListaLecciones) {
   const idTitulo = useId();
+  const idModulo = useId();
   const [agregando, setAgregando] = useState(tituloInicial !== "");
   const [titulo, setTitulo] = useState(tituloInicial);
+  const [modulo, setModulo] = useState("");
   const [errorTitulo, setErrorTitulo] = useState<string | undefined>();
   const [enviando, setEnviando] = useState(false);
   const [aviso, setAviso] = useState<string | null>(null);
   const [anuncio, setAnuncio] = useState("");
   const [porEliminar, setPorEliminar] = useState<LeccionEnMapa | null>(null);
   const [eliminando, setEliminando] = useState(false);
-  // el estado tarda un render en verse; con la ref un doble Enter no pasa
   const accionEnCurso = useRef(false);
   const lleno = lecciones.length >= LIMITES_CURSO.leccionesMax;
 
@@ -81,8 +82,6 @@ export default function ListaLecciones({
     },
   });
 
-  // Deja todo como "ocupado" mientras dura la acción. Si falla, `alFallar` recibe
-  // el error, salvo que se haya perdido la sesión: entonces solo se guarda la copia.
   async function ejecutar(accion: () => Promise<void>, alFallar: (error: unknown) => void) {
     if (accionEnCurso.current) return;
     accionEnCurso.current = true;
@@ -118,8 +117,6 @@ export default function ListaLecciones({
       (error) => {
         alCambiarLecciones(anteriores);
         setAviso(leerErrorDeAccion(error, "No se pudo guardar el nuevo orden."));
-        // otra pestaña cambió la lista: la que hay aquí está vieja. No se recarga la
-        // pantalla, para no perder lo escrito en el formulario del curso
         if (esConflicto(error)) {
           traerCursoEnEditor(idCurso)
             .then(({ curso }) => alCambiarLecciones(curso.lecciones))
@@ -143,9 +140,11 @@ export default function ListaLecciones({
     setEnviando(true);
     ejecutar(
       async () => {
-        const { leccion } = await crearLeccion(idCurso, { titulo });
+        const moduloLimpio = modulo.trim() || null;
+        const { leccion } = await crearLeccion(idCurso, { titulo, modulo: moduloLimpio });
         alCambiarLecciones((actuales) => [...actuales, leccion]);
         cambiarTitulo("");
+        setModulo("");
         setAgregando(false);
       },
       (fallo) => setAviso(leerErrorDeAccion(fallo, "No se pudo agregar la lección.")),
@@ -201,6 +200,7 @@ export default function ListaLecciones({
                 <span className={estilos.tituloLeccion}>
                   {leccion.posicion}. {leccion.titulo}
                 </span>
+                {leccion.modulo && <Insignia>{leccion.modulo}</Insignia>}
                 <span className={estilos.cantidad}>
                   {marcadas.has(leccion.id) ? (
                     <Insignia tono="acento" icono={CircleAlert}>
@@ -243,6 +243,15 @@ export default function ListaLecciones({
               error={errorTitulo}
               maxLongitud={LIMITES_LECCION.tituloMax}
               autoFocus
+            />
+          </div>
+          <div className={estilos.campoNueva}>
+            <CampoTexto
+              id={idModulo}
+              etiqueta="Módulo (opcional)"
+              valor={modulo}
+              alCambiar={setModulo}
+              maxLongitud={LIMITES_LECCION.moduloMax}
             />
           </div>
           <Boton

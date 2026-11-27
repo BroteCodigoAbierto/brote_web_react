@@ -43,9 +43,10 @@ export default function EditorLeccion({ idCurso, leccion }: PropsEditorLeccion) 
   const navegar = useNavigate();
   const ubicacion = useLocation();
   const idTitulo = useId();
+  const idModulo = useId();
   const editor = useEditorLeccion(idCurso, leccion);
   const { estado, guardando, focoAlError, focoAlFormulario } = editor;
-  const { titulo, bloques, idSeleccionado, hayCambios, mostrarErrores } = estado;
+  const { titulo, modulo, bloques, idSeleccionado, hayCambios, mostrarErrores } = estado;
   const { propsDialogo } = useSalirSinGuardar(hayCambios);
   const inspector = useRef<HTMLDivElement>(null);
   const [pruebaAbierta, setPruebaAbierta] = useState(false);
@@ -127,6 +128,16 @@ export default function EditorLeccion({ idCurso, leccion }: PropsEditorLeccion) 
               mostrarErrores && titulo.trim() === "" ? MENSAJES_EDITOR.campoObligatorio : undefined
             }
             maxLongitud={LIMITES_LECCION.tituloMax}
+            deshabilitado={guardando}
+          />
+        </div>
+        <div className={estilos.titulo}>
+          <CampoTexto
+            id={idModulo}
+            etiqueta="Módulo (opcional)"
+            valor={modulo}
+            alCambiar={(nuevo) => editor.editar({ tipo: "cambiarModulo", modulo: nuevo })}
+            maxLongitud={LIMITES_LECCION.moduloMax}
             deshabilitado={guardando}
           />
         </div>

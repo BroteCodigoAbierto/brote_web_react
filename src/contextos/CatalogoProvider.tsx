@@ -1,25 +1,40 @@
 import { useCallback, useEffect, useMemo, useReducer, type ReactNode } from "react";
-import { traerCatalogo } from "../servicios/cursos.ts";
+import { useSesion } from "../hooks/useSesion.ts";
+import { traerCatalogo, type FiltrosCatalogo } from "../servicios/cursos.ts";
 import type { RespuestaCatalogo } from "../tipos/contrato.ts";
 import { CatalogoContext, type EstadoCatalogo } from "./CatalogoContext.ts";
 
-// El pedido que falta hacer o que está en camino. Cada respuesta trae el
-// pedido que la originó (con su consulta) y solo cuenta si sigue siendo el
-// vigente: así lo que se ve corresponde siempre al último texto escrito.
-type Pendiente =
-  { tipo: "primera"; consulta: string } | { tipo: "mas"; consulta: string; despues: string };
+function claveFiltros(filtros: FiltrosCatalogo | null, idUsuario: string | null): string {
+  if (!filtros) return "";
+  return JSON.stringify([
+    idUsuario ?? "",
+    filtros.q,
+    filtros.categoria ?? "",
+    filtros.nivel ?? "",
+    filtros.idioma ?? "",
+    filtros.orden ?? "destacados",
+    Boolean(filtros.ocultarCompletados),
+    filtros.organizacion ?? "",
+  ]);
+}
 
-type Estado = EstadoCatalogo & { pendiente: Pendiente | null };
+type Pendiente =
+  | { tipo: "primera"; filtros: FiltrosCatalogo; clave: string }
+  | { tipo: "mas"; filtros: FiltrosCatalogo; clave: string; despues: string };
+
+type Estado = EstadoCatalogo & { clave: string; pendiente: Pendiente | null };
 
 type Accion =
-  | { tipo: "buscar"; consulta: string }
+  | { tipo: "buscar"; filtros: FiltrosCatalogo; clave: string }
   | { tipo: "cargarMas" }
   | { tipo: "reintentar" }
   | { tipo: "llegaron"; pendiente: Pendiente; respuesta: RespuestaCatalogo }
   | { tipo: "fallo"; pendiente: Pendiente; error: unknown };
 
 const inicial: Estado = {
+  filtros: null,
   consulta: null,
+  clave: "",
   cursos: [],
   siguiente: null,
   fase: "cargando",
@@ -30,15 +45,11 @@ const inicial: Estado = {
   pendiente: null,
 };
 
-// La búsqueda que se va a mostrar: la que está en camino o, si no hay, la que
-// está en pantalla.
-function consultaVigente(actual: Estado): string | null {
-  return actual.pendiente?.tipo === "primera" ? actual.pendiente.consulta : actual.consulta;
+function claveVigente(actual: Estado): string {
+  return actual.pendiente?.tipo === "primera" ? actual.pendiente.clave : actual.clave;
 }
 
-// Pide desde el primer curso. Si hay una lista en pantalla se queda, atenuada,
-// hasta que llegan los resultados (spec F02, "Buscando").
-function pedirPrimera(actual: Estado, consulta: string): Estado {
+function pedirPrimera(actual: Estado, filtros: FiltrosCatalogo, clave: string): Estado {
   const conLista = actual.fase === "listo";
   return {
     ...actual,
@@ -47,29 +58,32 @@ function pedirPrimera(actual: Estado, consulta: string): Estado {
     cargandoMas: false,
     errorMas: null,
     error: null,
-    pendiente: { tipo: "primera", consulta },
+    pendiente: { tipo: "primera", filtros, clave },
   };
 }
 
-function pedirMas(actual: Estado, consulta: string, despues: string): Estado {
+function pedirMas(
+  actual: Estado,
+  filtros: FiltrosCatalogo,
+  clave: string,
+  despues: string,
+): Estado {
   return {
     ...actual,
     cargandoMas: true,
     errorMas: null,
-    pendiente: { tipo: "mas", consulta, despues },
+    pendiente: { tipo: "mas", filtros, clave, despues },
   };
 }
 
 function reducir(actual: Estado, accion: Accion): Estado {
   switch (accion.tipo) {
     case "buscar":
-      // al volver del detalle la consulta es la misma: no se pide otra vez
-      if (accion.consulta === consultaVigente(actual) && actual.fase !== "error") return actual;
-      return pedirPrimera(actual, accion.consulta);
+      if (accion.clave === claveVigente(actual) && actual.fase !== "error") return actual;
+      return pedirPrimera(actual, accion.filtros, accion.clave);
     case "cargarMas":
-      // una sola carga a la vez, y nunca con cursos de una búsqueda anterior
       if (
-        actual.consulta === null ||
+        actual.filtros === null ||
         !actual.siguiente ||
         actual.cargandoMas ||
         actual.fase !== "listo" ||
@@ -77,12 +91,12 @@ function reducir(actual: Estado, accion: Accion): Estado {
       ) {
         return actual;
       }
-      return pedirMas(actual, actual.consulta, actual.siguiente);
+      return pedirMas(actual, actual.filtros, actual.clave, actual.siguiente);
     case "reintentar":
-      if (actual.consulta === null) return actual;
-      if (actual.fase === "error") return pedirPrimera(actual, actual.consulta);
+      if (actual.filtros === null) return actual;
+      if (actual.fase === "error") return pedirPrimera(actual, actual.filtros, actual.clave);
       if (actual.errorMas && actual.siguiente) {
-        return pedirMas(actual, actual.consulta, actual.siguiente);
+        return pedirMas(actual, actual.filtros, actual.clave, actual.siguiente);
       }
       return actual;
     case "llegaron":
@@ -90,7 +104,9 @@ function reducir(actual: Estado, accion: Accion): Estado {
       if (accion.pendiente.tipo === "primera") {
         return {
           ...actual,
-          consulta: accion.pendiente.consulta,
+          filtros: accion.pendiente.filtros,
+          consulta: accion.pendiente.filtros.q,
+          clave: accion.pendiente.clave,
           cursos: accion.respuesta.cursos,
           siguiente: accion.respuesta.siguiente,
           fase: "listo",
@@ -110,14 +126,15 @@ function reducir(actual: Estado, accion: Accion): Estado {
       if (accion.pendiente.tipo === "primera") {
         return {
           ...actual,
-          consulta: accion.pendiente.consulta,
+          filtros: accion.pendiente.filtros,
+          consulta: accion.pendiente.filtros.q,
+          clave: accion.pendiente.clave,
           fase: "error",
           buscando: false,
           error: accion.error,
           pendiente: null,
         };
       }
-      // los cursos ya cargados siguen en pantalla
       return { ...actual, cargandoMas: false, errorMas: accion.error, pendiente: null };
   }
 }
@@ -125,22 +142,28 @@ function reducir(actual: Estado, accion: Accion): Estado {
 type PropsCatalogoProvider = { children: ReactNode };
 
 export default function CatalogoProvider({ children }: PropsCatalogoProvider) {
+  const { usuario } = useSesion();
+  const idUsuario = usuario?.id ?? null;
   const [estado, despachar] = useReducer(reducir, inicial);
   const { pendiente } = estado;
 
   useEffect(() => {
     if (!pendiente) return;
     const despues = pendiente.tipo === "mas" ? pendiente.despues : null;
-    traerCatalogo({ q: pendiente.consulta, despues })
+    traerCatalogo({ ...pendiente.filtros, despues })
       .then((respuesta) => despachar({ tipo: "llegaron", pendiente, respuesta }))
       .catch((error: unknown) => despachar({ tipo: "fallo", pendiente, error }));
   }, [pendiente]);
 
-  const buscar = useCallback((consulta: string) => despachar({ tipo: "buscar", consulta }), []);
+  const buscar = useCallback(
+    (filtros: FiltrosCatalogo) => {
+      despachar({ tipo: "buscar", filtros, clave: claveFiltros(filtros, idUsuario) });
+    },
+    [idUsuario],
+  );
   const cargarMas = useCallback(() => despachar({ tipo: "cargarMas" }), []);
   const reintentar = useCallback(() => despachar({ tipo: "reintentar" }), []);
 
-  // `pendiente` viaja en el valor, pero ValorCatalogo no lo expone
   const valor = useMemo(
     () => ({ ...estado, buscar, cargarMas, reintentar }),
     [estado, buscar, cargarMas, reintentar],

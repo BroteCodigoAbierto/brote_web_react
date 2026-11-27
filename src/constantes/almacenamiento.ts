@@ -10,6 +10,8 @@ export const CLAVES = {
   sesionActiva: "sesion.activa",
   cierrePendiente: "sesion.cierrePendiente",
   copiaEditor: "editor.copia",
+  aspecto: "pref.aspecto",
+  espacio: "pref.espacio",
 } as const;
 
 type Clave = (typeof CLAVES)[keyof typeof CLAVES];
@@ -37,5 +39,21 @@ export function quitarMarca(clave: Clave) {
     localStorage.removeItem(clave);
   } catch {
     // sin almacenamiento no hay marca
+  }
+}
+
+export function leerTexto(clave: Clave): string | null {
+  try {
+    return localStorage.getItem(clave);
+  } catch {
+    return null;
+  }
+}
+
+export function ponerTexto(clave: Clave, valor: string) {
+  try {
+    localStorage.setItem(clave, valor);
+  } catch {
+    // sin almacenamiento
   }
 }
