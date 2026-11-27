@@ -62,7 +62,12 @@ function pedirPrimera(actual: Estado, filtros: FiltrosCatalogo, clave: string): 
   };
 }
 
-function pedirMas(actual: Estado, filtros: FiltrosCatalogo, clave: string, despues: string): Estado {
+function pedirMas(
+  actual: Estado,
+  filtros: FiltrosCatalogo,
+  clave: string,
+  despues: string,
+): Estado {
   return {
     ...actual,
     cargandoMas: true,

@@ -99,10 +99,7 @@ export default function DetalleCurso() {
   const [bifurcando, setBifurcando] = useState(false);
   const [errorFork, setErrorFork] = useState<string | null>(null);
 
-  const bloques = useMemo(
-    () => (datos ? agruparPorModulo(datos.curso.lecciones) : null),
-    [datos],
-  );
+  const bloques = useMemo(() => (datos ? agruparPorModulo(datos.curso.lecciones) : null), [datos]);
 
   if (cargando) return <IndicadorCarga />;
 
@@ -280,8 +277,9 @@ export default function DetalleCurso() {
             <p className={estilos.origenFork}>
               <GitFork className={estilos.iconoInline} aria-hidden="true" />
               Adaptado de{" "}
-              <Link to={`/cursos/${curso.cursoOrigen.id}`}>{curso.cursoOrigen.titulo}</Link> (por{" "}
-              {curso.cursoOrigen.nombreAutor})
+              <Link to={`/cursos/${curso.cursoOrigen.id}`}>
+                {curso.cursoOrigen.titulo}
+              </Link> (por {curso.cursoOrigen.nombreAutor})
             </p>
           )}
 

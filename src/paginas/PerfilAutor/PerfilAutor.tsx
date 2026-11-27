@@ -66,9 +66,7 @@ export default function PerfilAutor() {
         <div className={estilos.datos}>
           <h1 className={estilos.nombre}>{autor.nombre}</h1>
           <div className={estilos.meta}>
-            {fecha && (
-              <Insignia icono={Calendar}>En Brote desde {fecha}</Insignia>
-            )}
+            {fecha && <Insignia icono={Calendar}>En Brote desde {fecha}</Insignia>}
             <Insignia tono="primario" icono={BookOpen}>
               {autor.cursos.length === 1
                 ? "1 curso publicado"

@@ -231,9 +231,7 @@ function SeccionCursos() {
       void navegar(`/editor/${curso.id}`);
     } catch (err) {
       setErrorImportar(
-        err instanceof SyntaxError
-          ? "El archivo no es un JSON válido."
-          : leerErrorDeCarga(err),
+        err instanceof SyntaxError ? "El archivo no es un JSON válido." : leerErrorDeCarga(err),
       );
     } finally {
       setImportando(false);
@@ -741,9 +739,7 @@ function SeccionOrganizaciones() {
       setSlugManual(false);
       setDescripcionOrg("");
       setDominiosTexto("");
-      setOkCrearOrg(
-        `Espacio «${organizacion.nombre}» creado. URL: /o/${organizacion.slug}`,
-      );
+      setOkCrearOrg(`Espacio «${organizacion.nombre}» creado. URL: /o/${organizacion.slug}`);
       await recargarOrganizaciones();
     } catch (err) {
       setErrorCrearOrg(leerErrorDeCarga(err));
@@ -858,7 +854,12 @@ function SeccionOrganizaciones() {
             {errorCrearOrg && <Aviso tono="error" texto={errorCrearOrg} />}
             {okCrearOrg && <Aviso tono="exito" texto={okCrearOrg} />}
             <div>
-              <Boton tipo="submit" icono={Building2} enviando={creandoOrg} textoEnviando="Creando...">
+              <Boton
+                tipo="submit"
+                icono={Building2}
+                enviando={creandoOrg}
+                textoEnviando="Creando..."
+              >
                 Crear espacio
               </Boton>
             </div>

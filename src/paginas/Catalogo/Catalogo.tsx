@@ -52,9 +52,7 @@ const NOMBRE_ORDEN: Record<OrdenCatalogo, string> = {
 };
 
 function leerCategoria(valor: string | null): CategoriaCurso | undefined {
-  return CATEGORIAS_CURSO.includes(valor as CategoriaCurso)
-    ? (valor as CategoriaCurso)
-    : undefined;
+  return CATEGORIAS_CURSO.includes(valor as CategoriaCurso) ? (valor as CategoriaCurso) : undefined;
 }
 
 function leerNivel(valor: string | null): NivelCurso | undefined {

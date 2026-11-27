@@ -176,11 +176,7 @@ export default function CursoNoEditable({
       {aviso && <Aviso texto={aviso} />}
       {publicado ? (
         <div className={estilos.botonesCurso}>
-          <Boton
-            icono={Eye}
-            deshabilitado={retirando}
-            alPulsar={() => navegar(rutaVer)}
-          >
+          <Boton icono={Eye} deshabilitado={retirando} alPulsar={() => navegar(rutaVer)}>
             Ver curso
           </Boton>
           {curso.visibilidad === "enlacePrivado" && curso.claveEnlace && (
