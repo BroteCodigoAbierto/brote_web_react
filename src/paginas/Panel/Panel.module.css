@@ -4,9 +4,23 @@
   gap: var(--espacio-8);
 }
 
+.encabezadoPagina {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--espacio-4);
+}
+
 .titulo {
   font: var(--texto-titulo1);
   letter-spacing: var(--espaciado-titulo1);
+}
+
+.subtitulo {
+  margin-top: var(--espacio-2);
+  color: var(--color-texto-suave);
+  font: var(--texto-cuerpo);
 }
 
 /* cada bloque del panel con su título y sus propios estados */
@@ -16,18 +30,87 @@
   gap: var(--espacio-5);
 }
 
-.encabezadoSeccion {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: var(--espacio-5);
-}
-
 .tituloSeccion {
   color: var(--color-texto-suave);
   font: var(--texto-seccion);
   letter-spacing: var(--espaciado-seccion);
   text-transform: uppercase;
+}
+
+.tarjetaCodigo {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-4);
+  padding: var(--espacio-5) var(--espacio-6);
+}
+
+.formularioCodigo {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: var(--espacio-4);
+}
+
+.campoCodigo {
+  flex: 1;
+  min-width: 15rem;
+}
+
+.botonCodigo {
+  padding-top: 1.75rem;
+}
+
+.listaAulas {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(19rem, 1fr));
+  gap: var(--espacio-5);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.tarjetaAula {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-4);
+  padding: var(--espacio-5);
+}
+
+.encabezadoAula {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--espacio-3);
+}
+
+.nombreAula {
+  font: var(--texto-titulo3);
+}
+
+.metaAula {
+  color: var(--color-texto-suave);
+  font: var(--texto-nota);
+}
+
+.cursoAula {
+  color: var(--color-texto);
+  font: var(--texto-cuerpo-chico);
+  font-weight: 500;
+}
+
+.abrirCurso {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--espacio-2);
+  margin-top: auto;
+  color: var(--color-primario);
+  font: var(--texto-boton);
+}
+
+.iconoInline {
+  width: 1rem;
+  height: 1rem;
 }
 
 /* la rejilla de "Listas de tarjetas" (docs/diseno.md, sección 5) */
@@ -48,6 +131,13 @@
   margin: 0;
   padding: 0;
   list-style: none;
+}
+
+.itemInsignia {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: var(--espacio-2);
 }
 
 @media (min-width: 40rem) {

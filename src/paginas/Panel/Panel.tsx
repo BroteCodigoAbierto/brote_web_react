@@ -1,50 +1,71 @@
-import { BookMarked, ClipboardCheck, Medal, Plus, SquarePen } from "lucide-react";
-import { useEffect, useState } from "react";
-import { Link, useLocation, useNavigate } from "react-router";
+import {
+  ArrowRight,
+  BookMarked,
+  Check,
+  Copy,
+  GraduationCap,
+  Medal,
+  PenTool,
+  Users,
+} from "lucide-react";
+import { useState, type FormEvent } from "react";
+import { Link, useNavigate } from "react-router";
+import AvanceCurso from "../../componentes/AvanceCurso/AvanceCurso.tsx";
 import Aviso from "../../componentes/Aviso/Aviso.tsx";
 import Boton from "../../componentes/Boton/Boton.tsx";
+import CampoTexto from "../../componentes/CampoTexto/CampoTexto.tsx";
 import ErrorCarga from "../../componentes/ErrorCarga/ErrorCarga.tsx";
 import EstadoVacio from "../../componentes/EstadoVacio/EstadoVacio.tsx";
 import IndicadorCarga from "../../componentes/IndicadorCarga/IndicadorCarga.tsx";
+import Insignia from "../../componentes/Insignia/Insignia.tsx";
 import InsigniaCurso from "../../componentes/InsigniaCurso/InsigniaCurso.tsx";
+import Superficie from "../../componentes/Superficie/Superficie.tsx";
 import TarjetaCurso from "../../componentes/TarjetaCurso/TarjetaCurso.tsx";
-import TarjetaCursoAutor from "../../componentes/TarjetaCursoAutor/TarjetaCursoAutor.tsx";
-import TarjetaCursoRevision from "../../componentes/TarjetaCursoRevision/TarjetaCursoRevision.tsx";
 import { usePeticion } from "../../hooks/usePeticion.ts";
 import { useSesion } from "../../hooks/useSesion.ts";
-import { leerAvisoModeracion } from "../../utilidades/moderacion.ts";
 import { leerErrorDeCarga } from "../../servicios/cursos.ts";
-import { traerCursosDelAutor } from "../../servicios/editor.ts";
-import { traerCursosEnRevision } from "../../servicios/moderacion.ts";
+import { traerMisGrupos, unirseAGrupo } from "../../servicios/grupos.ts";
 import { traerCursosEmpezados, traerInsignias } from "../../servicios/progreso.ts";
-import type {
-  CursoDelAutor,
-  CursoEmpezado,
-  CursoEnRevision,
-  InsigniaCurso as Insignia,
+import {
+  LIMITES_GRUPO,
+  type CursoEmpezado,
+  type GrupoResumen,
+  type InsigniaCurso as TipoInsignia,
 } from "../../tipos/contrato.ts";
 import estilos from "./Panel.module.css";
 
-// "Mi panel" (specs F04 y F05): la página personal (docs/diseno.md, sección 5,
-// "Página personal"). Cada feature que agregue un bloque suma su sección, con sus
-// propios estados: si una falla, la otra sigue. "Cursos en revisión" (decisión 0018)
-// solo lo ve un administrador, y va primero porque es lo que viene a hacer.
+// "Mi aprendizaje" (/panel, F04 + F08 + decisión 0020): enfocado en el alumno
+// (progreso, aulas a las que se unió e insignias ganadas). La creación de cursos,
+// aulas docentes, organizaciones y moderación viven en /estudio.
 export default function Panel() {
-  const { usuario } = useSesion();
+  const navegar = useNavigate();
 
   return (
     <div className={estilos.panel}>
-      <h1 className={estilos.titulo}>Mi panel</h1>
-      {usuario?.esAdministrador && <CursosEnRevision />}
+      <header className={estilos.encabezadoPagina}>
+        <div>
+          <h1 className={estilos.titulo}>Mi aprendizaje</h1>
+          <p className={estilos.subtitulo}>
+            Retoma tus cursos, revisa tus aulas y consulta las insignias que ganaste.
+          </p>
+        </div>
+        <Boton
+          variante="secundario"
+          tamano="chico"
+          icono={PenTool}
+          alPulsar={() => navegar("/estudio")}
+        >
+          Ir al Estudio
+        </Boton>
+      </header>
+
       <SigueAprendiendo />
+      <MisAulasAlumno />
       <MisInsignias />
-      <CursosQueCree />
     </div>
   );
 }
 
-// Los cursos empezados, del avance más reciente al más antiguo. La página se
-// monta cada vez que se entra, así que siempre trae lo último.
 function SigueAprendiendo() {
   const { datos, cargando, error, recargar } = usePeticion(traerCursosEmpezados);
 
@@ -99,23 +120,69 @@ function ContenidoSigueAprendiendo({ cursos, cargando, error, alReintentar }: Pr
   );
 }
 
-// Los cursos del autor, del que cambió más recientemente al más antiguo (spec F05).
-function CursosQueCree() {
-  const navegar = useNavigate();
-  const { datos, cargando, error, recargar } = usePeticion(traerCursosDelAutor);
+// Aulas a las que el alumno se unió mediante código de clase (decisión 0020).
+function MisAulasAlumno() {
+  const { datos, cargando, error, recargar } = usePeticion(traerMisGrupos);
+  const [codigo, setCodigo] = useState("");
+  const [uniendose, setUniendose] = useState(false);
+  const [errorUnion, setErrorUnion] = useState<string | null>(null);
+  const [mensajeOk, setMensajeOk] = useState<string | null>(null);
+
+  const gruposAlumno = (datos?.grupos ?? []).filter((g) => !g.esDocente);
+
+  async function alUnirse(evento: FormEvent) {
+    evento.preventDefault();
+    const limpio = codigo.trim().toUpperCase();
+    if (!limpio) {
+      setErrorUnion("Escribe el código que te compartió tu docente.");
+      return;
+    }
+    setUniendose(true);
+    setErrorUnion(null);
+    setMensajeOk(null);
+    try {
+      const { grupo } = await unirseAGrupo({ codigo: limpio });
+      setCodigo("");
+      setMensajeOk(`Te uniste al aula «${grupo.nombre}».`);
+      recargar();
+    } catch (err) {
+      setErrorUnion(leerErrorDeCarga(err));
+    } finally {
+      setUniendose(false);
+    }
+  }
 
   return (
-    <section className={estilos.seccion} aria-labelledby="titulo-cursos-que-cree">
-      <div className={estilos.encabezadoSeccion}>
-        <h2 id="titulo-cursos-que-cree" className={estilos.tituloSeccion}>
-          Cursos que creé
-        </h2>
-        <Boton tamano="chico" icono={Plus} alPulsar={() => navegar("/editor/nuevo")}>
-          Nuevo curso
-        </Boton>
-      </div>
-      <ContenidoCursosQueCree
-        cursos={datos?.cursos ?? null}
+    <section className={estilos.seccion} aria-labelledby="titulo-mis-aulas">
+      <h2 id="titulo-mis-aulas" className={estilos.tituloSeccion}>
+        Mis aulas y grupos
+      </h2>
+
+      <Superficie className={estilos.tarjetaCodigo}>
+        <form className={estilos.formularioCodigo} onSubmit={alUnirse} noValidate>
+          <div className={estilos.campoCodigo}>
+            <CampoTexto
+              id="codigo-aula"
+              etiqueta="Unirme a un aula con código"
+              valor={codigo}
+              alCambiar={setCodigo}
+              maxLongitud={LIMITES_GRUPO.codigoMax}
+              ayuda="Si un profesor te dio un código de clase, ingrésalo aquí para compartir tu avance."
+              deshabilitado={uniendose}
+            />
+          </div>
+          <div className={estilos.botonCodigo}>
+            <Boton tipo="submit" enviando={uniendose} textoEnviando="Uniéndome...">
+              Unirme al aula
+            </Boton>
+          </div>
+        </form>
+        {errorUnion && <Aviso tono="error" texto={errorUnion} />}
+        {mensajeOk && <Aviso tono="exito" texto={mensajeOk} />}
+      </Superficie>
+
+      <ContenidoAulas
+        grupos={gruposAlumno}
         cargando={cargando}
         error={error}
         alReintentar={recargar}
@@ -124,47 +191,81 @@ function CursosQueCree() {
   );
 }
 
-type PropsContenidoCursosQueCree = {
-  cursos: CursoDelAutor[] | null;
+type PropsContenidoAulas = {
+  grupos: GrupoResumen[];
   cargando: boolean;
   error: unknown;
   alReintentar: () => void;
 };
 
-function ContenidoCursosQueCree({
-  cursos,
-  cargando,
-  error,
-  alReintentar,
-}: PropsContenidoCursosQueCree) {
+function ContenidoAulas({ grupos, cargando, error, alReintentar }: PropsContenidoAulas) {
   if (cargando) return <IndicadorCarga />;
-  if (error || !cursos) {
+  if (error) {
     return <ErrorCarga mensaje={leerErrorDeCarga(error)} alReintentar={alReintentar} />;
   }
-  if (cursos.length === 0) {
+  if (grupos.length === 0) {
     return (
       <EstadoVacio
-        icono={SquarePen}
-        titulo="Todavía no creas ningún curso."
-        texto="Crea uno y enseña lo que sabes."
+        icono={GraduationCap}
+        titulo="Aún no estás en ningún aula."
+        texto="Las aulas son opcionales. Si estudias con un grupo o docente, pide el código para unirte."
       />
     );
   }
   return (
-    <ul className={estilos.cuadricula}>
-      {cursos.map((curso) => (
-        <li key={curso.id}>
-          <TarjetaCursoAutor curso={curso} />
+    <ul className={estilos.listaAulas}>
+      {grupos.map((grupo) => (
+        <li key={grupo.id}>
+          <Superficie className={estilos.tarjetaAula}>
+            <div className={estilos.encabezadoAula}>
+              <div>
+                <h3 className={estilos.nombreAula}>{grupo.nombre}</h3>
+                <p className={estilos.metaAula}>
+                  Docente: {grupo.nombreDocente}
+                  {grupo.organizacion ? ` · ${grupo.organizacion.nombre}` : ""}
+                </p>
+              </div>
+              <Insignia icono={Users}>{grupo.cantidadAlumnos} alumnos</Insignia>
+            </div>
+            <p className={estilos.cursoAula}>{grupo.tituloCurso}</p>
+            {typeof grupo.leccionesCompletadas === "number" &&
+              typeof grupo.cantidadLecciones === "number" && (
+                <AvanceCurso
+                  completadas={grupo.leccionesCompletadas}
+                  total={grupo.cantidadLecciones}
+                />
+              )}
+            <Link to={`/cursos/${grupo.idCurso}`} className={estilos.abrirCurso}>
+              Abrir curso
+              <ArrowRight className={estilos.iconoInline} aria-hidden="true" />
+            </Link>
+          </Superficie>
         </li>
       ))}
     </ul>
   );
 }
 
-// F08: las insignias de quien entra, de la más reciente a la más antigua. Sus estados son
-// propios: si fallan, las otras secciones siguen.
 function MisInsignias() {
+  const { usuario } = useSesion();
   const { datos, cargando, error, recargar } = usePeticion(traerInsignias);
+  const [copiada, setCopiada] = useState<string | null>(null);
+
+  async function copiarConstancia(insignia: TipoInsignia) {
+    const fecha = new Intl.DateTimeFormat("es", {
+      day: "numeric",
+      month: "long",
+      year: "numeric",
+    }).format(new Date(insignia.ganadaEn));
+    const texto = `Constancia de finalización en Brote — ${usuario?.nombre ?? "Estudiante"} completó el curso «${insignia.titulo}» el ${fecha}. (${window.location.origin}/cursos/${insignia.idCurso})`;
+    try {
+      await navigator.clipboard.writeText(texto);
+      setCopiada(insignia.idCurso);
+      setTimeout(() => setCopiada((actual) => (actual === insignia.idCurso ? null : actual)), 2500);
+    } catch {
+      // sin permiso de portapapeles
+    }
+  }
 
   return (
     <section className={estilos.seccion} aria-labelledby="titulo-mis-insignias">
@@ -176,16 +277,20 @@ function MisInsignias() {
         cargando={cargando}
         error={error}
         alReintentar={recargar}
+        copiada={copiada}
+        alCopiar={copiarConstancia}
       />
     </section>
   );
 }
 
 type PropsContenidoMisInsignias = {
-  insignias: Insignia[] | null;
+  insignias: TipoInsignia[] | null;
   cargando: boolean;
   error: unknown;
   alReintentar: () => void;
+  copiada: string | null;
+  alCopiar: (insignia: TipoInsignia) => void;
 };
 
 function ContenidoMisInsignias({
@@ -193,6 +298,8 @@ function ContenidoMisInsignias({
   cargando,
   error,
   alReintentar,
+  copiada,
+  alCopiar,
 }: PropsContenidoMisInsignias) {
   if (cargando) return <IndicadorCarga />;
   if (error || !insignias) {
@@ -212,77 +319,16 @@ function ContenidoMisInsignias({
   return (
     <ul className={estilos.insignias}>
       {insignias.map((insignia) => (
-        <li key={insignia.idCurso}>
+        <li key={insignia.idCurso} className={estilos.itemInsignia}>
           <InsigniaCurso insignia={insignia} tamano="lista" />
-        </li>
-      ))}
-    </ul>
-  );
-}
-
-// Decisión 0018: los cursos que esperan decisión, del enviado hace más tiempo al más
-// reciente. Cada uno abre su revisión; al volver de decidir, el resultado llega en el
-// estado de la navegación y se dice aquí.
-function CursosEnRevision() {
-  const { datos, cargando, error, recargar } = usePeticion(traerCursosEnRevision);
-  const ubicacion = useLocation();
-  const navegar = useNavigate();
-  const [aviso] = useState(() => leerAvisoModeracion(ubicacion.state));
-
-  // se borra del historial: recargar o volver a esta entrada no lo repite
-  useEffect(() => {
-    if (leerAvisoModeracion(ubicacion.state)) {
-      navegar(ubicacion.pathname, { replace: true, state: null });
-    }
-  }, [ubicacion, navegar]);
-
-  return (
-    <section className={estilos.seccion} aria-labelledby="titulo-cursos-en-revision">
-      <h2 id="titulo-cursos-en-revision" className={estilos.tituloSeccion}>
-        Cursos en revisión
-      </h2>
-      {aviso && <Aviso texto={aviso.texto} tono={aviso.tono} />}
-      <ContenidoCursosEnRevision
-        cursos={datos?.cursos ?? null}
-        cargando={cargando}
-        error={error}
-        alReintentar={recargar}
-      />
-    </section>
-  );
-}
-
-type PropsContenidoCursosEnRevision = {
-  cursos: CursoEnRevision[] | null;
-  cargando: boolean;
-  error: unknown;
-  alReintentar: () => void;
-};
-
-function ContenidoCursosEnRevision({
-  cursos,
-  cargando,
-  error,
-  alReintentar,
-}: PropsContenidoCursosEnRevision) {
-  if (cargando) return <IndicadorCarga />;
-  if (error || !cursos) {
-    return <ErrorCarga mensaje={leerErrorDeCarga(error)} alReintentar={alReintentar} />;
-  }
-  if (cursos.length === 0) {
-    return (
-      <EstadoVacio
-        icono={ClipboardCheck}
-        titulo="No hay cursos en revisión."
-        texto="Cuando un autor envíe uno, aparecerá aquí para que lo revises."
-      />
-    );
-  }
-  return (
-    <ul className={estilos.cuadricula}>
-      {cursos.map((curso) => (
-        <li key={curso.id}>
-          <TarjetaCursoRevision curso={curso} />
+          <Boton
+            variante="fantasma"
+            tamano="chico"
+            icono={copiada === insignia.idCurso ? Check : Copy}
+            alPulsar={() => alCopiar(insignia)}
+          >
+            {copiada === insignia.idCurso ? "Constancia copiada" : "Copiar constancia"}
+          </Boton>
         </li>
       ))}
     </ul>

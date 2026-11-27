@@ -2,29 +2,39 @@ import { useEffect, useState } from "react";
 import Aviso from "../../componentes/Aviso/Aviso.tsx";
 import Boton from "../../componentes/Boton/Boton.tsx";
 import CampoArea from "../../componentes/CampoArea/CampoArea.tsx";
-import CampoImagen from "../../componentes/CampoImagen/CampoImagen.tsx";
 import CampoCasilla from "../../componentes/CampoCasilla/CampoCasilla.tsx";
+import CampoImagen from "../../componentes/CampoImagen/CampoImagen.tsx";
 import CampoSelector from "../../componentes/CampoSelector/CampoSelector.tsx";
-import PesoArchivos from "../../componentes/PesoArchivos/PesoArchivos.tsx";
-import VistaPortada from "../../componentes/VistaPortada/VistaPortada.tsx";
-import { aValorImagen, type ValorImagen } from "../../editor/imagenes.ts";
 import CampoTexto from "../../componentes/CampoTexto/CampoTexto.tsx";
 import InsigniaEstadoCurso from "../../componentes/InsigniaEstadoCurso/InsigniaEstadoCurso.tsx";
+import PesoArchivos from "../../componentes/PesoArchivos/PesoArchivos.tsx";
 import Superficie from "../../componentes/Superficie/Superficie.tsx";
+import VistaPortada from "../../componentes/VistaPortada/VistaPortada.tsx";
+import { aValorImagen, type ValorImagen } from "../../editor/imagenes.ts";
+import { useEspacio } from "../../hooks/useEspacio.ts";
 import { useFormulario } from "../../hooks/useFormulario.ts";
 import { ErrorHttp } from "../../servicios/api.ts";
 import { actualizarCurso, esSesionPerdida, leerErrorDeFormulario } from "../../servicios/editor.ts";
 import { leerErrorDeSubida, subirImagen } from "../../servicios/imagenes.ts";
 import {
+  CATEGORIAS_CURSO,
   IDIOMAS_CURSO,
   LIMITES_ARCHIVOS,
   LIMITES_CURSO,
   MENSAJES_ARCHIVOS,
   MENSAJES_IMAGENES,
+  NIVELES_CURSO,
+  NOMBRE_CATEGORIA,
   NOMBRE_IDIOMA,
+  NOMBRE_NIVEL,
+  NOMBRE_VISIBILIDAD,
+  VISIBILIDADES_CURSO,
+  type CategoriaCurso,
   type CursoEnEditor,
   type IdiomaCurso,
+  type NivelCurso,
   type RespuestaError,
+  type VisibilidadCurso,
 } from "../../tipos/contrato.ts";
 import { idLocal } from "../../utilidades/editor.ts";
 import { prepararImagen } from "../../utilidades/imagenes.ts";
@@ -33,8 +43,6 @@ import estilos from "./MapaCurso.module.css";
 
 type ValoresCurso = Record<CampoCurso, string>;
 
-// F14: el idioma va con el título y la descripción en la copia que se recupera al volver a
-// entrar (una copia de antes no lo trae)
 type CapturadoCurso = ValoresCurso & { idioma?: IdiomaCurso; daInsignia?: boolean };
 
 const OPCIONES_IDIOMA = IDIOMAS_CURSO.map((idioma) => ({
@@ -42,19 +50,36 @@ const OPCIONES_IDIOMA = IDIOMAS_CURSO.map((idioma) => ({
   texto: NOMBRE_IDIOMA[idioma],
 }));
 
+const OPCIONES_CATEGORIA = CATEGORIAS_CURSO.map((c) => ({
+  valor: c,
+  texto: NOMBRE_CATEGORIA[c],
+}));
+
+const OPCIONES_NIVEL = NIVELES_CURSO.map((n) => ({
+  valor: n,
+  texto: NOMBRE_NIVEL[n],
+}));
+
+function separarEtiquetas(texto: string): string[] {
+  return texto
+    .split(",")
+    .map((e) => e.trim())
+    .filter(Boolean)
+    .slice(0, LIMITES_CURSO.etiquetasMax);
+}
+
 type PropsDatosCurso = {
   curso: CursoEnEditor;
-  // lo que estaba sin guardar cuando expiró la sesión
   inicial: CapturadoCurso | null;
   ocupado: boolean;
   alCambiarOcupado: (ocupado: boolean) => void;
   alCambiarPendientes: (hayCambios: boolean) => void;
   alCambiarCapturado: (valores: CapturadoCurso) => void;
+  alActualizarCurso: (curso: CursoEnEditor) => void;
   alSesionPerdida: () => void;
 };
 
-// Los datos del curso (spec F05, "Editar los datos del curso"): la portada (F13), el título,
-// la descripción y el idioma (F14), que se guardan juntos con "Guardar cambios".
+// Los datos del curso (F05 + F08 + F13 + F14 + decisión 0020).
 export default function DatosCurso({
   curso,
   inicial,
@@ -62,30 +87,67 @@ export default function DatosCurso({
   alCambiarOcupado,
   alCambiarPendientes,
   alCambiarCapturado,
+  alActualizarCurso,
   alSesionPerdida,
 }: PropsDatosCurso) {
+  const { organizacionesDocente } = useEspacio();
   const [guardados, setGuardados] = useState<ValoresCurso>({
     titulo: curso.titulo,
     descripcion: curso.descripcion,
   });
   const [recienGuardado, setRecienGuardado] = useState(false);
-  // F13: la portada elegida (se guarda con "Guardar cambios") y el peso de las imágenes
+
   const [portada, setPortada] = useState<ValorImagen>(() =>
     aValorImagen(curso.portada ?? undefined),
   );
   const [portadaGuardada, setPortadaGuardada] = useState(curso.portada?.id ?? null);
-  // F14: el peso cuenta imágenes y audios
   const [pesoArchivos, setPesoArchivos] = useState(curso.pesoArchivos);
   const idPortada = portada.imagen?.id ?? null;
   const cambioPortada = idPortada !== portadaGuardada;
-  // F14: el idioma, como la portada: se manda solo si cambió
+
   const [idioma, setIdioma] = useState<IdiomaCurso>(inicial?.idioma ?? curso.idioma);
   const [idiomaGuardado, setIdiomaGuardado] = useState(curso.idioma);
   const cambioIdioma = idioma !== idiomaGuardado;
-  // F08: la insignia, como el idioma: se manda solo si cambió
+
   const [daInsignia, setDaInsignia] = useState(inicial?.daInsignia ?? curso.daInsignia);
   const [daInsigniaGuardado, setDaInsigniaGuardado] = useState(curso.daInsignia);
   const cambioInsignia = daInsignia !== daInsigniaGuardado;
+
+  const [categoria, setCategoria] = useState<CategoriaCurso>(curso.categoria);
+  const [categoriaGuardada, setCategoriaGuardada] = useState<CategoriaCurso>(curso.categoria);
+  const cambioCategoria = categoria !== categoriaGuardada;
+
+  const [nivel, setNivel] = useState<NivelCurso>(curso.nivel);
+  const [nivelGuardado, setNivelGuardado] = useState<NivelCurso>(curso.nivel);
+  const cambioNivel = nivel !== nivelGuardado;
+
+  const [etiquetasTexto, setEtiquetasTexto] = useState(curso.etiquetas.join(", "));
+  const [etiquetasGuardadas, setEtiquetasGuardadas] = useState(curso.etiquetas.join(", "));
+  const cambioEtiquetas = etiquetasTexto.trim() !== etiquetasGuardadas.trim();
+
+  const [visibilidad, setVisibilidad] = useState<VisibilidadCurso>(curso.visibilidad);
+  const [visibilidadGuardada, setVisibilidadGuardada] = useState<VisibilidadCurso>(
+    curso.visibilidad,
+  );
+  const cambioVisibilidad = visibilidad !== visibilidadGuardada;
+
+  const [idOrganizacion, setIdOrganizacion] = useState<string | null>(
+    curso.organizacion?.id ?? null,
+  );
+  const [orgGuardada, setOrgGuardada] = useState<string | null>(curso.organizacion?.id ?? null);
+  const cambioOrg = idOrganizacion !== orgGuardada;
+
+  const [tambienPublico, setTambienPublico] = useState(curso.tambienPublico);
+  const [tambienPublicoGuardado, setTambienPublicoGuardado] = useState(curso.tambienPublico);
+  const cambioTambienPublico = tambienPublico !== tambienPublicoGuardado;
+
+  const [permiteFork, setPermiteFork] = useState(curso.permiteFork);
+  const [permiteForkGuardado, setPermiteForkGuardado] = useState(curso.permiteFork);
+  const cambioFork = permiteFork !== permiteForkGuardado;
+
+  const opcionesVisibilidad = VISIBILIDADES_CURSO.filter(
+    (v) => v !== "organizacion" || organizacionesDocente.length > 0 || curso.organizacion !== null,
+  ).map((v) => ({ valor: v, texto: NOMBRE_VISIBILIDAD[v] }));
 
   const { valores, errores, general, enviando, cambiar, manejarEnvio } = useFormulario<CampoCurso>({
     inicial: inicial ? { titulo: inicial.titulo, descripcion: inicial.descripcion } : guardados,
@@ -99,15 +161,32 @@ export default function DatosCurso({
           ...(cambioPortada && { idPortada }),
           ...(cambioIdioma && { idioma }),
           ...(cambioInsignia && { daInsignia }),
+          ...(cambioCategoria && { categoria }),
+          ...(cambioNivel && { nivel }),
+          ...(cambioEtiquetas && { etiquetas: separarEtiquetas(etiquetasTexto) }),
+          ...(cambioVisibilidad && { visibilidad }),
+          ...(cambioOrg && { idOrganizacion }),
+          ...(cambioTambienPublico && { tambienPublico }),
+          ...(cambioFork && { permiteFork }),
         });
-        // el servidor recorta el título: lo guardado es lo que devuelve
         cambiar("titulo", guardado.titulo);
         setGuardados({ titulo: guardado.titulo, descripcion: guardado.descripcion });
         setPortadaGuardada(guardado.portada?.id ?? null);
         setIdiomaGuardado(guardado.idioma);
         setDaInsigniaGuardado(guardado.daInsignia);
+        setCategoriaGuardada(guardado.categoria);
+        setNivelGuardado(guardado.nivel);
+        const nuevasEtiquetas = guardado.etiquetas.join(", ");
+        setEtiquetasTexto(nuevasEtiquetas);
+        setEtiquetasGuardadas(nuevasEtiquetas);
+        setVisibilidadGuardada(guardado.visibilidad);
+        setOrgGuardada(guardado.organizacion?.id ?? null);
+        setIdOrganizacion(guardado.organizacion?.id ?? null);
+        setTambienPublicoGuardado(guardado.tambienPublico);
+        setPermiteForkGuardado(guardado.permiteFork);
         setPesoArchivos(guardado.pesoArchivos);
         setRecienGuardado(true);
+        alActualizarCurso(guardado);
       } catch (error) {
         if (esSesionPerdida(error)) alSesionPerdida();
         marcarErrorPortada(error);
@@ -124,9 +203,15 @@ export default function DatosCurso({
     cambioPortada ||
     cambioIdioma ||
     cambioInsignia ||
+    cambioCategoria ||
+    cambioNivel ||
+    cambioEtiquetas ||
+    cambioVisibilidad ||
+    cambioOrg ||
+    cambioTambienPublico ||
+    cambioFork ||
     portada.subida !== null;
 
-  // F13: un 400 con campos.portada (no es del curso o es un GIF) va en su campo
   function marcarErrorPortada(error: unknown) {
     if (!(error instanceof ErrorHttp) || error.estado !== 400) return;
     const mensaje = (error.cuerpo as Partial<RespuestaError> | null)?.campos?.portada;
@@ -138,7 +223,6 @@ export default function DatosCurso({
     );
   }
 
-  // F13: sube la portada; al terminar, la pone solo si sigue siendo la que se eligió
   function subirPortada(archivo: File): string {
     const idSubida = idLocal();
     function terminar(cambios: Partial<ValorImagen>) {
@@ -184,7 +268,6 @@ export default function DatosCurso({
           <InsigniaEstadoCurso estado={curso.estado} />
         </div>
       </div>
-      {/* noValidate: los mensajes son los de la spec, no los del navegador */}
       <form className={estilos.formulario} noValidate onSubmit={manejarEnvio}>
         <CampoImagen
           id="portada-curso"
@@ -214,6 +297,22 @@ export default function DatosCurso({
           deshabilitado={ocupado}
         />
         <CampoSelector
+          id="categoria-curso"
+          etiqueta="Categoría"
+          valor={categoria}
+          opciones={OPCIONES_CATEGORIA}
+          alCambiar={(valor) => valor && setCategoria(valor as CategoriaCurso)}
+          deshabilitado={ocupado}
+        />
+        <CampoSelector
+          id="nivel-curso"
+          etiqueta="Nivel"
+          valor={nivel}
+          opciones={OPCIONES_NIVEL}
+          alCambiar={(valor) => valor && setNivel(valor as NivelCurso)}
+          deshabilitado={ocupado}
+        />
+        <CampoSelector
           id="idioma-curso"
           etiqueta="Idioma"
           valor={idioma}
@@ -222,12 +321,58 @@ export default function DatosCurso({
           ayuda="El idioma de la voz que lee las frases de escuchar y repetir."
           deshabilitado={ocupado}
         />
+        <CampoTexto
+          id="etiquetas-curso"
+          etiqueta="Etiquetas (opcional)"
+          valor={etiquetasTexto}
+          alCambiar={setEtiquetasTexto}
+          ayuda={`Separadas por coma (hasta ${LIMITES_CURSO.etiquetasMax}). Ej: python, algoritmos, principiantes`}
+          deshabilitado={ocupado}
+        />
+        <CampoSelector
+          id="visibilidad-curso"
+          etiqueta="Visibilidad"
+          valor={visibilidad}
+          opciones={opcionesVisibilidad}
+          alCambiar={(valor) => valor && setVisibilidad(valor as VisibilidadCurso)}
+          ayuda="El enlace privado y los espacios sin revisión se publican directo sin espera."
+          deshabilitado={ocupado}
+        />
+        {organizacionesDocente.length > 0 && (
+          <CampoSelector
+            id="organizacion-curso"
+            etiqueta="Organización (opcional)"
+            valor={idOrganizacion}
+            textoVacio="Mi cuenta personal"
+            opciones={organizacionesDocente.map((o) => ({ valor: o.id, texto: o.nombre }))}
+            alCambiar={setIdOrganizacion}
+            deshabilitado={ocupado}
+          />
+        )}
+        {visibilidad === "organizacion" && (
+          <CampoCasilla
+            id="tambien-publico-curso"
+            etiqueta="Compartir también en el catálogo abierto de la comunidad"
+            ayuda="Si lo activas, el curso aparecerá en tu organización y además podrá verse en la comunidad."
+            valor={tambienPublico}
+            alCambiar={setTambienPublico}
+            deshabilitado={ocupado}
+          />
+        )}
         <CampoCasilla
           id="insignia-curso"
           etiqueta="Dar una insignia a quien complete el curso"
           ayuda="Quien termine todas las lecciones gana una insignia con la portada del curso."
           valor={daInsignia}
           alCambiar={setDaInsignia}
+          deshabilitado={ocupado}
+        />
+        <CampoCasilla
+          id="fork-curso"
+          etiqueta="Permitir que otros docentes adapten (bifurquen) este curso"
+          ayuda="Quien lo adapte creará su propio borrador manteniendo el crédito a tu curso original."
+          valor={permiteFork}
+          alCambiar={setPermiteFork}
           deshabilitado={ocupado}
         />
         {pesoArchivos > 0 && (

@@ -131,8 +131,8 @@ export function useEditorLeccion(idCurso: string, leccion: LeccionEnEditor) {
         despachar({ tipo: "archivoSubido", idSubida, archivo: await subir(idCurso, preparado) });
       } catch (error) {
         if (esSesionPerdida(error)) {
-          const { titulo, bloques, version } = ultimo.current;
-          const datos = { titulo, bloques: limpiarSubidas(bloques), version };
+          const { titulo, modulo, bloques, version } = ultimo.current;
+          const datos = { titulo, modulo, bloques: limpiarSubidas(bloques), version };
           guardarCopia({ idUsuario, ruta: pathname, datos });
           return;
         }
@@ -164,7 +164,7 @@ export function useEditorLeccion(idCurso: string, leccion: LeccionEnEditor) {
 
   async function guardar(reemplazar = false) {
     if (guardandoAhora.current || !comprobar("No se guardó")) return;
-    const { titulo, bloques, version } = estado;
+    const { titulo, modulo, bloques, version } = estado;
     guardandoAhora.current = true;
     setGuardando(true);
     setAviso(null);
@@ -172,6 +172,7 @@ export function useEditorLeccion(idCurso: string, leccion: LeccionEnEditor) {
     try {
       const respuesta = await guardarLeccion(idCurso, leccion.id, {
         titulo,
+        modulo: modulo.trim() || null,
         actividades: bloques.map(aActividad),
         version,
         ...(reemplazar && { reemplazar: true }),
@@ -180,7 +181,7 @@ export function useEditorLeccion(idCurso: string, leccion: LeccionEnEditor) {
       setGuardada(true);
     } catch (error) {
       if (esSesionPerdida(error)) {
-        guardarCopia({ idUsuario, ruta: pathname, datos: { titulo, bloques, version } });
+        guardarCopia({ idUsuario, ruta: pathname, datos: { titulo, modulo, bloques, version } });
       } else if (esConflicto(error)) {
         setVersionMasNueva(true);
       } else if (error instanceof ErrorHttp && error.estado === 400) {

@@ -1,4 +1,4 @@
-import { Send } from "lucide-react";
+import { Rocket, Send } from "lucide-react";
 import { useRef, useState } from "react";
 import Boton from "../../componentes/Boton/Boton.tsx";
 import Dialogo from "../../componentes/Dialogo/Dialogo.tsx";
@@ -9,6 +9,7 @@ import {
   esContenidoIncompleto,
   esSesionPerdida,
   leerErrorDeAccion,
+  publicarCursoDirecto,
   traerCursoEnEditor,
 } from "../../servicios/editor.ts";
 import { MENSAJES_EDITOR, type CursoEnEditor, type LeccionEnMapa } from "../../tipos/contrato.ts";
@@ -16,9 +17,11 @@ import { textoLeccionesVacias, type AvisoEstado } from "../../utilidades/editor.
 import estilos from "./MapaCurso.module.css";
 
 const NO_SE_PUDO_ENVIAR = "No se pudo enviar el curso a revisión.";
+const NO_SE_PUDO_PUBLICAR = "No se pudo publicar el curso.";
 
 type PropsEnviarRevision = {
   idCurso: string;
+  puedePublicarDirecto: boolean;
   hayCambios: boolean;
   ocupado: boolean;
   alCambiarOcupado: (ocupado: boolean) => void;
@@ -29,11 +32,10 @@ type PropsEnviarRevision = {
   alSesionPerdida: () => void;
 };
 
-// "Enviar a revisión" (spec F06). Antes de preguntar se pide otra vez el curso: la
-// lista del mapa solo se carga al abrirlo, y con otra pestaña puede estar vieja
-// (brote_specs, research de F06, punto 6).
+// "Enviar a revisión" o "Publicar ahora" (F06 + decisión 0020).
 export default function EnviarRevision({
   idCurso,
+  puedePublicarDirecto,
   hayCambios,
   ocupado,
   alCambiarOcupado,
@@ -46,10 +48,8 @@ export default function EnviarRevision({
   const [comprobando, setComprobando] = useState(false);
   const [confirmando, setConfirmando] = useState(false);
   const [enviando, setEnviando] = useState(false);
-  // el estado tarda un render en verse; con la ref un doble clic no pasa
   const accionEnCurso = useRef(false);
 
-  // Actualiza el mapa con lo guardado y dice si el curso se puede enviar.
   async function comprobar(): Promise<boolean> {
     const { curso } = await traerCursoEnEditor(idCurso);
     if (curso.estado !== "borrador") {
@@ -79,9 +79,8 @@ export default function EnviarRevision({
       if (await comprobar()) setConfirmando(true);
     } catch (error) {
       if (esSesionPerdida(error)) alSesionPerdida();
-      // un GET responde con el mensaje de abrir, y aquí el curso se acaba de borrar
       else if (esNoDisponible(error)) alAviso(MENSAJES_EDITOR.cursoNoExiste);
-      else alAviso(NO_SE_PUDO_ENVIAR);
+      else alAviso(puedePublicarDirecto ? NO_SE_PUDO_PUBLICAR : NO_SE_PUDO_ENVIAR);
     } finally {
       accionEnCurso.current = false;
       setComprobando(false);
@@ -89,7 +88,6 @@ export default function EnviarRevision({
     }
   }
 
-  // El mensaje se queda aunque no se pueda pedir otra vez el curso.
   async function avisarYActualizar(mensaje: string) {
     alAviso(mensaje);
     await comprobar().catch(() => {});
@@ -101,14 +99,22 @@ export default function EnviarRevision({
     setEnviando(true);
     alCambiarOcupado(true);
     try {
-      const { curso } = await enviarARevision(idCurso);
-      alCambiarCurso(curso, { texto: "Curso enviado a revisión.", tono: "exito" });
+      if (puedePublicarDirecto) {
+        const { curso } = await publicarCursoDirecto(idCurso);
+        alCambiarCurso(curso, { texto: "¡Curso publicado!", tono: "exito" });
+      } else {
+        const { curso } = await enviarARevision(idCurso);
+        alCambiarCurso(curso, { texto: "Curso enviado a revisión.", tono: "exito" });
+      }
     } catch (error) {
       setConfirmando(false);
       if (esSesionPerdida(error)) alSesionPerdida();
       else if (esContenidoIncompleto(error)) await avisarYActualizar(leerErrorDeCarga(error));
       else if (esConflicto(error)) await avisarYActualizar(MENSAJES_EDITOR.estadoCambiado);
-      else alAviso(leerErrorDeAccion(error, NO_SE_PUDO_ENVIAR));
+      else
+        alAviso(
+          leerErrorDeAccion(error, puedePublicarDirecto ? NO_SE_PUDO_PUBLICAR : NO_SE_PUDO_ENVIAR),
+        );
     } finally {
       accionEnCurso.current = false;
       setEnviando(false);
@@ -116,24 +122,37 @@ export default function EnviarRevision({
     }
   }
 
+  const etiquetaBoton = puedePublicarDirecto ? "Publicar ahora" : "Enviar a revisión";
+
   return (
     <div className={estilos.enviar}>
       <Boton
-        icono={Send}
+        icono={puedePublicarDirecto ? Rocket : Send}
         enviando={comprobando}
-        textoEnviando="Enviar a revisión"
+        textoEnviando={etiquetaBoton}
         deshabilitado={hayCambios || ocupado}
         alPulsar={pulsar}
       >
-        Enviar a revisión
+        {etiquetaBoton}
       </Boton>
-      {hayCambios && <p className={estilos.nota}>Guarda los cambios para poder enviarlo.</p>}
+      {hayCambios && (
+        <p className={estilos.nota}>
+          {puedePublicarDirecto
+            ? "Guarda los cambios para poder publicarlo."
+            : "Guarda los cambios para poder enviarlo."}
+        </p>
+      )}
       <Dialogo
         abierto={confirmando}
-        titulo="¿Enviar a revisión?"
-        texto="Mientras esté en revisión no podrás editarlo. Un administrador lo revisará antes de publicarlo."
-        textoConfirmar="Enviar"
+        titulo={puedePublicarDirecto ? "¿Publicar este curso ahora?" : "¿Enviar a revisión?"}
+        texto={
+          puedePublicarDirecto
+            ? "El curso quedará publicado de inmediato según su configuración de visibilidad."
+            : "Mientras esté en revisión no podrás editarlo. Un moderador lo revisará antes de publicarlo."
+        }
+        textoConfirmar={puedePublicarDirecto ? "Publicar" : "Enviar"}
         textoCancelar="Cancelar"
+        varianteConfirmar="primario"
         enviando={enviando}
         alConfirmar={confirmar}
         alCancelar={() => setConfirmando(false)}

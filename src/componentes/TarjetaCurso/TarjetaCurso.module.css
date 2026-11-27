@@ -37,6 +37,12 @@
   padding: 0 var(--espacio-3) var(--espacio-3);
 }
 
+.etiquetasSuperiores {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espacio-2);
+}
+
 /* line-clamp corta en N líneas y termina en "…" */
 .titulo,
 .descripcion {
@@ -75,6 +81,8 @@
 
 .pie {
   display: flex;
+  flex-wrap: wrap;
+  gap: var(--espacio-2);
 }
 
 @media (prefers-reduced-motion: reduce) {

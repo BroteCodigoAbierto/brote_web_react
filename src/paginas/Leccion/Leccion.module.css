@@ -16,3 +16,30 @@
   margin: 0 auto;
   padding: var(--espacio-5) var(--espacio-5) var(--espacio-9);
 }
+
+.accionesInvitado {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--espacio-3);
+}
+
+.pieReporte {
+  display: flex;
+  justify-content: center;
+  padding: 0 var(--espacio-5) var(--espacio-6);
+}
+
+.camposReporte {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-3);
+  margin-top: var(--espacio-4);
+}
+
+.ctaVisitante {
+  display: flex;
+  flex-direction: column;
+  gap: var(--espacio-4);
+  margin-top: var(--espacio-5);
+}

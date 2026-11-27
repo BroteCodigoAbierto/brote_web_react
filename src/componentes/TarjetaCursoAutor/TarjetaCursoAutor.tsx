@@ -1,4 +1,4 @@
-import { ArrowRight, BookOpen, MessageSquareWarning } from "lucide-react";
+import { ArrowRight, BookOpen, Building2, Link2, MessageSquareWarning } from "lucide-react";
 import { Link } from "react-router";
 import type { CursoDelAutor } from "../../tipos/contrato.ts";
 import { textoCantidadLecciones } from "../../utilidades/cursos.ts";
@@ -13,9 +13,7 @@ type PropsTarjetaCursoAutor = {
   curso: CursoDelAutor;
 };
 
-// Un curso en "Cursos que creé" (spec F06; docs/diseno.md, sección 5, "Estado de un
-// curso"). Toda la tarjeta es un enlace a su mapa, que muestra lo que se puede hacer
-// en cada estado.
+// Un curso en "Mis cursos" del Estudio (F06 + decisión 0020).
 export default function TarjetaCursoAutor({ curso }: PropsTarjetaCursoAutor) {
   return (
     <Superficie como={Link} to={`/editor/${curso.id}`} className={base.tarjeta}>
@@ -29,6 +27,14 @@ export default function TarjetaCursoAutor({ curso }: PropsTarjetaCursoAutor) {
         <h3 className={base.titulo}>{curso.titulo}</h3>
         <div className={estilos.insignias}>
           <InsigniaEstadoCurso estado={curso.estado} />
+          {curso.visibilidad === "enlacePrivado" && (
+            <Insignia icono={Link2}>Enlace privado</Insignia>
+          )}
+          {curso.organizacion && (
+            <Insignia tono="acento" icono={Building2}>
+              {curso.organizacion.nombre}
+            </Insignia>
+          )}
           {curso.revisionRechazada && (
             <Insignia tono="acento" icono={MessageSquareWarning}>
               Revisión no aprobada

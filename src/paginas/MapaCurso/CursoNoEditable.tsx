@@ -1,4 +1,4 @@
-import { Eye, EyeOff, Undo2 } from "lucide-react";
+import { Check, Copy, Download, Eye, EyeOff, Undo2 } from "lucide-react";
 import { useEffect, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router";
 import Aviso from "../../componentes/Aviso/Aviso.tsx";
@@ -11,6 +11,7 @@ import { useSesion } from "../../hooks/useSesion.ts";
 import {
   esConflicto,
   esSesionPerdida,
+  exportarCurso,
   leerErrorDeAccion,
   retirarDelCatalogo,
   retirarDeRevision,
@@ -18,7 +19,10 @@ import {
 } from "../../servicios/editor.ts";
 import {
   MENSAJES_EDITOR,
+  NOMBRE_CATEGORIA,
   NOMBRE_IDIOMA,
+  NOMBRE_NIVEL,
+  NOMBRE_VISIBILIDAD,
   type CursoEnEditor,
   type RespuestaCursoEnEditor,
 } from "../../tipos/contrato.ts";
@@ -32,8 +36,7 @@ type PropsCursoNoEditable = {
   alLimpiarAviso: () => void;
 };
 
-// El mapa de un curso en revisión o publicado (spec F06; docs/diseno.md, sección 5,
-// "Curso que no se edita"): lo que se puede hacer con él es retirarlo.
+// El mapa de un curso en revisión o publicado (F06 + F07 + decisión 0020).
 export default function CursoNoEditable({
   curso,
   alCambiarCurso,
@@ -44,12 +47,12 @@ export default function CursoNoEditable({
   const idUsuario = useSesion().usuario?.id ?? "";
   const [confirmando, setConfirmando] = useState(false);
   const [retirando, setRetirando] = useState(false);
+  const [exportando, setExportando] = useState(false);
+  const [enlaceCopiado, setEnlaceCopiado] = useState(false);
   const [aviso, setAviso] = useState<string | null>(null);
-  // el estado tarda un render en verse; con la ref un doble clic no pasa
   const accionEnCurso = useRef(false);
   const publicado = curso.estado === "publicado";
 
-  // Una copia de cuando era borrador reaparecería al volver a serlo, ya vieja.
   useEffect(() => {
     tomarCopia(idUsuario, pathname);
   }, [idUsuario, pathname]);
@@ -59,7 +62,6 @@ export default function CursoNoEditable({
       const { curso: actual } = await traerCursoEnEditor(curso.id);
       alCambiarCurso(actual, { texto: MENSAJES_EDITOR.estadoCambiado, tono: "error" });
     } catch {
-      // sin red no hay estado real que mostrar, pero el aviso sí
       setAviso(MENSAJES_EDITOR.estadoCambiado);
     }
   }
@@ -79,7 +81,6 @@ export default function CursoNoEditable({
       alCambiarCurso(retirado, { texto: exito, tono: "exito" });
     } catch (error) {
       setConfirmando(false);
-      // con la sesión perdida, pedir() ya mandó a "Entrar"
       if (esConflicto(error)) await pasarAlEstadoReal();
       else if (!esSesionPerdida(error)) setAviso(leerErrorDeAccion(error, fallo));
     } finally {
@@ -87,6 +88,42 @@ export default function CursoNoEditable({
       setRetirando(false);
     }
   }
+
+  async function descargarJson() {
+    setExportando(true);
+    setAviso(null);
+    try {
+      const datos = await exportarCurso(curso.id);
+      const blob = new Blob([JSON.stringify(datos, null, 2)], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+      const enlace = document.createElement("a");
+      enlace.href = url;
+      enlace.download = `curso-${curso.id}.brote.json`;
+      enlace.click();
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      setAviso(leerErrorDeAccion(error, "No se pudo exportar el curso."));
+    } finally {
+      setExportando(false);
+    }
+  }
+
+  async function copiarEnlacePrivado() {
+    if (!curso.claveEnlace) return;
+    const url = `${window.location.origin}/cursos/enlace/${curso.claveEnlace}`;
+    try {
+      await navigator.clipboard.writeText(url);
+      setEnlaceCopiado(true);
+      setTimeout(() => setEnlaceCopiado(false), 2500);
+    } catch {
+      // sin permiso de portapapeles
+    }
+  }
+
+  const rutaVer =
+    curso.visibilidad === "enlacePrivado" && curso.claveEnlace
+      ? `/cursos/enlace/${curso.claveEnlace}`
+      : `/cursos/${curso.id}`;
 
   return (
     <Superficie className={estilos.panel}>
@@ -102,9 +139,14 @@ export default function CursoNoEditable({
           <div>
             <InsigniaEstadoCurso estado={curso.estado} />
           </div>
-          {/* F14: como texto, porque no se edita */}
-          <p className={estilos.idiomaCurso}>Idioma: {NOMBRE_IDIOMA[curso.idioma]}</p>
-          {/* F08: como texto, igual que el idioma */}
+          <p className={estilos.idiomaCurso}>
+            {NOMBRE_CATEGORIA[curso.categoria]} · {NOMBRE_NIVEL[curso.nivel]} ·{" "}
+            {NOMBRE_IDIOMA[curso.idioma]}
+          </p>
+          <p className={estilos.idiomaCurso}>
+            Visibilidad: {NOMBRE_VISIBILIDAD[curso.visibilidad]}
+            {curso.organizacion ? ` (${curso.organizacion.nombre})` : ""}
+          </p>
           <p className={estilos.idiomaCurso}>
             {curso.daInsignia
               ? "Da una insignia a quien lo complete"
@@ -112,14 +154,23 @@ export default function CursoNoEditable({
           </p>
         </div>
       </div>
+
+      {publicado && curso.visibilidad === "enlacePrivado" && curso.claveEnlace && (
+        <Aviso
+          tono="info"
+          titulo="Enlace privado activo"
+          texto={`${window.location.origin}/cursos/enlace/${curso.claveEnlace}`}
+        />
+      )}
+
       <div className={estilos.explicacion}>
         <p className={estilos.mensaje}>
           {publicado ? MENSAJES_EDITOR.cursoPublicado : MENSAJES_EDITOR.cursoEnRevision}
         </p>
         <p className={estilos.textoMensaje}>
           {publicado
-            ? "Para editarlo, retíralo del catálogo. Cuando termines, tendrás que enviarlo otra vez a revisión."
-            : "Un administrador lo revisará antes de publicarlo."}
+            ? "Para editarlo, retíralo primero para volver a borrador."
+            : "Un moderador lo revisará antes de publicarlo."}
         </p>
       </div>
       {aviso && <Aviso texto={aviso} />}
@@ -128,9 +179,29 @@ export default function CursoNoEditable({
           <Boton
             icono={Eye}
             deshabilitado={retirando}
-            alPulsar={() => navegar(`/cursos/${curso.id}`)}
+            alPulsar={() => navegar(rutaVer)}
           >
             Ver curso
+          </Boton>
+          {curso.visibilidad === "enlacePrivado" && curso.claveEnlace && (
+            <Boton
+              variante="secundario"
+              icono={enlaceCopiado ? Check : Copy}
+              deshabilitado={retirando}
+              alPulsar={copiarEnlacePrivado}
+            >
+              {enlaceCopiado ? "Enlace copiado" : "Copiar enlace privado"}
+            </Boton>
+          )}
+          <Boton
+            variante="secundario"
+            icono={Download}
+            enviando={exportando}
+            textoEnviando="Exportando..."
+            deshabilitado={retirando}
+            alPulsar={descargarJson}
+          >
+            Exportar JSON
           </Boton>
           <Boton
             variante="secundario"
@@ -138,11 +209,21 @@ export default function CursoNoEditable({
             deshabilitado={retirando}
             alPulsar={() => setConfirmando(true)}
           >
-            Retirar del catálogo
+            Retirar a borrador
           </Boton>
         </div>
       ) : (
         <div className={estilos.botonesCurso}>
+          <Boton
+            variante="secundario"
+            icono={Download}
+            enviando={exportando}
+            textoEnviando="Exportando..."
+            deshabilitado={retirando}
+            alPulsar={descargarJson}
+          >
+            Exportar JSON
+          </Boton>
           <Boton
             variante="secundario"
             icono={Undo2}
@@ -162,16 +243,16 @@ export default function CursoNoEditable({
       )}
       <Dialogo
         abierto={confirmando}
-        titulo="¿Retirar este curso del catálogo?"
-        texto="Los alumnos dejarán de verlo y no podrán cursarlo, pero conservarán su progreso. Para publicarlo otra vez tendrás que enviarlo a revisión."
+        titulo="¿Retirar este curso a borrador?"
+        texto="Los alumnos dejarán de verlo temporalmente, pero conservarán su progreso."
         textoConfirmar="Retirar"
         textoCancelar="Cancelar"
         enviando={retirando}
         alConfirmar={() =>
           retirar(
             retirarDelCatalogo,
-            "El curso se retiró del catálogo y volvió a borrador.",
-            "No se pudo retirar el curso del catálogo.",
+            "El curso se retiró y volvió a borrador.",
+            "No se pudo retirar el curso.",
           )
         }
         alCancelar={() => setConfirmando(false)}
